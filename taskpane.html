@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Neota Word Add-in</title>
+<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font-sans,system-ui,sans-serif);font-size:13px;color:var(--color-text-primary,#1a1a1a);background:var(--color-background-primary,#fff);height:100vh;display:flex;flex-direction:column;overflow:hidden}
@@ -114,6 +115,14 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 
 .select-with-btn{display:flex;gap:6px;align-items:center}
 .select-with-btn select{flex:1;margin-bottom:0}
+.combo-wrap{position:relative;display:flex;align-items:center}
+.combo-wrap input{flex:1;padding-right:24px}
+.combo-arrow{position:absolute;right:1px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer;font-size:11px;color:var(--color-text-secondary,#666);padding:0 5px;height:calc(100% - 2px);border-radius:0 4px 4px 0}
+.combo-arrow:hover{background:var(--color-background-secondary,#f0f0f0)}
+.combo-drop{display:none;position:absolute;top:100%;left:0;right:0;background:var(--color-background-primary,#fff);border:0.5px solid var(--color-border-secondary,#ccc);border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.1);z-index:300;max-height:160px;overflow-y:auto}
+.combo-drop.open{display:block}
+.combo-opt{padding:6px 10px;font-size:12px;cursor:pointer}
+.combo-opt:hover{background:var(--color-background-secondary,#f5f5f5)}
 </style>
 </head>
 <body>
@@ -636,9 +645,9 @@ function buildVarFields(containerId, v, disabled){
     <div class="field-row"><label class="field-label">Question Text</label><div class="field-input"><input type="text" id="${containerId}-question" value="${v?esc(v.question):''}" ${d}></div></div>
     <div class="field-row"><label class="field-label">Hint Text</label><div class="field-input"><input type="text" id="${containerId}-hint" value="${v?esc(v.hint):''}" ${d}></div></div>
     <div class="field-row"><label class="field-label">Default Answer</label><div class="field-input"><textarea id="${containerId}-default" rows="2" ${d}>${v?esc(v.defaultAnswer):''}</textarea></div></div>
-    <div class="field-row"><label class="field-label">Issue</label><div class="field-input"><select id="${containerId}-issue" ${d}><option value="">—</option>${issues}</select></div></div>
+    <div class="field-row"><label class="field-label">Issue</label><div class="field-input"><div class="combo-wrap"><input type="text" id="${containerId}-issue" value="${v&&v.issueName?esc(v.issueName):'First Issue'}" ${d} placeholder="First Issue" autocomplete="off"><button type="button" class="combo-arrow" ${d} onclick="openCombo('${containerId}-issue','${containerId}-issue-drop','issues')">▾</button><div class="combo-drop" id="${containerId}-issue-drop"></div></div></div></div>
     <div class="field-row"><label class="field-label">Folder</label><div class="field-input"><input type="text" id="${containerId}-folder" value="${v?esc(v.folder||''):''}" ${d}></div></div>
-    <div class="field-row"><label class="field-label">Form</label><div class="field-input"><select id="${containerId}-form" ${d}><option value="">&lt;Type new form&gt;</option>${forms}</select></div></div>
+    <div class="field-row"><label class="field-label">Form</label><div class="field-input"><div class="combo-wrap"><input type="text" id="${containerId}-form" value="${v&&v.formName?esc(v.formName):''}" ${d} placeholder="&lt;Type new form&gt;" autocomplete="off"><button type="button" class="combo-arrow" ${d} onclick="openCombo('${containerId}-form','${containerId}-form-drop','forms')">▾</button><div class="combo-drop" id="${containerId}-form-drop"></div></div></div></div>
     <div class="field-row"><label class="field-label">Note</label><div class="field-input"><textarea id="${containerId}-note" rows="2" ${d}>${v?esc(v.note||''):''}</textarea></div></div>
     <div class="checkbox-row"><input type="checkbox" id="${containerId}-is-question" ${v===null||v===undefined||(v&&v.isQuestion!==false)?'checked':''} ${d}><label for="${containerId}-is-question">This is a Question variable</label></div>
     <div class="checkbox-row"><input type="checkbox" id="${containerId}-is-mv" ${v&&v.isMultiValue?'checked':''} ${d}><label for="${containerId}-is-mv">This variable can have multiple values</label></div>
@@ -719,10 +728,9 @@ function readVarFields(prefix){
     question: document.getElementById(prefix+'-question')?.value.trim()||'',
     hint: document.getElementById(prefix+'-hint')?.value.trim()||'',
     defaultAnswer: document.getElementById(prefix+'-default')?.value.trim()||'',
-    issueId: document.getElementById(prefix+'-issue')?.value||'',
-    issueName: (()=>{const s=document.getElementById(prefix+'-issue');return s?s.options[s.selectedIndex]?.text||'':''})(),
+    issueName: document.getElementById(prefix+'-issue')?.value.trim()||'First Issue',
     folder: document.getElementById(prefix+'-folder')?.value.trim()||'',
-    formId: document.getElementById(prefix+'-form')?.value||'',
+    formName: document.getElementById(prefix+'-form')?.value.trim()||'',
     note: document.getElementById(prefix+'-note')?.value.trim()||'',
     isQuestion: document.getElementById(prefix+'-is-question')?.checked!==false,
     isMultiValue: document.getElementById(prefix+'-is-mv')?.checked||false,
@@ -1380,8 +1388,53 @@ function exportXML(){
   setStatus('item1.xml exported');
 }
 
+// Combo box helpers
+function openCombo(inputId, dropId, sourceKey){
+  document.querySelectorAll('.combo-drop').forEach(d=>{ if(d.id!==dropId) d.classList.remove('open'); });
+  const drop = document.getElementById(dropId);
+  if(!drop) return;
+  // Build options fresh from current state each time
+  let items = [];
+  if(sourceKey==='issues'){
+    const fromIssues = state.issues.map(i=>i.name);
+    const fromVars = state.variables.map(v=>v.issueName).filter(Boolean);
+    items = [...new Set([...fromIssues, ...fromVars])];
+  }
+  if(sourceKey==='forms'){
+    // collect all unique form names from state.forms + from variables that have a formName
+    const fromForms = state.forms.map(f=>f.name);
+    const fromVars = state.variables.map(v=>v.formName).filter(Boolean);
+    items = [...new Set([...fromForms, ...fromVars])];
+  }
+  drop.innerHTML = items.length
+    ? items.map(name=>`<div class="combo-opt" onclick="pickCombo('${inputId}','${name.replace(/'/g,"\\'")}','${dropId}')">${esc(name)}</div>`).join('')
+    : `<div class="combo-opt" style="color:var(--color-text-tertiary,#aaa);font-style:italic">Nothing defined yet</div>`;
+  drop.classList.toggle('open');
+}
+function toggleCombo(inputId, dropId){
+  document.querySelectorAll('.combo-drop').forEach(d=>{ if(d.id!==dropId) d.classList.remove('open'); });
+  document.getElementById(dropId)?.classList.toggle('open');
+}
+function pickCombo(inputId, val, dropId){
+  const inp = document.getElementById(inputId);
+  if(inp) inp.value = val;
+  document.getElementById(dropId)?.classList.remove('open');
+}
+document.addEventListener('click', e=>{
+  if(!e.target.closest('.combo-wrap')) document.querySelectorAll('.combo-drop').forEach(d=>d.classList.remove('open'));
+});
+
 // Init child type select
 buildTypeOptions('child-type','Text');
+
+// Initialise Office.js if available
+if(typeof Office !== 'undefined'){
+  Office.onReady(info => {
+    if(info.host === Office.HostType.Word){
+      setStatus('Connected to Word');
+    }
+  });
+}
 </script>
 </body>
 </html>
