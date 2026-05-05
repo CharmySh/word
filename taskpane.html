@@ -741,19 +741,35 @@ function readVarFields(prefix){
 // ---- Open New Variable ----
 function openNewVar(){
   state.tempChildVars=[];
-  document.getElementById('var-new-layout').innerHTML='';
-  // insert container div
   document.getElementById('var-new-layout').innerHTML='<div id="vnew"></div>';
-  buildVarFields('vnew', null, false);
-  buildTypeOptions('vnew-type','Text');
-  openModal('varNewModal');
+
+  // Try to read selected text from Word to pre-populate name
+  if(typeof Word !== 'undefined' && typeof Office !== 'undefined' && Office.context){
+    Word.run(async ctx=>{
+      const sel = ctx.document.getSelection();
+      sel.load('text');
+      await ctx.sync();
+      const selectedText = sel.text ? sel.text.trim() : '';
+      buildVarFields('vnew', selectedText ? {name: selectedText} : null, false);
+      buildTypeOptions('vnew-type','Text');
+      openModal('varNewModal');
+    }).catch(()=>{
+      buildVarFields('vnew', null, false);
+      buildTypeOptions('vnew-type','Text');
+      openModal('varNewModal');
+    });
+  } else {
+    buildVarFields('vnew', null, false);
+    buildTypeOptions('vnew-type','Text');
+    openModal('varNewModal');
+  }
 }
 
 function saveNewVariable(){
   const v = readVarFields('vnew');
   if(!v.name){ setStatus('Name is required','error'); return; }
   v.id = state.nextId();
-  v.mergeField = v.name+'/'+(v.issueName||'')+'/';
+  v.mergeField = v.name + '/' + (v.issueName||'First Issue') + '/';
   const useNow = document.getElementById('vnew-use-now')?.checked;
   const replaceAll = document.getElementById('vnew-replace-all')?.checked;
   state.variables.push(v);
@@ -917,7 +933,7 @@ function doInsertByVar(v, replaceAll){
       const cc = sel.insertContentControl();
       cc.title = 'NL_VAR:' + v.name;
       cc.tag = v.mergeField || v.name;
-      cc.insertText('«' + v.name + '»', Word.InsertLocation.replace);
+      cc.insertText('«' + (v.mergeField || v.name) + '»', Word.InsertLocation.replace);
       cc.appearance = Word.ContentControlAppearance.tags;
       await ctx.sync();
       console.log('Insert successful');
