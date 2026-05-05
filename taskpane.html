@@ -8,6 +8,20 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font-sans,system-ui,sans-serif);font-size:13px;color:var(--color-text-primary,#1a1a1a);background:var(--color-background-primary,#fff);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+/* Compact toolbar mode */
+.toolbar-strip{display:flex;flex-wrap:wrap;gap:3px;padding:5px 8px;background:var(--color-background-secondary,#f5f5f5);border-bottom:0.5px solid var(--color-border-tertiary,#e5e5e5);flex-shrink:0}
+.tb-group{position:relative;display:inline-flex;flex-direction:column;align-items:center}
+.tb-btn{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px 6px;border:0.5px solid transparent;border-radius:4px;background:none;cursor:pointer;font-size:9px;color:var(--color-text-secondary,#555);min-width:40px;transition:background 0.1s}
+.tb-btn:hover{background:var(--c-neota-light);border-color:#9fe1cb}
+.tb-btn.active{background:var(--c-neota-light);border-color:var(--c-neota);color:var(--c-neota)}
+.tb-icon{font-size:16px;line-height:1}
+.tb-drop{display:none;position:absolute;top:100%;left:0;background:var(--color-background-primary,#fff);border:0.5px solid var(--color-border-secondary,#ccc);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,0.12);z-index:50;min-width:170px;padding:4px 0;white-space:nowrap}
+.tb-drop.open{display:block}
+.tb-sep{width:0.5px;background:var(--color-border-tertiary,#e5e5e5);margin:2px 3px;align-self:stretch}
+/* hide old nav when toolbar active */
+body.toolbar-mode .nav{display:none}
+body.toolbar-mode .topbar{padding:5px 10px}
+body:not(.toolbar-mode) .toolbar-strip{display:none}
 :root{--c-neota:#1d9e75;--c-neota-light:#e1f5ee;--c-neota-dark:#085041}
 .topbar{background:var(--c-neota);color:#fff;padding:8px 12px;display:flex;align-items:center;gap:8px;flex-shrink:0}
 .topbar-title{font-size:14px;font-weight:500}
@@ -50,6 +64,8 @@ label.field-label{font-size:12px;color:var(--color-text-primary,#1a1a1a);display
 .field-row .field-input{flex:1}
 .checkbox-row{display:flex;align-items:center;gap:7px;margin-bottom:5px;font-size:12px}
 .checkbox-row input[type=checkbox]{width:14px;height:14px;flex-shrink:0;margin:0}
+input.field-error, select.field-error, textarea.field-error{border-color:#c0392b!important;box-shadow:0 0 0 2px rgba(192,57,43,0.15)!important}
+.field-error-msg{font-size:11px;color:#c0392b;margin-top:2px;display:block}
 
 .card{background:var(--color-background-secondary,#f9f9f9);border:0.5px solid var(--color-border-tertiary,#e5e5e5);border-radius:8px;padding:10px 12px;margin-bottom:6px}
 .card-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -130,6 +146,84 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span class="topbar-title">Neota Word Add-in</span>
+  <button onclick="toggleToolbarMode()" id="view-toggle-btn" style="margin-left:auto;background:rgba(255,255,255,0.2);border:0.5px solid rgba(255,255,255,0.4);border-radius:4px;color:#fff;font-size:10px;padding:3px 7px;cursor:pointer">Toolbar view</button>
+</div>
+
+<!-- TOOLBAR STRIP (toolbar mode only) -->
+<div class="toolbar-strip">
+  <!-- Variable -->
+  <div class="tb-group">
+    <button class="tb-btn" onclick="tbToggle('tb-var-drop')"><span class="tb-icon">(x)</span>Variable</button>
+    <div class="tb-drop" id="tb-var-drop">
+      <button class="dropdown-item" onclick="closeTbDrops();openNewVar()">New...</button>
+      <button class="dropdown-item" onclick="closeTbDrops();openViewEditVar()">View/Edit...</button>
+      <button class="dropdown-item" onclick="closeTbDrops();openDeleteVar()">Delete...</button>
+      <button class="dropdown-item" onclick="closeTbDrops();openUseExisting()">Use Existing...</button>
+      <button class="dropdown-item" onclick="closeTbDrops();openNVDS()">Named Value Display Sets...</button>
+    </div>
+  </div>
+  <div class="tb-sep"></div>
+  <!-- Condition -->
+  <div class="tb-group">
+    <button class="tb-btn" onclick="tbToggle('tb-cond-drop')"><span class="tb-icon">◈</span>Condition</button>
+    <div class="tb-drop" id="tb-cond-drop">
+      <button class="dropdown-item" onclick="closeTbDrops();openModal('condNewModal')">New...</button>
+      <button class="dropdown-item" onclick="closeTbDrops();openViewEditCond()">View/Edit...</button>
+      <button class="dropdown-item" onclick="closeTbDrops();openDeleteCond()">Delete...</button>
+      <button class="dropdown-item" onclick="closeTbDrops();openInsertCond()">Use Existing...</button>
+    </div>
+  </div>
+  <div class="tb-sep"></div>
+  <!-- Form -->
+  <div class="tb-group">
+    <button class="tb-btn" onclick="tbToggle('tb-form-drop')"><span class="tb-icon">⊞</span>Form</button>
+    <div class="tb-drop" id="tb-form-drop">
+      <button class="dropdown-item" onclick="closeTbDrops();openModal('formNewModal')">New...</button>
+      <button class="dropdown-item" onclick="closeTbDrops();openViewEditForm()">View/Edit...</button>
+      <button class="dropdown-item" onclick="closeTbDrops();openDeleteForm()">Delete...</button>
+    </div>
+  </div>
+  <div class="tb-sep"></div>
+  <!-- Repeat -->
+  <div class="tb-group">
+    <button class="tb-btn" onclick="closeTbDrops();openRepeatModal()"><span class="tb-icon">↻</span>Repeat</button>
+  </div>
+  <div class="tb-sep"></div>
+  <!-- Issue -->
+  <div class="tb-group">
+    <button class="tb-btn" onclick="tbToggle('tb-issue-drop')"><span class="tb-icon">≡</span>Issue</button>
+    <div class="tb-drop" id="tb-issue-drop">
+      <button class="dropdown-item" onclick="closeTbDrops();openModal('issueNewModal')">New...</button>
+      <button class="dropdown-item" onclick="closeTbDrops();openViewEditIssue()">View/Edit...</button>
+      <button class="dropdown-item" onclick="closeTbDrops();openDeleteIssue()">Delete...</button>
+    </div>
+  </div>
+  <div class="tb-sep"></div>
+  <!-- Check -->
+  <div class="tb-group">
+    <button class="tb-btn" onclick="closeTbDrops();checkDocument()"><span class="tb-icon">✓</span>Check</button>
+  </div>
+  <!-- View Data -->
+  <div class="tb-group">
+    <button class="tb-btn" onclick="closeTbDrops();showDataTable()"><span class="tb-icon">⊟</span>Data</button>
+  </div>
+  <!-- Show/Hide -->
+  <div class="tb-group">
+    <button class="tb-btn" onclick="tbToggle('tb-view-drop')"><span class="tb-icon">👁</span>View</button>
+    <div class="tb-drop" id="tb-view-drop">
+      <button class="dropdown-item" onclick="closeTbDrops();toggleShading()">Show/Hide Field Shading</button>
+      <button class="dropdown-item" onclick="closeTbDrops();toggleFieldCodes()">Show/Hide Field Codes</button>
+    </div>
+  </div>
+  <!-- Organizer -->
+  <div class="tb-group">
+    <button class="tb-btn" onclick="closeTbDrops();showPanel('organizer')"><span class="tb-icon">🗂</span>Organizer</button>
+  </div>
+  <div class="tb-sep"></div>
+  <!-- Prepare -->
+  <div class="tb-group">
+    <button class="tb-btn" onclick="closeTbDrops();prepareDocument()"><span class="tb-icon">⊘</span>Prepare</button>
+  </div>
 </div>
 
 <div class="nav">
@@ -765,9 +859,36 @@ function openNewVar(){
   }
 }
 
+function clearFieldErrors(prefix){
+  document.querySelectorAll(`#${prefix} .field-error`).forEach(el=>el.classList.remove('field-error'));
+  document.querySelectorAll(`#${prefix} .field-error-msg`).forEach(el=>el.remove());
+}
+function showFieldError(fieldId, msg){
+  const el = document.getElementById(fieldId);
+  if(!el) return;
+  el.classList.add('field-error');
+  // remove existing error msg if any
+  el.parentElement.querySelectorAll('.field-error-msg').forEach(e=>e.remove());
+  const span = document.createElement('span');
+  span.className = 'field-error-msg';
+  span.textContent = msg;
+  el.insertAdjacentElement('afterend', span);
+  el.focus();
+}
+
 function saveNewVariable(){
+  clearFieldErrors('vnew');
   const v = readVarFields('vnew');
-  if(!v.name){ setStatus('Name is required','error'); return; }
+  let hasError = false;
+  if(!v.name){
+    showFieldError('vnew-name', 'Name is required');
+    hasError = true;
+  }
+  if(!v.question){
+    showFieldError('vnew-question', 'Question Text is required');
+    hasError = true;
+  }
+  if(hasError) return;
   v.id = state.nextId();
   v.mergeField = v.name + '/' + (v.issueName||'First Issue') + '/';
   const useNow = document.getElementById('vnew-use-now')?.checked;
@@ -1420,6 +1541,25 @@ function exportXML(){
   URL.revokeObjectURL(url);
   setStatus('item1.xml exported');
 }
+
+// Toolbar mode toggle
+let toolbarMode = false;
+function toggleToolbarMode(){
+  toolbarMode = !toolbarMode;
+  document.body.classList.toggle('toolbar-mode', toolbarMode);
+  document.getElementById('view-toggle-btn').textContent = toolbarMode ? 'Panel view' : 'Toolbar view';
+}
+function tbToggle(id){
+  const isOpen = document.getElementById(id).classList.contains('open');
+  closeTbDrops();
+  if(!isOpen) document.getElementById(id).classList.add('open');
+}
+function closeTbDrops(){
+  document.querySelectorAll('.tb-drop').forEach(d=>d.classList.remove('open'));
+}
+document.addEventListener('click', e=>{
+  if(!e.target.closest('.tb-group')) closeTbDrops();
+});
 
 // Combo box helpers
 function openCombo(inputId, dropId, sourceKey){
