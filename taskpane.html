@@ -899,20 +899,37 @@ function removeNVDS(){
 
 // ---- Insert merge field into Word ----
 function doInsertByVar(v, replaceAll){
-  if(typeof Word !== 'undefined'){
-    Word.run(async ctx=>{
-      const sel=ctx.document.getSelection();
-      const cc=sel.insertContentControl();
-      cc.title='NL_VAR:'+v.name;
-      cc.tag=v.mergeField;
-      cc.insertText('«'+v.name+'»','Replace');
-      cc.appearance='Tags';
-      await ctx.sync();
-      setStatus('Merge field inserted: '+v.name);
-    }).catch(e=>setStatus('Word API error: '+e.message,'error'));
-  } else {
-    setStatus('[Demo] Merge field inserted: «'+v.name+'»');
+  if(typeof Word === 'undefined'){
+    setStatus('Office.js not loaded — not running inside Word','error');
+    return;
   }
+  if(typeof Office === 'undefined' || !Office.context){
+    setStatus('Office context not available','error');
+    return;
+  }
+  console.log('Inserting variable:', v.name);
+  Word.run(async ctx=>{
+    try{
+      const sel = ctx.document.getSelection();
+      sel.load('text');
+      await ctx.sync();
+      console.log('Selection text:', sel.text);
+      const cc = sel.insertContentControl();
+      cc.title = 'NL_VAR:' + v.name;
+      cc.tag = v.mergeField || v.name;
+      cc.insertText('«' + v.name + '»', Word.InsertLocation.replace);
+      cc.appearance = Word.ContentControlAppearance.tags;
+      await ctx.sync();
+      console.log('Insert successful');
+      setStatus('Merge field inserted: ' + v.name);
+    } catch(inner){
+      console.error('Inner error:', inner);
+      setStatus('Insert failed: ' + inner.message, 'error');
+    }
+  }).catch(e=>{
+    console.error('Word.run error:', e);
+    setStatus('Word API error: ' + e.message, 'error');
+  });
 }
 
 // ---- Render variable list ----
