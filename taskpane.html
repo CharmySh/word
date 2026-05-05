@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Neota Word Add-in</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans,system-ui,sans-serif);font-size:13px;color:var(--color-text-primary,#1a1a1a);background:var(--color-background-primary,#fff);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+:root{--c-neota:#1d9e75;--c-neota-light:#e1f5ee;--c-neota-dark:#085041}
+.topbar{background:var(--c-neota);color:#fff;padding:8px 12px;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.topbar-title{font-size:14px;font-weight:500}
+.topbar-logo{width:20px;height:20px;background:#fff;border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--c-neota);font-weight:700;font-size:11px}
+.nav{display:flex;border-bottom:0.5px solid var(--color-border-tertiary,#e5e5e5);flex-shrink:0;overflow-x:auto}
+.nav-btn{flex:1;min-width:52px;padding:7px 4px;font-size:10px;font-weight:500;border:none;background:none;cursor:pointer;color:var(--color-text-secondary,#666);border-bottom:2px solid transparent;transition:all 0.15s;text-align:center;white-space:nowrap}
+.nav-btn:hover{color:var(--c-neota)}
+.nav-btn.active{color:var(--c-neota);border-bottom-color:var(--c-neota)}
+.nav-icon{font-size:14px;display:block;margin-bottom:2px}
+.content{flex:1;overflow-y:auto;padding:12px}
+.panel{display:none}
+.panel.active{display:block}
+.section-title{font-size:12px;font-weight:500;color:var(--color-text-secondary,#666);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;margin-top:16px}
+.section-title:first-child{margin-top:0}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border:0.5px solid var(--color-border-secondary,#ccc);border-radius:6px;background:none;cursor:pointer;font-size:12px;color:var(--color-text-primary,#1a1a1a);transition:background 0.1s}
+.btn:hover{background:var(--color-background-secondary,#f5f5f5)}
+.btn-primary{background:var(--c-neota);color:#fff;border-color:var(--c-neota)}
+.btn-primary:hover{background:var(--c-neota-dark);border-color:var(--c-neota-dark)}
+.btn-danger{color:#c0392b;border-color:#f0c0c0}
+.btn-danger:hover{background:#fdf0f0}
+.btn-sm{padding:4px 8px;font-size:11px}
+.btn-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+input,select,textarea{width:100%;padding:6px 8px;border:0.5px solid var(--color-border-secondary,#ccc);border-radius:6px;font-size:12px;font-family:inherit;background:var(--color-background-primary,#fff);color:var(--color-text-primary,#1a1a1a);margin-bottom:8px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--c-neota);box-shadow:0 0 0 2px rgba(29,158,117,0.15)}
+label{font-size:11px;color:var(--color-text-secondary,#666);display:block;margin-bottom:3px}
+.field{margin-bottom:10px}
+.card{background:var(--color-background-secondary,#f9f9f9);border:0.5px solid var(--color-border-tertiary,#e5e5e5);border-radius:8px;padding:10px 12px;margin-bottom:6px}
+.card-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card-name{font-weight:500;font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card-type{font-size:10px;color:#fff;background:var(--c-neota);padding:2px 6px;border-radius:10px;white-space:nowrap}
+.card-type.cond{background:#534AB7}
+.card-type.form{background:#D85A30}
+.card-type.issue{background:#185FA5}
+.card-type.repeat{background:#BA7517}
+.card-actions{display:flex;gap:4px;flex-shrink:0}
+.empty{color:var(--color-text-tertiary,#aaa);font-size:12px;text-align:center;padding:24px 0;font-style:italic}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:100;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--color-background-primary,#fff);border-radius:10px;padding:16px;width:90%;max-width:340px;max-height:85vh;overflow-y:auto;box-shadow:0 4px 24px rgba(0,0,0,0.18)}
+.modal-title{font-size:14px;font-weight:500;margin-bottom:14px}
+.modal-footer{display:flex;gap:6px;justify-content:flex-end;margin-top:14px}
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 7px;border-radius:10px;background:var(--color-background-secondary,#f0f0f0);color:var(--color-text-secondary,#555);margin:2px}
+.divider{border:none;border-top:0.5px solid var(--color-border-tertiary,#e5e5e5);margin:12px 0}
+.info-box{background:var(--c-neota-light);border:0.5px solid #9fe1cb;border-radius:6px;padding:8px 10px;font-size:11px;color:var(--c-neota-dark);margin-bottom:10px}
+.expr-row{display:flex;gap:5px;align-items:center;margin-bottom:6px}
+.expr-row select{margin-bottom:0;flex:1}
+.expr-row button{flex-shrink:0}
+.list-values{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+.tree{font-size:12px}
+.tree-issue{margin-bottom:8px}
+.tree-issue-name{font-weight:500;color:var(--c-neota-dark);padding:4px 0;cursor:pointer;display:flex;align-items:center;gap:5px}
+.tree-children{padding-left:14px;border-left:1px solid var(--color-border-tertiary,#e5e5e5);margin-left:6px}
+.tree-item{padding:3px 0;color:var(--color-text-secondary,#666);display:flex;align-items:center;gap:5px}
+.badge{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.badge.var{background:var(--c-neota)}
+.badge.cond{background:#534AB7}
+.badge.form{background:#D85A30}
+.badge.repeat{background:#BA7517}
+.check-item{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary,#e5e5e5)}
+.check-ok{color:#1d9e75;font-size:14px;flex-shrink:0}
+.check-warn{color:#e24b4a;font-size:14px;flex-shrink:0}
+.status-bar{padding:6px 12px;font-size:11px;color:#fff;background:var(--c-neota);flex-shrink:0;text-align:center;min-height:26px}
+.status-bar.error{background:#c0392b}
+.status-bar.warn{background:#ba7517}
+table.data-table{width:100%;border-collapse:collapse;font-size:11px}
+table.data-table th{background:var(--color-background-secondary,#f5f5f5);padding:6px 8px;text-align:left;font-weight:500;border-bottom:0.5px solid var(--color-border-tertiary,#e5e5e5)}
+table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border-tertiary,#e5e5e5)}
+.chevron{display:inline-block;transition:transform 0.2s;margin-right:2px}
+.chevron.open{transform:rotate(90deg)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">N</div>
+  <span class="topbar-title">Neota Word Add-in</span>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showPanel('variables')"><span class="nav-icon">(x)</span>Variables</button>
+  <button class="nav-btn" onclick="showPanel('conditions')"><span class="nav-icon">◈</span>Conditions</button>
+  <button class="nav-btn" onclick="showPanel('forms')"><span class="nav-icon">⊞</span>Forms</button>
+  <button class="nav-btn" onclick="showPanel('issues')"><span class="nav-icon">≡</span>Issues</button>
+  <button class="nav-btn" onclick="showPanel('repeat')"><span class="nav-icon">↻</span>Repeat</button>
+  <button class="nav-btn" onclick="showPanel('organizer')"><span class="nav-icon">⊟</span>Organizer</button>
+  <button class="nav-btn" onclick="showPanel('tools')"><span class="nav-icon">⚙</span>Tools</button>
+</div>
+
+<div class="content">
+
+  <!-- VARIABLES -->
+  <div id="panel-variables" class="panel active">
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="openModal('varModal')">+ New variable</button>
+      <button class="btn" onclick="insertMergeField()">Insert merge field</button>
+    </div>
+    <div id="var-list"></div>
+  </div>
+
+  <!-- CONDITIONS -->
+  <div id="panel-conditions" class="panel">
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="openModal('condModal')">+ New condition</button>
+      <button class="btn" onclick="insertConditionTags()">Insert condition tags</button>
+    </div>
+    <div id="cond-list"></div>
+  </div>
+
+  <!-- FORMS -->
+  <div id="panel-forms" class="panel">
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="openModal('formModal')">+ New form</button>
+    </div>
+    <div id="form-list"></div>
+  </div>
+
+  <!-- ISSUES -->
+  <div id="panel-issues" class="panel">
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="openModal('issueModal')">+ New issue</button>
+    </div>
+    <div id="issue-list"></div>
+  </div>
+
+  <!-- REPEAT -->
+  <div id="panel-repeat" class="panel">
+    <div class="info-box">Repeat tags display values of multi-value or instance variables when the document is generated.</div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="openModal('repeatModal')">Insert repeat tag</button>
+    </div>
+    <div class="section-title">Inserted repeats</div>
+    <div id="repeat-list"></div>
+  </div>
+
+  <!-- ORGANIZER -->
+  <div id="panel-organizer" class="panel">
+    <div class="btn-row">
+      <button class="btn" onclick="renderOrganizer()">↺ Refresh</button>
+    </div>
+    <div class="section-title">Application structure</div>
+    <div id="organizer-tree"></div>
+  </div>
+
+  <!-- TOOLS -->
+  <div id="panel-tools" class="panel">
+    <div class="section-title">Document tools</div>
+    <div class="card" style="cursor:pointer" onclick="prepareDocument()">
+      <div class="card-row"><span class="card-name">Prepare document</span><span class="card-type">⊘</span></div>
+      <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Remove all Neota markup from document</div>
+    </div>
+    <div class="card" style="cursor:pointer" onclick="showPanel('organizer');renderDataTable()">
+      <div class="card-row"><span class="card-name">View data as table</span><span class="card-type">⊟</span></div>
+      <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Generate table of all variables and conditions</div>
+    </div>
+    <div class="card" style="cursor:pointer" onclick="checkDocument()">
+      <div class="card-row"><span class="card-name">Check document</span><span class="card-type">✓</span></div>
+      <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Scan for errors in template markup</div>
+    </div>
+    <div class="card" style="cursor:pointer" onclick="exportXML()">
+      <div class="card-row"><span class="card-name">Export XML</span><span class="card-type">↓</span></div>
+      <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Download item1.xml for Neota Studio import</div>
+    </div>
+    <hr class="divider">
+    <div class="section-title">Field display</div>
+    <div class="btn-row">
+      <button class="btn" onclick="toggleShading()" id="shade-btn">Hide field shading</button>
+      <button class="btn" onclick="toggleFieldCodes()" id="code-btn">Show field codes</button>
+    </div>
+    <hr class="divider">
+    <div class="section-title">Check results</div>
+    <div id="check-results"><div class="empty">Run "Check document" to see results</div></div>
+    <div id="data-table-container"></div>
+  </div>
+
+</div>
+
+<div class="status-bar" id="status-bar">Ready</div>
+
+<!-- VARIABLE MODAL -->
+<div class="modal-overlay" id="varModal">
+<div class="modal">
+  <div class="modal-title" id="varModalTitle">New variable</div>
+  <input type="hidden" id="var-edit-id">
+  <div class="field"><label>Name *</label><input id="var-name" placeholder="e.g. ClientName"></div>
+  <div class="field"><label>Data type *</label>
+    <select id="var-type" onchange="onVarTypeChange()">
+      <option value="Text">Text</option>
+      <option value="Number">Number</option>
+      <option value="Date">Date</option>
+      <option value="Boolean">Boolean (Yes/No)</option>
+      <option value="List">List</option>
+      <option value="Multi-value Text">Multi-value Text</option>
+      <option value="Instance">Instance</option>
+    </select>
+  </div>
+  <div id="list-values-section" style="display:none">
+    <div class="field">
+      <label>List values (one per line)</label>
+      <textarea id="var-list-values" rows="4" placeholder="Option A&#10;Option B&#10;Option C"></textarea>
+    </div>
+  </div>
+  <div id="instance-section" style="display:none">
+    <div class="field">
+      <label>Child variables (comma-separated names)</label>
+      <input id="var-children" placeholder="e.g. PropertyAddress, PropertyType">
+    </div>
+  </div>
+  <div class="field"><label>Question text *</label><input id="var-question" placeholder="What is the client name?"></div>
+  <div class="field"><label>Hint text</label><input id="var-hint" placeholder="Optional hint for users"></div>
+  <div class="field"><label>Default answer</label><input id="var-default" placeholder="Optional default value"></div>
+  <div class="field"><label>Issue</label>
+    <select id="var-issue"><option value="">— Select issue —</option></select>
+  </div>
+  <div class="field"><label>Form</label>
+    <select id="var-form"><option value="">— Select form —</option></select>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" onclick="closeModal('varModal')">Cancel</button>
+    <button class="btn btn-primary" onclick="saveVariable()">Save variable</button>
+  </div>
+</div>
+</div>
+
+<!-- CONDITION MODAL -->
+<div class="modal-overlay" id="condModal">
+<div class="modal">
+  <div class="modal-title" id="condModalTitle">New condition</div>
+  <input type="hidden" id="cond-edit-id">
+  <div class="field"><label>Name *</label><input id="cond-name" placeholder="e.g. ShowCopyrightClause"></div>
+  <div class="field"><label>Description</label><input id="cond-desc" placeholder="Optional description"></div>
+  <div class="section-title" style="margin-top:10px">Expressions</div>
+  <div id="expr-list"></div>
+  <button class="btn btn-sm" onclick="addExprRow()">+ Add expression</button>
+  <div class="modal-footer">
+    <button class="btn" onclick="closeModal('condModal')">Cancel</button>
+    <button class="btn btn-primary" onclick="saveCondition()">Save condition</button>
+  </div>
+</div>
+</div>
+
+<!-- FORM MODAL -->
+<div class="modal-overlay" id="formModal">
+<div class="modal">
+  <div class="modal-title" id="formModalTitle">New form</div>
+  <input type="hidden" id="form-edit-id">
+  <div class="field"><label>Form name *</label><input id="form-name" placeholder="e.g. Party Details"></div>
+  <div class="field"><label>Issue</label>
+    <select id="form-issue"><option value="">— Select issue —</option></select>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" onclick="closeModal('formModal')">Cancel</button>
+    <button class="btn btn-primary" onclick="saveForm()">Save form</button>
+  </div>
+</div>
+</div>
+
+<!-- ISSUE MODAL -->
+<div class="modal-overlay" id="issueModal">
+<div class="modal">
+  <div class="modal-title" id="issueModalTitle">New issue</div>
+  <input type="hidden" id="issue-edit-id">
+  <div class="field"><label>Issue name *</label><input id="issue-name" placeholder="e.g. Party Details"></div>
+  <div class="field"><label>Parent issue</label>
+    <select id="issue-parent"><option value="">— Top level —</option></select>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" onclick="closeModal('issueModal')">Cancel</button>
+    <button class="btn btn-primary" onclick="saveIssue()">Save issue</button>
+  </div>
+</div>
+</div>
+
+<!-- REPEAT MODAL -->
+<div class="modal-overlay" id="repeatModal">
+<div class="modal">
+  <div class="modal-title">Insert repeat tag</div>
+  <div class="info-box">Select a multi-value or instance variable to repeat.</div>
+  <div class="field"><label>Variable *</label>
+    <select id="repeat-var"><option value="">— Select variable —</option></select>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" onclick="closeModal('repeatModal')">Cancel</button>
+    <button class="btn btn-primary" onclick="saveRepeat()">Insert repeat</button>
+  </div>
+</div>
+</div>
+
+<!-- MERGE FIELD INSERT MODAL -->
+<div class="modal-overlay" id="mergeModal">
+<div class="modal">
+  <div class="modal-title">Insert merge field</div>
+  <div class="field"><label>Variable</label>
+    <select id="merge-var"><option value="">— Select variable —</option></select>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" onclick="closeModal('mergeModal')">Cancel</button>
+    <button class="btn btn-primary" onclick="doInsertMergeField()">Insert</button>
+  </div>
+</div>
+</div>
+
+<!-- CONDITION INSERT MODAL -->
+<div class="modal-overlay" id="condInsertModal">
+<div class="modal">
+  <div class="modal-title">Insert condition tags</div>
+  <div class="info-box">Select the text in your document first, then choose a condition. The selected text will be wrapped in condition tags.</div>
+  <div class="field"><label>Condition</label>
+    <select id="insert-cond-var"><option value="">— Select condition —</option></select>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" onclick="closeModal('condInsertModal')">Cancel</button>
+    <button class="btn btn-primary" onclick="doInsertCondition()">Insert</button>
+  </div>
+</div>
+</div>
+
+<script>
+const state = {
+  variables: [],
+  conditions: [],
+  forms: [],
+  issues: [],
+  repeats: [],
+  shadingOn: true,
+  fieldCodesOn: false,
+  nextId: () => Date.now() + Math.floor(Math.random()*1000)
+};
+
+function setStatus(msg, type='') {
+  const b = document.getElementById('status-bar');
+  b.textContent = msg;
+  b.className = 'status-bar' + (type ? ' ' + type : '');
+  if(type !== 'error') setTimeout(()=>{ b.textContent='Ready'; b.className='status-bar'; }, 3000);
+}
+
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  const idx = ['variables','conditions','forms','issues','repeat','organizer','tools'];
+  document.querySelectorAll('.nav-btn')[idx.indexOf(id)]?.classList.add('active');
+  if(id === 'organizer') renderOrganizer();
+}
+
+function openModal(id) {
+  if(id === 'varModal') { populateIssueSelect('var-issue'); populateFormSelect('var-form'); }
+  if(id === 'formModal') populateIssueSelect('form-issue');
+  if(id === 'issueModal') populateIssueSelect('issue-parent');
+  if(id === 'repeatModal') populateMVSelect('repeat-var');
+  if(id === 'mergeModal') populateAllVarsSelect('merge-var');
+  if(id === 'condInsertModal') populateCondSelect('insert-cond-var');
+  document.getElementById(id).classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  resetModal(id);
+}
+
+function resetModal(id) {
+  const m = document.getElementById(id);
+  m.querySelectorAll('input[type=text],input[type=hidden],textarea').forEach(i => i.value='');
+  m.querySelectorAll('select').forEach(s => s.selectedIndex=0);
+  if(id==='varModal') { document.getElementById('list-values-section').style.display='none'; document.getElementById('instance-section').style.display='none'; document.getElementById('varModalTitle').textContent='New variable'; }
+  if(id==='condModal') { document.getElementById('expr-list').innerHTML=''; document.getElementById('condModalTitle').textContent='New condition'; }
+  if(id==='formModal') document.getElementById('formModalTitle').textContent='New form';
+  if(id==='issueModal') document.getElementById('issueModalTitle').textContent='New issue';
+}
+
+function onVarTypeChange() {
+  const t = document.getElementById('var-type').value;
+  document.getElementById('list-values-section').style.display = t==='List'?'block':'none';
+  document.getElementById('instance-section').style.display = t==='Instance'?'block':'none';
+}
+
+function populateIssueSelect(selId) {
+  const s = document.getElementById(selId);
+  s.innerHTML = '<option value="">— Select issue —</option>';
+  if(selId==='issue-parent') s.innerHTML='<option value="">— Top level —</option>';
+  state.issues.forEach(i => { const o=document.createElement('option'); o.value=i.id; o.textContent=i.name; s.appendChild(o); });
+}
+
+function populateFormSelect(selId) {
+  const s = document.getElementById(selId);
+  s.innerHTML = '<option value="">— Select form —</option>';
+  state.forms.forEach(f => { const o=document.createElement('option'); o.value=f.id; o.textContent=f.name; s.appendChild(o); });
+}
+
+function populateMVSelect(selId) {
+  const s = document.getElementById(selId);
+  s.innerHTML = '<option value="">— Select variable —</option>';
+  state.variables.filter(v=>v.type==='Multi-value Text'||v.type==='Instance').forEach(v => { const o=document.createElement('option'); o.value=v.id; o.textContent=v.name+' ('+v.type+')'; s.appendChild(o); });
+}
+
+function populateAllVarsSelect(selId) {
+  const s = document.getElementById(selId);
+  s.innerHTML = '<option value="">— Select variable —</option>';
+  state.variables.forEach(v => { const o=document.createElement('option'); o.value=v.id; o.textContent=v.name+' ('+v.type+')'; s.appendChild(o); });
+}
+
+function populateCondSelect(selId) {
+  const s = document.getElementById(selId);
+  s.innerHTML = '<option value="">— Select condition —</option>';
+  state.conditions.forEach(c => { const o=document.createElement('option'); o.value=c.id; o.textContent=c.name; s.appendChild(o); });
+}
+
+function saveVariable() {
+  const name = document.getElementById('var-name').value.trim();
+  const q = document.getElementById('var-question').value.trim();
+  if(!name || !q) { setStatus('Name and Question Text are required','error'); return; }
+  const id = document.getElementById('var-edit-id').value || state.nextId();
+  const type = document.getElementById('var-type').value;
+  const listVals = type==='List' ? document.getElementById('var-list-values').value.split('\n').map(s=>s.trim()).filter(Boolean) : [];
+  const children = type==='Instance' ? document.getElementById('var-children').value.split(',').map(s=>s.trim()).filter(Boolean) : [];
+  const issueEl = document.getElementById('var-issue');
+  const formEl = document.getElementById('var-form');
+  const issueId = issueEl.value;
+  const issueName = issueEl.options[issueEl.selectedIndex]?.text || '';
+  const formId = formEl.value;
+  const v = {
+    id, name, type,
+    question: q,
+    hint: document.getElementById('var-hint').value.trim(),
+    defaultAnswer: document.getElementById('var-default').value.trim(),
+    listValues: listVals,
+    children,
+    issueId, issueName: issueId?issueName:'',
+    formId,
+    mergeField: name + '/' + (issueName||'') + '/'
+  };
+  const idx = state.variables.findIndex(x=>x.id==id);
+  if(idx>=0) state.variables[idx]=v; else state.variables.push(v);
+  closeModal('varModal');
+  renderVariables();
+  setStatus('Variable "'+name+'" saved');
+}
+
+function renderVariables() {
+  const el = document.getElementById('var-list');
+  if(!state.variables.length){ el.innerHTML='<div class="empty">No variables defined yet</div>'; return; }
+  el.innerHTML = state.variables.map(v => `
+    <div class="card">
+      <div class="card-row">
+        <span class="card-name">${esc(v.name)}</span>
+        <span class="card-type">${esc(v.type)}</span>
+        <div class="card-actions">
+          <button class="btn btn-sm" onclick="editVariable('${v.id}')">Edit</button>
+          <button class="btn btn-sm" onclick="insertSpecificMergeField('${v.id}')">Insert</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteVariable('${v.id}')">×</button>
+        </div>
+      </div>
+      ${v.question?`<div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:3px">${esc(v.question)}</div>`:''}
+      ${v.issueName?`<span class="tag">${esc(v.issueName)}</span>`:''}
+      ${v.listValues&&v.listValues.length?`<div class="list-values">${v.listValues.map(l=>`<span class="tag">${esc(l)}</span>`).join('')}</div>`:''}
+    </div>`).join('');
+}
+
+function editVariable(id) {
+  const v = state.variables.find(x=>x.id==id);
+  if(!v) return;
+  openModal('varModal');
+  document.getElementById('varModalTitle').textContent = 'Edit variable';
+  document.getElementById('var-edit-id').value = v.id;
+  document.getElementById('var-name').value = v.name;
+  document.getElementById('var-type').value = v.type;
+  document.getElementById('var-question').value = v.question;
+  document.getElementById('var-hint').value = v.hint||'';
+  document.getElementById('var-default').value = v.defaultAnswer||'';
+  if(v.type==='List'){ document.getElementById('list-values-section').style.display='block'; document.getElementById('var-list-values').value=v.listValues.join('\n'); }
+  if(v.type==='Instance'){ document.getElementById('instance-section').style.display='block'; document.getElementById('var-children').value=v.children.join(', '); }
+  setTimeout(()=>{ document.getElementById('var-issue').value=v.issueId||''; document.getElementById('var-form').value=v.formId||''; },50);
+}
+
+function deleteVariable(id) {
+  state.variables = state.variables.filter(x=>x.id!=id);
+  renderVariables();
+  setStatus('Variable deleted');
+}
+
+function insertMergeField() { openModal('mergeModal'); }
+
+function insertSpecificMergeField(id) {
+  const v = state.variables.find(x=>x.id==id);
+  if(!v) return;
+  doInsertByVar(v);
+}
+
+function doInsertMergeField() {
+  const id = document.getElementById('merge-var').value;
+  const v = state.variables.find(x=>x.id==id);
+  if(!v){ setStatus('Select a variable','warn'); return; }
+  closeModal('mergeModal');
+  doInsertByVar(v);
+}
+
+function doInsertByVar(v) {
+  if(typeof Word !== 'undefined') {
+    Word.run(async ctx => {
+      const sel = ctx.document.getSelection();
+      sel.insertContentControl();
+      await ctx.sync();
+      const cc = sel.contentControls.getFirstOrNullObject();
+      cc.title = 'NL_VAR:' + v.name;
+      cc.tag = v.mergeField;
+      cc.insertText('«' + v.name + '»', 'Replace');
+      if(state.shadingOn) cc.appearance = 'Tags';
+      await ctx.sync();
+      setStatus('Merge field inserted: ' + v.name);
+    }).catch(e => setStatus('Error: ' + e.message,'error'));
+  } else {
+    setStatus('[Demo] Merge field inserted: «' + v.name + '»');
+  }
+}
+
+function addExprRow(expr) {
+  const el = document.getElementById('expr-list');
+  const vars = state.variables.map(v=>`<option value="${esc(v.name)}" ${expr&&expr.variable===v.name?'selected':''}>${esc(v.name)}</option>`).join('');
+  const ops = ['==','!=','>','>=','<','<=','contains'].map(o=>`<option value="${o}" ${expr&&expr.op===o?'selected':''}>${o}</option>`).join('');
+  const row = document.createElement('div');
+  row.className = 'expr-row';
+  row.innerHTML = `<select style="flex:1.5">${vars}</select><select>${ops}</select><input type="text" placeholder="value" value="${expr?esc(expr.value):''}" style="flex:1"><button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">×</button>`;
+  el.appendChild(row);
+}
+
+function saveCondition() {
+  const name = document.getElementById('cond-name').value.trim();
+  if(!name){ setStatus('Name is required','error'); return; }
+  const id = document.getElementById('cond-edit-id').value || state.nextId();
+  const rows = document.getElementById('expr-list').querySelectorAll('.expr-row');
+  const exprs = Array.from(rows).map(r => {
+    const sels = r.querySelectorAll('select');
+    const inp = r.querySelector('input');
+    return { variable: sels[0].value, op: sels[1].value, value: inp.value.trim() };
+  }).filter(e=>e.variable);
+  const c = { id, name, desc: document.getElementById('cond-desc').value.trim(), expressions: exprs };
+  const idx = state.conditions.findIndex(x=>x.id==id);
+  if(idx>=0) state.conditions[idx]=c; else state.conditions.push(c);
+  closeModal('condModal');
+  renderConditions();
+  setStatus('Condition "'+name+'" saved');
+}
+
+function renderConditions() {
+  const el = document.getElementById('cond-list');
+  if(!state.conditions.length){ el.innerHTML='<div class="empty">No conditions defined yet</div>'; return; }
+  el.innerHTML = state.conditions.map(c => `
+    <div class="card">
+      <div class="card-row">
+        <span class="card-name">${esc(c.name)}</span>
+        <span class="card-type cond">Condition</span>
+        <div class="card-actions">
+          <button class="btn btn-sm" onclick="editCondition('${c.id}')">Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteCondition('${c.id}')">×</button>
+        </div>
+      </div>
+      ${c.expressions.length?`<div style="margin-top:4px">${c.expressions.map(e=>`<span class="tag">${esc(e.variable)} ${e.op} "${esc(e.value)}"</span>`).join(' AND ')}</div>`:''}
+    </div>`).join('');
+}
+
+function editCondition(id) {
+  const c = state.conditions.find(x=>x.id==id);
+  if(!c) return;
+  openModal('condModal');
+  document.getElementById('condModalTitle').textContent='Edit condition';
+  document.getElementById('cond-edit-id').value=c.id;
+  document.getElementById('cond-name').value=c.name;
+  document.getElementById('cond-desc').value=c.desc||'';
+  document.getElementById('expr-list').innerHTML='';
+  c.expressions.forEach(e=>addExprRow(e));
+}
+
+function deleteCondition(id) {
+  state.conditions=state.conditions.filter(x=>x.id!=id);
+  renderConditions();
+  setStatus('Condition deleted');
+}
+
+function insertConditionTags() { openModal('condInsertModal'); }
+
+function doInsertCondition() {
+  const id = document.getElementById('insert-cond-var').value;
+  const c = state.conditions.find(x=>x.id==id);
+  if(!c){ setStatus('Select a condition','warn'); return; }
+  closeModal('condInsertModal');
+  if(typeof Word !== 'undefined') {
+    Word.run(async ctx => {
+      const sel = ctx.document.getSelection();
+      const range = sel.getRange();
+      range.insertText('[IF:'+c.name+']', 'Start');
+      range.insertText('[/IF:'+c.name+']', 'End');
+      await ctx.sync();
+      setStatus('Condition tags inserted: ' + c.name);
+    }).catch(e=>setStatus('Error: '+e.message,'error'));
+  } else {
+    setStatus('[Demo] Condition tags inserted: [IF:'+c.name+'] ... [/IF:'+c.name+']');
+  }
+}
+
+function saveForm() {
+  const name = document.getElementById('form-name').value.trim();
+  if(!name){ setStatus('Form name required','error'); return; }
+  const id = document.getElementById('form-edit-id').value || state.nextId();
+  const issueEl = document.getElementById('form-issue');
+  const f = { id, name, issueId: issueEl.value, issueName: issueEl.options[issueEl.selectedIndex]?.text||'' };
+  const idx = state.forms.findIndex(x=>x.id==id);
+  if(idx>=0) state.forms[idx]=f; else state.forms.push(f);
+  closeModal('formModal');
+  renderForms();
+  setStatus('Form "'+name+'" saved');
+}
+
+function renderForms() {
+  const el = document.getElementById('form-list');
+  if(!state.forms.length){ el.innerHTML='<div class="empty">No forms defined yet</div>'; return; }
+  el.innerHTML = state.forms.map(f => `
+    <div class="card">
+      <div class="card-row">
+        <span class="card-name">${esc(f.name)}</span>
+        <span class="card-type form">Form</span>
+        <div class="card-actions">
+          <button class="btn btn-sm" onclick="editForm('${f.id}')">Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteForm('${f.id}')">×</button>
+        </div>
+      </div>
+      ${f.issueName&&f.issueId?`<span class="tag">${esc(f.issueName)}</span>`:''}
+      <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:3px">${state.variables.filter(v=>v.formId==f.id).map(v=>v.name).join(', ')||'No variables assigned'}</div>
+    </div>`).join('');
+}
+
+function editForm(id) {
+  const f = state.forms.find(x=>x.id==id);
+  if(!f) return;
+  openModal('formModal');
+  document.getElementById('formModalTitle').textContent='Edit form';
+  document.getElementById('form-edit-id').value=f.id;
+  document.getElementById('form-name').value=f.name;
+  setTimeout(()=>{ document.getElementById('form-issue').value=f.issueId||''; },50);
+}
+
+function deleteForm(id) {
+  state.forms=state.forms.filter(x=>x.id!=id);
+  renderForms();
+  setStatus('Form deleted');
+}
+
+function saveIssue() {
+  const name = document.getElementById('issue-name').value.trim();
+  if(!name){ setStatus('Issue name required','error'); return; }
+  const id = document.getElementById('issue-edit-id').value || state.nextId();
+  const parentEl = document.getElementById('issue-parent');
+  const i = { id, name, parentId: parentEl.value, parentName: parentEl.options[parentEl.selectedIndex]?.text||'' };
+  const idx = state.issues.findIndex(x=>x.id==id);
+  if(idx>=0) state.issues[idx]=i; else state.issues.push(i);
+  closeModal('issueModal');
+  renderIssues();
+  setStatus('Issue "'+name+'" saved');
+}
+
+function renderIssues() {
+  const el = document.getElementById('issue-list');
+  if(!state.issues.length){ el.innerHTML='<div class="empty">No issues defined yet</div>'; return; }
+  el.innerHTML = state.issues.map(i => `
+    <div class="card">
+      <div class="card-row">
+        <span class="card-name">${esc(i.name)}</span>
+        <span class="card-type issue">Issue</span>
+        <div class="card-actions">
+          <button class="btn btn-sm" onclick="editIssue('${i.id}')">Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteIssue('${i.id}')">×</button>
+        </div>
+      </div>
+      ${i.parentId?`<span class="tag">Under: ${esc(i.parentName)}</span>`:'<span class="tag">Top level</span>'}
+    </div>`).join('');
+}
+
+function editIssue(id) {
+  const i = state.issues.find(x=>x.id==id);
+  if(!i) return;
+  openModal('issueModal');
+  document.getElementById('issueModalTitle').textContent='Edit issue';
+  document.getElementById('issue-edit-id').value=i.id;
+  document.getElementById('issue-name').value=i.name;
+  setTimeout(()=>{ document.getElementById('issue-parent').value=i.parentId||''; },50);
+}
+
+function deleteIssue(id) {
+  state.issues=state.issues.filter(x=>x.id!=id);
+  renderIssues();
+  setStatus('Issue deleted');
+}
+
+function saveRepeat() {
+  const varId = document.getElementById('repeat-var').value;
+  const v = state.variables.find(x=>x.id==varId);
+  if(!v){ setStatus('Select a variable','warn'); return; }
+  const r = { id: state.nextId(), varId, varName: v.name, varType: v.type };
+  state.repeats.push(r);
+  closeModal('repeatModal');
+  renderRepeats();
+  if(typeof Word !== 'undefined') {
+    Word.run(async ctx => {
+      const sel = ctx.document.getSelection();
+      sel.insertText('[REPEAT:'+v.name+'] <Insert Text> [/REPEAT:'+v.name+']', 'Replace');
+      await ctx.sync();
+      setStatus('Repeat tag inserted for: '+v.name);
+    }).catch(e=>setStatus('Error: '+e.message,'error'));
+  } else {
+    setStatus('[Demo] Repeat tag inserted for: '+v.name);
+  }
+}
+
+function renderRepeats() {
+  const el = document.getElementById('repeat-list');
+  if(!state.repeats.length){ el.innerHTML='<div class="empty">No repeat tags inserted</div>'; return; }
+  el.innerHTML = state.repeats.map(r => `
+    <div class="card">
+      <div class="card-row">
+        <span class="card-name">${esc(r.varName)}</span>
+        <span class="card-type repeat">${esc(r.varType)}</span>
+        <div class="card-actions">
+          <button class="btn btn-sm btn-danger" onclick="deleteRepeat('${r.id}')">×</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function deleteRepeat(id) {
+  state.repeats=state.repeats.filter(x=>x.id!=id);
+  renderRepeats();
+}
+
+function renderOrganizer() {
+  const el = document.getElementById('organizer-tree');
+  if(!state.issues.length && !state.variables.length){ el.innerHTML='<div class="empty">No elements defined yet</div>'; return; }
+  const topIssues = state.issues.filter(i=>!i.parentId);
+  let html = '<div class="tree">';
+  topIssues.forEach(issue => {
+    html += renderIssueTree(issue);
+  });
+  const unassigned = state.variables.filter(v=>!v.issueId);
+  if(unassigned.length) {
+    html += `<div class="tree-issue"><div class="tree-issue-name"><span class="badge var"></span>Unassigned variables</div><div class="tree-children">`;
+    unassigned.forEach(v => { html += `<div class="tree-item"><span class="badge var"></span>${esc(v.name)} <span style="font-size:10px;color:var(--color-text-tertiary,#aaa)">(${v.type})</span></div>`; });
+    html += '</div></div>';
+  }
+  const uconds = state.conditions;
+  if(uconds.length) {
+    html += `<div class="tree-issue"><div class="tree-issue-name"><span class="badge cond"></span>Conditions</div><div class="tree-children">`;
+    uconds.forEach(c => { html += `<div class="tree-item"><span class="badge cond"></span>${esc(c.name)}</div>`; });
+    html += '</div></div>';
+  }
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function renderIssueTree(issue) {
+  const children = state.issues.filter(i=>i.parentId==issue.id);
+  const vars = state.variables.filter(v=>v.issueId==issue.id);
+  const forms = state.forms.filter(f=>f.issueId==issue.id);
+  let html = `<div class="tree-issue"><div class="tree-issue-name"><span class="badge issue" style="background:#185FA5"></span>${esc(issue.name)}</div><div class="tree-children">`;
+  if(forms.length){ forms.forEach(f=>{ html+=`<div class="tree-item"><span class="badge form"></span>${esc(f.name)} <span style="font-size:10px;color:var(--color-text-tertiary,#aaa)">(Form)</span></div>`; }); }
+  if(vars.length){ vars.forEach(v=>{ html+=`<div class="tree-item"><span class="badge var"></span>${esc(v.name)} <span style="font-size:10px;color:var(--color-text-tertiary,#aaa)">(${v.type})</span></div>`; }); }
+  children.forEach(c=>{ html+=renderIssueTree(c); });
+  html += '</div></div>';
+  return html;
+}
+
+function checkDocument() {
+  showPanel('tools');
+  const results = [];
+  if(!state.variables.length && !state.conditions.length) {
+    results.push({ok:false, msg:'No variables or conditions defined'});
+  }
+  state.variables.forEach(v => {
+    if(!v.question) results.push({ok:false, msg:'Variable "'+v.name+'" has no question text'});
+    if(v.type==='List' && !v.listValues.length) results.push({ok:false, msg:'List variable "'+v.name+'" has no list values'});
+    else results.push({ok:true, msg:'Variable "'+v.name+'" ('+v.type+') — OK'});
+  });
+  state.conditions.forEach(c => {
+    if(!c.expressions.length) results.push({ok:false, msg:'Condition "'+c.name+'" has no expressions'});
+    else results.push({ok:true, msg:'Condition "'+c.name+'" — OK'});
+  });
+  if(!results.length) results.push({ok:true, msg:'Document is clean — no issues found'});
+  const el = document.getElementById('check-results');
+  el.innerHTML = results.map(r=>`<div class="check-item"><span class="${r.ok?'check-ok':'check-warn'}">${r.ok?'✓':'✗'}</span><span style="font-size:12px">${esc(r.msg)}</span></div>`).join('');
+  const errors = results.filter(r=>!r.ok).length;
+  setStatus(errors ? errors+' issue(s) found' : 'Document check passed', errors?'warn':'');
+}
+
+function renderDataTable() {
+  const el = document.getElementById('data-table-container');
+  if(!state.variables.length && !state.conditions.length){ el.innerHTML=''; return; }
+  let html = '<hr class="divider"><div class="section-title">Data table</div><div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Name</th><th>Type</th><th>Issue</th><th>Question</th></tr></thead><tbody>';
+  state.variables.forEach(v=>{ html+=`<tr><td>${esc(v.name)}</td><td>${esc(v.type)}</td><td>${esc(v.issueName||'—')}</td><td>${esc(v.question)}</td></tr>`; });
+  state.conditions.forEach(c=>{ html+=`<tr><td>${esc(c.name)}</td><td>Condition</td><td>—</td><td>${c.expressions.map(e=>e.variable+' '+e.op+' "'+e.value+'"').join(' AND ')||'—'}</td></tr>`; });
+  html += '</tbody></table></div>';
+  el.innerHTML = html;
+}
+
+function exportXML() {
+  const ts = Date.now();
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<nl xmlns="http://www.neotalogic.com">\n  <nl_version>3.18.0</nl_version>\n  <nl_source>blank</nl_source>\n  <nl_doc_type>self</nl_doc_type>\n  <nl_doc_paths></nl_doc_paths>\n  <nl_mode>studio</nl_mode>\n  <nl_imported></nl_imported>\n  <variables>\n`;
+  state.variables.forEach((v,i)=>{
+    xml += `    <variable var_issue_sequence="${i+1}" var_form_sequence="0">\n`;
+    xml += `      <variable_id>${v.id}</variable_id>\n`;
+    xml += `      <parent_id></parent_id>\n      <parent_name></parent_name>\n      <child_ids></child_ids>\n`;
+    xml += `      <issue>${xmlEsc(v.issueName)}</issue>\n`;
+    xml += `      <issue_id>${v.issueId||''}</issue_id>\n`;
+    xml += `      <variable_name>${xmlEsc(v.name)}</variable_name>\n`;
+    xml += `      <data_type>${xmlEsc(v.type)}</data_type>\n`;
+    xml += `      <var_named_value_display_set_id></var_named_value_display_set_id>\n`;
+    xml += `      <var_named_value_display_set_name></var_named_value_display_set_name>\n`;
+    xml += `      <dynamic_list_source><source_var_id></source_var_id><source_var_name></source_var_name></dynamic_list_source>\n`;
+    xml += `      <question_text>${xmlEsc(v.question)}</question_text>\n`;
+    xml += `      <values>${v.listValues.map(l=>`<value>${xmlEsc(l)}</value>`).join('')}</values>\n`;
+    xml += `      <hint_text>${xmlEsc(v.hint)}</hint_text>\n`;
+    xml += `      <default_answers>${xmlEsc(v.defaultAnswer)}</default_answers>\n`;
+    xml += `      <mv>${v.type.startsWith('Multi')?'true':''}</mv>\n`;
+    xml += `      <form_id>${v.formId||''}</form_id>\n`;
+    xml += `      <folder></folder>\n      <notes></notes>\n`;
+    xml += `      <merge_field>${xmlEsc(v.mergeField)}</merge_field>\n`;
+    xml += `    </variable>\n`;
+  });
+  xml += `  </variables>\n  <conditions>\n`;
+  state.conditions.forEach(c=>{
+    xml += `    <condition>\n      <condition_id>${c.id}</condition_id>\n`;
+    xml += `      <condition_name>${xmlEsc(c.name)}</condition_name>\n`;
+    xml += `      <description>${xmlEsc(c.desc)}</description>\n`;
+    xml += `      <expressions>${c.expressions.map(e=>`<expression><variable>${xmlEsc(e.variable)}</variable><operator>${e.op}</operator><value>${xmlEsc(e.value)}</value></expression>`).join('')}</expressions>\n`;
+    xml += `    </condition>\n`;
+  });
+  xml += `  </conditions>\n  <forms>\n`;
+  state.forms.forEach(f=>{
+    xml += `    <form><form_id>${f.id}</form_id><form_name>${xmlEsc(f.name)}</form_name><issue_id>${f.issueId}</issue_id></form>\n`;
+  });
+  xml += `  </forms>\n  <issues>\n`;
+  state.issues.forEach((i,seq)=>{
+    xml += `    <issue issue_top_sequence="${seq}">\n      <issue_id>${i.id}</issue_id>\n      <issue_name>${xmlEsc(i.name)}</issue_name>\n    </issue>\n`;
+  });
+  xml += `  </issues>\n  <named_value_display_sets/>\n  <deleted/>\n</nl>`;
+  const blob = new Blob([xml], {type:'application/xml'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='item1.xml'; a.click();
+  URL.revokeObjectURL(url);
+  setStatus('item1.xml exported');
+}
+
+function prepareDocument() {
+  if(!confirm('This will remove all Neota markup from the document. Continue?')) return;
+  if(typeof Word !== 'undefined') {
+    Word.run(async ctx => {
+      const ccs = ctx.document.contentControls;
+      ccs.load('items');
+      await ctx.sync();
+      ccs.items.filter(c=>c.title&&c.title.startsWith('NL_')).forEach(c=>c.delete(true));
+      await ctx.sync();
+      setStatus('Document prepared — all Neota markup removed');
+    }).catch(e=>setStatus('Error: '+e.message,'error'));
+  } else {
+    setStatus('[Demo] Document prepared — all Neota markup removed');
+  }
+}
+
+function toggleShading() {
+  state.shadingOn = !state.shadingOn;
+  document.getElementById('shade-btn').textContent = state.shadingOn ? 'Hide field shading' : 'Show field shading';
+  setStatus('Field shading '+(state.shadingOn?'on':'off'));
+}
+
+function toggleFieldCodes() {
+  state.fieldCodesOn = !state.fieldCodesOn;
+  document.getElementById('code-btn').textContent = state.fieldCodesOn ? 'Hide field codes' : 'Show field codes';
+  setStatus('Field codes '+(state.fieldCodesOn?'visible':'hidden'));
+}
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function xmlEsc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+renderVariables(); renderConditions(); renderForms(); renderIssues(); renderRepeats();
+</script>
+</body>
+</html>
