@@ -1346,51 +1346,44 @@ function saveXMLToDocument(){
   }).catch(e=>{console.error('Word.run error:',e);setStatus('Word API error: '+e.message,'error');});
 }
 
-function loadXMLFromDocument(){
-  if(typeof Word==='undefined'){setStatus('Not running inside Word','error');return;}
-  const NS='http://www.neotalogic.com';
-  Word.run(async ctx=>{
-    try{
-      const parts=ctx.document.customXmlParts.getByNamespace(NS);
-      parts.load('items');
-      await ctx.sync();
-      if(!parts.items.length){setStatus('No Neota XML found in document','warn');return;}
-      const part=parts.items[0];
-      part.load('xml');
-      await ctx.sync();
-      if(!part.xml){setStatus('XML part is empty','warn');return;}
-      parseXMLIntoState(part.xml);
-      renderVariables();renderConditions();renderForms();renderIssues();renderRepeats();
-      setStatus('Data loaded from document successfully');
-    }catch(inner){
-      console.error('Load error:',inner);
-      setStatus('Load failed: '+inner.message,'error');
-    }
-  }).catch(e=>setStatus('Word API error: '+e.message,'error'));
-}
-
 // ---- Auto-load helper ----
 function autoLoadFromDocument(){
   if(typeof Word==='undefined') return;
   const NS='http://www.neotalogic.com';
   Word.run(async ctx=>{
     try{
-      const parts=ctx.document.customXmlParts.getByNamespace(NS);
-      parts.load('items');
+      // Step 1: get all custom xml part IDs
+      const allParts=ctx.document.customXmlParts;
+      allParts.load('items');
       await ctx.sync();
-      if(!parts.items.length){ setStatus('Ready'); return; }
-      const part=parts.items[0];
-      part.load('xml');
-      await ctx.sync();
-      if(!part.xml){ setStatus('Ready'); return; }
-      parseXMLIntoState(part.xml);
-      renderVariables();renderConditions();renderForms();renderIssues();renderRepeats();
-      setStatus('Document data loaded — '+state.variables.length+' variable(s) found');
+      console.log('Total custom XML parts:',allParts.items.length);
+      if(!allParts.items.length){setStatus('Ready');return;}
+      // Step 2: load each part's xml and find the Neota one
+      for(let i=0;i<allParts.items.length;i++){
+        const part=allParts.items[i];
+        part.load('xml,namespaceUri');
+        await ctx.sync();
+        console.log('Part',i,'namespace:',part.namespaceUri,'xml length:',part.xml?.length);
+        if(part.namespaceUri===NS||part.xml?.includes('http://www.neotalogic.com')){
+          parseXMLIntoState(part.xml);
+          renderVariables();renderConditions();renderForms();renderIssues();renderRepeats();
+          setStatus('Document data loaded — '+state.variables.length+' variable(s) found');
+          return;
+        }
+      }
+      setStatus('Ready — no Neota data found in document');
     }catch(e){
       console.log('Auto-load error:',e.message);
       setStatus('Ready');
     }
-  }).catch(()=>setStatus('Ready'));
+  }).catch(e=>{console.log('Auto-load Word.run error:',e.message);setStatus('Ready');});
+}
+
+// ---- Load XML from document ----
+function loadXMLFromDocument(){
+  if(typeof Word==='undefined'){setStatus('Not running inside Word','error');return;}
+  setStatus('Loading from document...');
+  autoLoadFromDocument();
 }
 
 // ---- Parse XML into state ----
