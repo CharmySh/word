@@ -101,7 +101,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span class="topbar-title">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.1.2</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.1.4</span>
 </div>
 <div class="nav">
   <button class="nav-btn active" onclick="showPanel('variables')"><span class="nav-icon">(x)</span>Variables</button>
@@ -192,6 +192,10 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
   <!-- TOOLS -->
   <div id="panel-tools" class="panel">
     <div class="section-title">Document tools</div>
+    <div class="card" style="cursor:pointer;margin-bottom:6px" onclick="downloadAsTemplate()">
+      <div class="card-row"><span class="card-name">Download as Template</span></div>
+      <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Save XML to document then download with -Template suffix</div>
+    </div>
     <div class="card" style="cursor:pointer;margin-bottom:6px" onclick="saveXMLToDocument()">
       <div class="card-row"><span class="card-name">Save to document</span></div>
       <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Embed Neota XML into the Word document (required for Studio import)</div>
@@ -835,11 +839,20 @@ function doInsertByVar(v,replaceAll){
   Word.run(async ctx=>{
     try{
       const sel=ctx.document.getSelection();
-      sel.load('text');await ctx.sync();
-      sel.insertText(displayText,Word.InsertLocation.replace);
+      await ctx.sync();
+      const ooxml=`<pkg:package xmlns:pkg="http://schemas.microsoft.com/office/2006/xmlPackage"><pkg:part pkg:name="/_rels/.rels" pkg:contentType="application/vnd.openxmlformats-package.relationships+xml"><pkg:xmlData><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships></pkg:xmlData></pkg:part><pkg:part pkg:name="/word/document.xml" pkg:contentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"><pkg:xmlData><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:r><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:rPr><w:color w:val="0000FF"/></w:rPr><w:instrText xml:space="preserve"> MERGEFIELD ${mergeField} \* MERGEFORMAT </w:instrText></w:r><w:r><w:fldChar w:fldCharType="separate"/></w:r><w:r><w:rPr><w:noProof/><w:color w:val="0000FF"/></w:rPr><w:t>${displayText}</w:t></w:r><w:r><w:fldChar w:fldCharType="end"/></w:r></w:p></w:body></w:document></pkg:xmlData></pkg:part></pkg:package>`;
+      sel.insertOoxml(ooxml, Word.InsertLocation.replace);
       await ctx.sync();
       setStatus('Merge field inserted: '+v.name);
-    }catch(inner){setStatus('Insert failed: '+inner.message,'error');}
+    }catch(inner){
+      console.error('OOXML failed, trying plain text:',inner.message);
+      try{
+        const sel2=ctx.document.getSelection();
+        sel2.insertText(displayText, Word.InsertLocation.replace);
+        await ctx.sync();
+        setStatus('Inserted as text (OOXML unavailable): '+v.name);
+      }catch(e2){setStatus('Insert failed: '+e2.message,'error');}
+    }
   }).catch(e=>setStatus('Word API error: '+e.message,'error'));
 }
 
@@ -1123,6 +1136,40 @@ function buildXML(){
   allIssues.forEach((iss,seq)=>{xml+=`    <issue issue_top_sequence="${seq}">\n      <issue_id>${iss.id}</issue_id>\n      <issue_name>${xmlEsc(iss.name)}</issue_name>\n    </issue>\n`;});
   xml+=`  </issues>\n  <named_value_display_sets/>\n  <deleted/>\n</nl>`;
   return xml;
+}
+
+// ---- Download as Template ----
+function downloadAsTemplate(){
+  if(typeof Word==='undefined'){setStatus('Not running inside Word','error');return;}
+  if(!state.variables.length){setStatus('No variables to save','warn');return;}
+  setStatus('Saving XML and preparing download...');
+  const xml=buildXML();
+  const NS='http://www.neotalogic.com';
+  Word.run(async ctx=>{
+    try{
+      // Save XML part first
+      try{
+        const existing=ctx.document.customXmlParts.getByNamespace(NS);
+        existing.load('items');await ctx.sync();
+        existing.items.forEach(p=>p.delete());await ctx.sync();
+      }catch(e){console.log('No existing parts:',e.message);}
+      ctx.document.customXmlParts.add(xml);
+      await ctx.sync();
+      // Get document name and trigger download
+      const docProps=ctx.document.properties;
+      docProps.load('title');
+      await ctx.sync();
+      // Use Office dialog to trigger save-as, or instruct user
+      setStatus('XML saved! Now use File → Save As → Download a copy');
+      // Show a more prominent instruction
+      if(confirm('Neota XML has been saved to the document.\n\nClick OK to be reminded to:\n1. Press Ctrl+S to save\n2. Go to File → Save As → Download a copy\n3. Rename the file with -Template suffix before importing to Studio')){
+        setStatus('Remember to download with -Template in the filename');
+      }
+    }catch(inner){
+      console.error('Download as template failed:',inner);
+      setStatus('Failed: '+inner.message,'error');
+    }
+  }).catch(e=>setStatus('Word API error: '+e.message,'error'));
 }
 
 // ---- Save XML to document ----
