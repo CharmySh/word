@@ -633,9 +633,9 @@ function getNVDSOptions(){
 // ---- Variable form builder (shared by New and Edit) ----
 function buildVarFields(containerId, v, disabled){
   const isInstance = v ? v.type==='Instance' : false;
-  const isList = v ? (v.type==='List'||v.type==='Ordered List'||v.type==='Dynamic List') : false;
+  const isList = v ? (v.type==='List'||v.type==='Ordered List'||v.type==='Yes/No') : false;
   const isDynamic = v ? v.type==='Dynamic List' : false;
-  const isNVDS = v ? (v.type==='List'||v.type==='Ordered List') : false;
+  const isNVDS = v ? (v.type==='List'||v.type==='Ordered List'||v.type==='Yes/No') : false;
   const d = disabled ? 'disabled' : '';
   const issues = state.issues.map(i=>`<option value="${i.id}" ${v&&v.issueId==i.id?'selected':''}>${esc(i.name)}</option>`).join('');
   const forms = state.forms.map(f=>`<option value="${f.id}" ${v&&v.formId==f.id?'selected':''}>${esc(f.name)}</option>`).join('');
@@ -644,10 +644,10 @@ function buildVarFields(containerId, v, disabled){
   const leftFields = `
     <div class="field-row"><label class="field-label">Name*</label><div class="field-input"><input type="text" id="${containerId}-name" value="${v?esc(v.name):''}" ${d}></div></div>
     <div class="field-row"><label class="field-label">Data Type*</label><div class="field-input"><select id="${containerId}-type" onchange="onTypeChange('${containerId}')" ${d}>${DATA_TYPES.map(t=>`<option value="${t}" ${v&&v.type===t?'selected':''}>${t}</option>`).join('')}</select></div></div>
-    <div class="field-row"><label class="field-label" id="${containerId}-listval-label">List Values${isList?'*':''}</label><div class="field-input"><input type="text" id="${containerId}-listvals" value="${v&&v.listValues?esc(v.listValues.join(', ')):''}" ${isList?'':' disabled'} placeholder="Comma separated"></div></div>
+    <div class="field-row" id="${containerId}-listval-row" style="display:${isList?'flex':'none'}"><label class="field-label" id="${containerId}-listval-label">List Values${isList?'*':''}</label><div class="field-input"><input type="text" id="${containerId}-listvals" value="${v&&v.listValues?esc(v.listValues.join(', ')):''}" ${isList?'':' disabled'} placeholder="Comma separated"></div></div>
     <div class="field-row" id="${containerId}-valset-row" style="display:${isDynamic?'flex':'none'}"><label class="field-label">Source*</label><div class="field-input"><select id="${containerId}-valset">${getListVarOptions(v&&v.valsetId)}</select></div></div>
     <div class="field-row" id="${containerId}-nvds-row" style="display:${isNVDS?'flex':'none'}"><label class="field-label">Values Set</label><div class="field-input"><select id="${containerId}-nvds" ${d}>${nvdsOpts}</select></div></div>
-    <div class="field-row"><label class="field-label">Question Text</label><div class="field-input"><input type="text" id="${containerId}-question" value="${v?esc(v.question):''}" ${d}></div></div>
+    <div class="field-row"><label class="field-label">Question Text*</label><div class="field-input"><input type="text" id="${containerId}-question" value="${v?esc(v.question):''}" ${d}></div></div>
     <div class="field-row"><label class="field-label">Hint Text</label><div class="field-input"><input type="text" id="${containerId}-hint" value="${v?esc(v.hint):''}" ${d}></div></div>
     <div class="field-row"><label class="field-label">Default Answer</label><div class="field-input"><textarea id="${containerId}-default" rows="2" ${d} placeholder="${getDefaultPlaceholder(v?v.type:'Text')}">${v?esc(v.defaultAnswer):''}</textarea></div></div>
     <div class="field-row"><label class="field-label">Issue</label><div class="field-input"><div class="combo-wrap"><input type="text" id="${containerId}-issue" value="${v&&v.issueName?esc(v.issueName):'First Issue'}" ${d} placeholder="First Issue" autocomplete="off"><button type="button" class="combo-arrow" ${d} onclick="openCombo('${containerId}-issue','${containerId}-issue-drop','issues')">▾</button><div class="combo-drop" id="${containerId}-issue-drop"></div></div></div></div>
@@ -655,7 +655,7 @@ function buildVarFields(containerId, v, disabled){
     <div class="field-row"><label class="field-label">Form</label><div class="field-input"><div class="combo-wrap"><input type="text" id="${containerId}-form" value="${v&&v.formName?esc(v.formName):''}" ${d} placeholder="&lt;Type new form&gt;" autocomplete="off"><button type="button" class="combo-arrow" ${d} onclick="openCombo('${containerId}-form','${containerId}-form-drop','forms')">▾</button><div class="combo-drop" id="${containerId}-form-drop"></div></div></div></div>
     <div class="field-row"><label class="field-label">Note</label><div class="field-input"><textarea id="${containerId}-note" rows="2" ${d}>${v?esc(v.note||''):''}</textarea></div></div>
     <div class="checkbox-row"><input type="checkbox" id="${containerId}-is-question" ${v===null||v===undefined||(v&&v.isQuestion!==false)?'checked':''} ${d}><label for="${containerId}-is-question">This is a Question variable</label></div>
-    <div class="checkbox-row"><input type="checkbox" id="${containerId}-is-mv" ${v&&v.isMultiValue?'checked':''} ${d}><label for="${containerId}-is-mv">This variable can have multiple values</label></div>
+    <div class="checkbox-row"><input type="checkbox" id="${containerId}-is-mv" ${v&&v.isMultiValue?'checked':''} ${v&&v.type==='Yes/No'?'disabled':''}${d}><label for="${containerId}-is-mv">This variable can have multiple values</label></div>
   `;
 
   const container = document.getElementById(containerId);
@@ -666,7 +666,7 @@ function buildVarFields(containerId, v, disabled){
     container.innerHTML = `<div class="instance-layout"><div class="instance-left">${leftFields}<div class="checkbox-row"><input type="checkbox" id="${containerId}-use-children" ${v&&v.useChildrenNow?'checked':''}><label for="${containerId}-use-children">Use child variables in the document now</label></div><div class="checkbox-row" style="margin-left:21px"><input type="checkbox" id="${containerId}-replace-all" disabled><label for="${containerId}-replace-all">Replace all occurrences of the selected text</label></div></div><div class="instance-right"><div style="font-size:12px;font-weight:500;margin-bottom:6px">Child Variables</div><button class="btn btn-sm" onclick="openModal('childVarModal')" style="margin-bottom:8px">New Child Variable</button><div id="${containerId}-children-list"></div></div></div>`;
     renderChildVarsList(containerId);
   } else {
-    container.innerHTML = `${leftFields}<div class="checkbox-row"><input type="checkbox" id="${containerId}-use-now" checked ${d}><label for="${containerId}-use-now">Use this variable in the document now</label></div><div class="checkbox-row" style="margin-left:21px"><input type="checkbox" id="${containerId}-replace-all" ${d}><label for="${containerId}-replace-all">Replace all occurrences of the selected text</label></div>`;
+    container.innerHTML = `${leftFields}<div class="checkbox-row"><input type="checkbox" id="${containerId}-use-now" checked ${d}><label for="${containerId}-use-now">Use this variable in the document now</label></div><div class="checkbox-row" style="margin-left:21px"><input type="checkbox" id="${containerId}-replace-all" disabled><label for="${containerId}-replace-all" style="color:var(--color-text-tertiary,#aaa)">Replace all occurrences of the selected text</label></div>`;
   }
 }
 
@@ -691,15 +691,18 @@ function getDefaultPlaceholder(type){
 
 function onTypeChange(containerId){
   const type = document.getElementById(containerId+'-type')?.value;
-  const isList = type==='List'||type==='Ordered List'||type==='Dynamic List';
+  const isList = type==='List'||type==='Ordered List'||type==='Yes/No';
   const isDynamic = type==='Dynamic List';
-  const isNVDS = type==='List'||type==='Ordered List';
+  const isListRequired = type==='List'||type==='Ordered List';
+  const isNVDS = type==='List'||type==='Ordered List'||type==='Yes/No';
 
-  // List Values field — enabled and required for list types
+  // List Values row — visible and required for List, Ordered List, Dynamic List
+  const listValRow = document.getElementById(containerId+'-listval-row');
   const listVal = document.getElementById(containerId+'-listvals');
   const listLabel = document.getElementById(containerId+'-listval-label');
+  if(listValRow) listValRow.style.display = isList ? 'flex' : 'none';
   if(listVal){ listVal.disabled = !isList; }
-  if(listLabel){ listLabel.textContent = 'List Values' + (isList?'*':''); }
+  if(listLabel){ listLabel.textContent = 'List Values' + (isListRequired?'*':''); }
 
   // Source dropdown (Dynamic List only)
   const valsetRow = document.getElementById(containerId+'-valset-row');
@@ -712,6 +715,10 @@ function onTypeChange(containerId){
   // Values Set (NVDS) — for List and Ordered List only
   const nvdsRow = document.getElementById(containerId+'-nvds-row');
   if(nvdsRow) nvdsRow.style.display = isNVDS ? 'flex' : 'none';
+
+  // Disable "can have multiple values" for Yes/No
+  const mvCb = document.getElementById(containerId+'-is-mv');
+  if(mvCb){ mvCb.disabled = (type==='Yes/No'); if(type==='Yes/No') mvCb.checked=false; }
 
   // Default answer placeholder
   const defEl = document.getElementById(containerId+'-default');
