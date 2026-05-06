@@ -18,12 +18,9 @@ body{font-family:var(--font-sans,system-ui,sans-serif);font-size:13px;color:var(
 .nav-btn.active{color:var(--c-neota);border-bottom-color:var(--c-neota)}
 .nav-icon{font-size:14px;display:block;margin-bottom:2px}
 .content{flex:1;overflow-y:auto;padding:12px}
-.panel{display:none}
-.panel.active{display:block}
+.panel{display:none}.panel.active{display:block}
 .section-title{font-size:12px;font-weight:500;color:var(--color-text-secondary,#666);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;margin-top:16px}
 .section-title:first-child{margin-top:0}
-
-/* Dropdown menu buttons */
 .menu-group{position:relative;display:inline-block;margin-bottom:6px;margin-right:6px}
 .menu-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border:0.5px solid var(--color-border-secondary,#ccc);border-radius:6px;background:none;cursor:pointer;font-size:12px;color:var(--color-text-primary,#1a1a1a);transition:background 0.1s}
 .menu-btn:hover{background:var(--color-background-secondary,#f5f5f5)}
@@ -32,7 +29,6 @@ body{font-family:var(--font-sans,system-ui,sans-serif);font-size:13px;color:var(
 .dropdown.open{display:block}
 .dropdown-item{display:block;width:100%;padding:7px 14px;font-size:12px;text-align:left;border:none;background:none;cursor:pointer;color:var(--color-text-primary,#1a1a1a)}
 .dropdown-item:hover{background:var(--color-background-secondary,#f5f5f5)}
-
 .btn{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border:0.5px solid var(--color-border-secondary,#ccc);border-radius:6px;background:none;cursor:pointer;font-size:12px;color:var(--color-text-primary,#1a1a1a);transition:background 0.1s}
 .btn:hover{background:var(--color-background-secondary,#f5f5f5)}
 .btn-primary{background:var(--c-neota);color:#fff;border-color:var(--c-neota)}
@@ -41,80 +37,54 @@ body{font-family:var(--font-sans,system-ui,sans-serif);font-size:13px;color:var(
 .btn-danger:hover{background:#fdf0f0}
 .btn-sm{padding:4px 8px;font-size:11px}
 .btn-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-
 input[type=text],input[type=number],select,textarea{width:100%;padding:5px 7px;border:0.5px solid var(--color-border-secondary,#ccc);border-radius:4px;font-size:12px;font-family:inherit;background:var(--color-background-primary,#fff);color:var(--color-text-primary,#1a1a1a);margin-bottom:0}
-input[type=text]:focus,input[type=number]:focus,select:focus,textarea:focus{outline:none;border-color:var(--c-neota);box-shadow:0 0 0 2px rgba(29,158,117,0.15)}
+input[type=text]:focus,select:focus,textarea:focus{outline:none;border-color:var(--c-neota);box-shadow:0 0 0 2px rgba(29,158,117,0.15)}
 input[type=text]:disabled,select:disabled,textarea:disabled{background:var(--color-background-secondary,#f5f5f5);color:var(--color-text-secondary,#888)}
 label.field-label{font-size:12px;color:var(--color-text-primary,#1a1a1a);display:inline-block;width:100px;flex-shrink:0;padding-top:5px;vertical-align:top}
 .field-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:7px}
 .field-row .field-input{flex:1}
 .checkbox-row{display:flex;align-items:center;gap:7px;margin-bottom:5px;font-size:12px}
 .checkbox-row input[type=checkbox]{width:14px;height:14px;flex-shrink:0;margin:0}
-input.field-error, select.field-error, textarea.field-error{border-color:#c0392b!important;box-shadow:0 0 0 2px rgba(192,57,43,0.15)!important}
+input.field-error,select.field-error,textarea.field-error{border-color:#c0392b!important;box-shadow:0 0 0 2px rgba(192,57,43,0.15)!important}
 .field-error-msg{font-size:11px;color:#c0392b;margin-top:2px;display:block}
-
 .card{background:var(--color-background-secondary,#f9f9f9);border:0.5px solid var(--color-border-tertiary,#e5e5e5);border-radius:8px;padding:10px 12px;margin-bottom:6px}
 .card-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .card-name{font-weight:500;font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .card-type{font-size:10px;color:#fff;background:var(--c-neota);padding:2px 6px;border-radius:10px;white-space:nowrap}
-.card-type.cond{background:#534AB7}
-.card-type.form{background:#D85A30}
-.card-type.issue{background:#185FA5}
-.card-type.repeat{background:#BA7517}
+.card-type.cond{background:#534AB7}.card-type.form{background:#D85A30}.card-type.issue{background:#185FA5}.card-type.repeat{background:#BA7517}
 .card-actions{display:flex;gap:4px;flex-shrink:0}
 .empty{color:var(--color-text-tertiary,#aaa);font-size:12px;text-align:center;padding:24px 0;font-style:italic}
-
-/* Modal */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:100;display:none;align-items:flex-start;justify-content:center;padding-top:20px;overflow-y:auto}
 .modal-overlay.open{display:flex}
 .modal{background:var(--color-background-primary,#fff);border-radius:8px;padding:16px;width:95%;max-width:480px;box-shadow:0 4px 24px rgba(0,0,0,0.18);margin-bottom:20px}
 .modal-title{font-size:14px;font-weight:500;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
 .modal-close{background:none;border:none;cursor:pointer;font-size:16px;color:var(--color-text-secondary,#888);padding:0 4px}
 .modal-footer{display:flex;gap:6px;justify-content:flex-end;margin-top:14px;padding-top:10px;border-top:0.5px solid var(--color-border-tertiary,#e5e5e5)}
-.modal-divider{border:none;border-top:0.5px solid var(--color-border-tertiary,#e5e5e5);margin:10px 0}
-
-/* Instance two-column layout */
 .instance-layout{display:flex;gap:12px}
 .instance-left{flex:1;min-width:0}
 .instance-right{width:180px;flex-shrink:0;border-left:0.5px solid var(--color-border-tertiary,#e5e5e5);padding-left:12px}
 .child-var-item{display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:0.5px solid var(--color-border-tertiary,#e5e5e5);font-size:11px}
-
-/* NVDS table */
 .nvds-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
 .nvds-table th{background:var(--color-background-secondary,#f5f5f5);padding:5px 8px;text-align:left;font-weight:500;border:0.5px solid var(--color-border-tertiary,#e5e5e5)}
 .nvds-table td{padding:5px 8px;border:0.5px solid var(--color-border-tertiary,#e5e5e5);cursor:pointer}
 .nvds-table tr.selected td{background:var(--c-neota-light)}
-
 .info-box{background:var(--c-neota-light);border:0.5px solid #9fe1cb;border-radius:6px;padding:8px 10px;font-size:11px;color:var(--c-neota-dark);margin-bottom:10px}
 .tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 7px;border-radius:10px;background:var(--color-background-secondary,#f0f0f0);color:var(--color-text-secondary,#555);margin:2px}
 .divider{border:none;border-top:0.5px solid var(--color-border-tertiary,#e5e5e5);margin:12px 0}
-
 .expr-row{display:flex;gap:5px;align-items:center;margin-bottom:6px}
 .expr-row select{margin-bottom:0;flex:1}
-
 .tree{font-size:12px}
 .tree-issue{margin-bottom:8px}
 .tree-issue-name{font-weight:500;color:var(--c-neota-dark);padding:4px 0;display:flex;align-items:center;gap:5px}
 .tree-children{padding-left:14px;border-left:1px solid var(--color-border-tertiary,#e5e5e5);margin-left:6px}
 .tree-item{padding:3px 0;color:var(--color-text-secondary,#666);display:flex;align-items:center;gap:5px}
 .badge{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
-.badge.var{background:var(--c-neota)}
-.badge.cond{background:#534AB7}
-.badge.form{background:#D85A30}
-.badge.repeat{background:#BA7517}
-
-.check-item{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary,#e5e5e5)}
-.check-ok{color:#1d9e75;font-size:14px;flex-shrink:0}
-.check-warn{color:#e24b4a;font-size:14px;flex-shrink:0}
-
+.badge.var{background:var(--c-neota)}.badge.cond{background:#534AB7}.badge.form{background:#D85A30}.badge.repeat{background:#BA7517}
 .status-bar{padding:6px 12px;font-size:11px;color:#fff;background:var(--c-neota);flex-shrink:0;text-align:center;min-height:26px}
-.status-bar.error{background:#c0392b}
-.status-bar.warn{background:#ba7517}
-
+.status-bar.error{background:#c0392b}.status-bar.warn{background:#ba7517}
 table.data-table{width:100%;border-collapse:collapse;font-size:11px}
 table.data-table th{background:var(--color-background-secondary,#f5f5f5);padding:6px 8px;text-align:left;font-weight:500;border-bottom:0.5px solid var(--color-border-tertiary,#e5e5e5)}
 table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border-tertiary,#e5e5e5)}
-
 .select-with-btn{display:flex;gap:6px;align-items:center}
 .select-with-btn select{flex:1;margin-bottom:0}
 .combo-wrap{position:relative;display:flex;align-items:center}
@@ -128,13 +98,11 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 </style>
 </head>
 <body>
-
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span class="topbar-title">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.1.1</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.1.2</span>
 </div>
-
 <div class="nav">
   <button class="nav-btn active" onclick="showPanel('variables')"><span class="nav-icon">(x)</span>Variables</button>
   <button class="nav-btn" onclick="showPanel('conditions')"><span class="nav-icon">◈</span>Conditions</button>
@@ -144,9 +112,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
   <button class="nav-btn" onclick="showPanel('organizer')"><span class="nav-icon">⊟</span>Organizer</button>
   <button class="nav-btn" onclick="showPanel('tools')"><span class="nav-icon">⚙</span>Tools</button>
 </div>
-
 <div class="content">
-
   <!-- VARIABLES -->
   <div id="panel-variables" class="panel active">
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
@@ -164,7 +130,6 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
     <div class="section-title">Defined variables</div>
     <div id="var-list"><div class="empty">No variables defined yet</div></div>
   </div>
-
   <!-- CONDITIONS -->
   <div id="panel-conditions" class="panel">
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
@@ -181,7 +146,6 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
     <div class="section-title">Defined conditions</div>
     <div id="cond-list"><div class="empty">No conditions defined yet</div></div>
   </div>
-
   <!-- FORMS -->
   <div id="panel-forms" class="panel">
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
@@ -197,7 +161,6 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
     <div class="section-title">Defined forms</div>
     <div id="form-list"><div class="empty">No forms defined yet</div></div>
   </div>
-
   <!-- ISSUES -->
   <div id="panel-issues" class="panel">
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
@@ -213,29 +176,30 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
     <div class="section-title">Defined issues</div>
     <div id="issue-list"><div class="empty">No issues defined yet</div></div>
   </div>
-
   <!-- REPEAT -->
   <div id="panel-repeat" class="panel">
     <div class="info-box">Repeat tags display values of multi-value or instance variables when the document is generated.</div>
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="openModal('repeatModal')">Insert repeat tag</button>
-    </div>
+    <div class="btn-row"><button class="btn btn-primary" onclick="openRepeatModal()">Insert repeat tag</button></div>
     <div class="section-title">Inserted repeats</div>
     <div id="repeat-list"><div class="empty">No repeat tags inserted</div></div>
   </div>
-
   <!-- ORGANIZER -->
   <div id="panel-organizer" class="panel">
-    <div class="btn-row">
-      <button class="btn" onclick="renderOrganizer()">↺ Refresh</button>
-    </div>
+    <div class="btn-row"><button class="btn" onclick="renderOrganizer()">↺ Refresh</button></div>
     <div class="section-title">Application structure</div>
     <div id="organizer-tree"></div>
   </div>
-
   <!-- TOOLS -->
   <div id="panel-tools" class="panel">
     <div class="section-title">Document tools</div>
+    <div class="card" style="cursor:pointer;margin-bottom:6px" onclick="saveXMLToDocument()">
+      <div class="card-row"><span class="card-name">Save to document</span></div>
+      <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Embed Neota XML into the Word document (required for Studio import)</div>
+    </div>
+    <div class="card" style="cursor:pointer;margin-bottom:6px" onclick="loadXMLFromDocument()">
+      <div class="card-row"><span class="card-name">Load from document</span></div>
+      <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Reload variables and conditions from embedded XML</div>
+    </div>
     <div class="card" style="cursor:pointer;margin-bottom:6px" onclick="prepareDocument()">
       <div class="card-row"><span class="card-name">Prepare document</span></div>
       <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Remove all Neota markup from document</div>
@@ -248,39 +212,25 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
       <div class="card-row"><span class="card-name">Check document</span></div>
       <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Scan for errors in template markup</div>
     </div>
-    <div class="card" style="cursor:pointer;margin-bottom:6px" id="save-to-doc-btn" onclick="handleSaveToDoc()">
-      <div class="card-row"><span class="card-name">Save to document</span></div>
-      <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Embed Neota XML into the Word document (required for Studio import)</div>
-    </div>
-    <div class="card" style="cursor:pointer;margin-bottom:6px" id="load-from-doc-btn" onclick="handleLoadFromDoc()">
-      <div class="card-row"><span class="card-name">Load from document</span></div>
-      <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Reload variables and conditions from embedded XML</div>
-    </div>
     <hr class="divider">
     <div class="section-title">Display</div>
     <div class="btn-row">
-      <button class="btn" onclick="toggleShading()" id="shade-btn">Show/Hide Field Shading</button>
-      <button class="btn" onclick="toggleFieldCodes()" id="code-btn">Show/Hide Field Codes</button>
+      <button class="btn" onclick="toggleShading()">Show/Hide Field Shading</button>
+      <button class="btn" onclick="toggleFieldCodes()">Show/Hide Field Codes</button>
     </div>
     <hr class="divider">
     <div class="section-title">Check results</div>
     <div id="check-results"><div class="empty">Run "Check document" to see results</div></div>
     <div id="data-table-container"></div>
   </div>
-
 </div>
-
 <div class="status-bar" id="status-bar">Ready</div>
 
-<!-- ==================== VARIABLE MODALS ==================== -->
-
-<!-- New Variable -->
+<!-- NEW VARIABLE MODAL -->
 <div class="modal-overlay" id="varNewModal">
 <div class="modal" id="varNewModalInner" style="max-width:520px">
   <div class="modal-title">New Variable <button class="modal-close" onclick="closeModal('varNewModal')">×</button></div>
-  <div id="var-new-layout">
-    <!-- filled by renderVarForm -->
-  </div>
+  <div id="var-new-layout"><div id="vnew"></div></div>
   <div class="modal-footer">
     <button class="btn" onclick="closeModal('varNewModal')">Cancel</button>
     <button class="btn btn-primary" onclick="saveNewVariable()">OK</button>
@@ -288,7 +238,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 </div>
 </div>
 
-<!-- View/Edit Variable -->
+<!-- VIEW/EDIT VARIABLE MODAL -->
 <div class="modal-overlay" id="varEditModal">
 <div class="modal" style="max-width:520px">
   <div class="modal-title">View/Edit Variable <button class="modal-close" onclick="closeModal('varEditModal')">×</button></div>
@@ -308,7 +258,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 </div>
 </div>
 
-<!-- Delete Variable -->
+<!-- DELETE VARIABLE MODAL -->
 <div class="modal-overlay" id="varDeleteModal">
 <div class="modal" style="max-width:480px">
   <div class="modal-title">Delete Variable <button class="modal-close" onclick="closeModal('varDeleteModal')">×</button></div>
@@ -327,7 +277,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 </div>
 </div>
 
-<!-- Use Existing Variable -->
+<!-- USE EXISTING MODAL -->
 <div class="modal-overlay" id="varUseModal">
 <div class="modal" style="max-width:480px">
   <div class="modal-title">Use Variable in Document <button class="modal-close" onclick="closeModal('varUseModal')">×</button></div>
@@ -349,7 +299,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 </div>
 </div>
 
-<!-- Named Value Display Sets -->
+<!-- NVDS MODAL -->
 <div class="modal-overlay" id="nvdsModal">
 <div class="modal" style="max-width:400px">
   <div class="modal-title">Named Value Display Sets <button class="modal-close" onclick="closeModal('nvdsModal')">×</button></div>
@@ -360,10 +310,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
     <button class="btn btn-sm btn-primary" onclick="addNVDS()">Add</button>
   </div>
   <div style="font-size:12px;margin-bottom:4px;font-weight:500">Named Value Display Sets:</div>
-  <table class="nvds-table">
-    <thead><tr><th>Name</th><th>Type</th><th></th></tr></thead>
-    <tbody id="nvds-tbody"></tbody>
-  </table>
+  <table class="nvds-table"><thead><tr><th>Name</th><th>Type</th></tr></thead><tbody id="nvds-tbody"></tbody></table>
   <div class="modal-footer">
     <button class="btn btn-sm btn-danger" onclick="removeNVDS()">Remove</button>
     <button class="btn" onclick="closeModal('nvdsModal')">Cancel</button>
@@ -372,14 +319,13 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 </div>
 </div>
 
-<!-- New Child Variable (sub-modal) -->
+<!-- CHILD VARIABLE MODAL -->
 <div class="modal-overlay" id="childVarModal" style="z-index:200">
 <div class="modal" style="max-width:400px">
   <div class="modal-title">New Child Variable <button class="modal-close" onclick="closeModal('childVarModal')">×</button></div>
   <div class="field-row"><label class="field-label">Name*</label><div class="field-input"><input type="text" id="child-name"></div></div>
   <div class="field-row"><label class="field-label">Data Type*</label><div class="field-input"><select id="child-type" onchange="onChildTypeChange()"></select></div></div>
-  <div class="field-row" id="child-listval-row" style="display:none"><label class="field-label">List Values</label><div class="field-input"><input type="text" id="child-listvals" placeholder="Comma separated values"></div></div>
-  <div class="field-row"><label class="field-label">Values Set</label><div class="field-input"><select id="child-valset"><option value="">—</option></select></div></div>
+  <div class="field-row" id="child-listval-row" style="display:none"><label class="field-label">List Values</label><div class="field-input"><input type="text" id="child-listvals" placeholder="Comma separated"></div></div>
   <div class="field-row"><label class="field-label">Question Text</label><div class="field-input"><input type="text" id="child-question"></div></div>
   <div class="field-row"><label class="field-label">Hint Text</label><div class="field-input"><input type="text" id="child-hint"></div></div>
   <div class="field-row"><label class="field-label">Default Answer</label><div class="field-input"><input type="text" id="child-default"></div></div>
@@ -393,7 +339,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 </div>
 </div>
 
-<!-- ==================== CONDITION MODALS ==================== -->
+<!-- CONDITION MODALS -->
 <div class="modal-overlay" id="condNewModal">
 <div class="modal" style="max-width:520px">
   <div class="modal-title">New Condition <button class="modal-close" onclick="closeModal('condNewModal')">×</button></div>
@@ -401,12 +347,12 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
   <div class="field-row"><label class="field-label">Name*</label><div class="field-input"><input type="text" id="cond-name" placeholder="e.g. ShowCopyrightClause"></div></div>
   <div class="field-row"><label class="field-label">Description</label><div class="field-input"><input type="text" id="cond-desc"></div></div>
   <div class="field-row"><label class="field-label">Issue</label><div class="field-input"><div class="combo-wrap"><input type="text" id="cond-issue" value="First Issue" autocomplete="off"><button type="button" class="combo-arrow" onclick="openCombo('cond-issue','cond-issue-drop','issues')">▾</button><div class="combo-drop" id="cond-issue-drop"></div></div></div></div>
-  <div class="section-title" style="margin-top:10px">Expressions <span style="font-size:11px;font-weight:400;color:var(--color-text-secondary,#666)">(top-level conjunction)</span></div>
   <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:12px">
     <span>Conjunct:</span>
     <label><input type="radio" name="cond-conjunct" value="and" checked> AND</label>
     <label><input type="radio" name="cond-conjunct" value="or"> OR</label>
   </div>
+  <div class="section-title">Expressions</div>
   <div id="expr-list"></div>
   <button class="btn btn-sm" onclick="addExprRow()">+ Add expression</button>
   <div class="modal-footer">
@@ -417,13 +363,13 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 </div>
 
 <div class="modal-overlay" id="condEditModal">
-<div class="modal" style="max-width:480px">
+<div class="modal" style="max-width:520px">
   <div class="modal-title">View/Edit Condition <button class="modal-close" onclick="closeModal('condEditModal')">×</button></div>
   <div class="field-row" style="margin-bottom:10px">
     <label class="field-label">Condition</label>
     <div class="field-input select-with-btn">
       <select id="edit-cond-select" onchange="loadCondForEdit()"><option value="">— Select Condition —</option></select>
-      <button class="btn btn-sm" onclick="refreshCondSelect()">Refresh</button>
+      <button class="btn btn-sm" onclick="refreshCondSelect('edit-cond-select')">Refresh</button>
     </div>
   </div>
   <div id="cond-edit-fields"></div>
@@ -466,7 +412,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 </div>
 </div>
 
-<!-- ==================== FORM MODALS ==================== -->
+<!-- FORM MODALS -->
 <div class="modal-overlay" id="formNewModal">
 <div class="modal" style="max-width:400px">
   <div class="modal-title">New Form <button class="modal-close" onclick="closeModal('formNewModal')">×</button></div>
@@ -487,7 +433,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
     <label class="field-label">Form</label>
     <div class="field-input select-with-btn">
       <select id="edit-form-select" onchange="loadFormForEdit()"><option value="">— Select Form —</option></select>
-      <button class="btn btn-sm" onclick="refreshFormSelect()">Refresh</button>
+      <button class="btn btn-sm" onclick="refreshFormSelect('edit-form-select')">Refresh</button>
     </div>
   </div>
   <div id="form-edit-fields"></div>
@@ -515,7 +461,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 </div>
 </div>
 
-<!-- ==================== ISSUE MODALS ==================== -->
+<!-- ISSUE MODALS -->
 <div class="modal-overlay" id="issueNewModal">
 <div class="modal" style="max-width:400px">
   <div class="modal-title">New Issue <button class="modal-close" onclick="closeModal('issueNewModal')">×</button></div>
@@ -536,7 +482,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
     <label class="field-label">Issue</label>
     <div class="field-input select-with-btn">
       <select id="edit-issue-select" onchange="loadIssueForEdit()"><option value="">— Select Issue —</option></select>
-      <button class="btn btn-sm" onclick="refreshIssueSelect()">Refresh</button>
+      <button class="btn btn-sm" onclick="refreshIssueSelect('edit-issue-select')">Refresh</button>
     </div>
   </div>
   <div id="issue-edit-fields"></div>
@@ -578,460 +524,329 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 </div>
 
 <script>
+// ---- Constants ----
 const DATA_TYPES = ['Text','Number','Integer','Currency','Percent','List','Ordered List','Dynamic List','Yes/No','URL','Date','Time','Timestamp','Instance'];
+const OPERATORS = [
+  {val:'eq',label:'== (equals)'},{val:'neq',label:'!= (not equals)'},
+  {val:'gt',label:'> (greater than)'},{val:'gte',label:'>= (greater or equal)'},
+  {val:'lt',label:'< (less than)'},{val:'lte',label:'<= (less or equal)'},
+  {val:'contains',label:'contains'}
+];
 
+// ---- State ----
 const state = {
-  variables: [],
-  conditions: [],
-  forms: [],
-  issues: [],
-  repeats: [],
-  nvds: [],
-  tempChildVars: [],
-  editingChildIdx: null,
-  nextId: () => Date.now() + Math.floor(Math.random()*1000)
+  variables:[],conditions:[],forms:[],issues:[],repeats:[],nvds:[],
+  tempChildVars:[],_selectedNVDS:null,
+  nextId:()=>Date.now()+Math.floor(Math.random()*9999)
 };
 
 // ---- Utilities ----
-function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function xmlEsc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-function setStatus(msg, type=''){
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function xmlEsc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function setStatus(msg,type=''){
   const b=document.getElementById('status-bar');
-  b.textContent=msg; b.className='status-bar'+(type?' '+type:'');
-  if(type!=='error') setTimeout(()=>{b.textContent='Ready';b.className='status-bar';},3000);
+  b.textContent=msg;b.className='status-bar'+(type?' '+type:'');
+  if(type!=='error')setTimeout(()=>{b.textContent='Ready';b.className='status-bar';},4000);
 }
-
 function showPanel(id){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
   const idx=['variables','conditions','forms','issues','repeat','organizer','tools'];
   document.querySelectorAll('.nav-btn')[idx.indexOf(id)]?.classList.add('active');
-  if(id==='organizer') renderOrganizer();
+  if(id==='organizer')renderOrganizer();
 }
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function toggleMenu(id){closeMenus();document.getElementById(id).classList.toggle('open');}
+function closeMenus(){document.querySelectorAll('.dropdown').forEach(d=>d.classList.remove('open'));}
+document.addEventListener('click',e=>{if(!e.target.closest('.menu-group'))closeMenus();});
 
-function openModal(id){
-  document.getElementById(id).classList.add('open');
+// ---- Combo box ----
+function openCombo(inputId,dropId,sourceKey){
+  document.querySelectorAll('.combo-drop').forEach(d=>{if(d.id!==dropId)d.classList.remove('open');});
+  const drop=document.getElementById(dropId);if(!drop)return;
+  let items=[];
+  if(sourceKey==='issues'){
+    const fromIssues=state.issues.map(i=>i.name);
+    const fromVars=state.variables.map(v=>v.issueName).filter(Boolean);
+    items=[...new Set([...fromIssues,...fromVars])];
+  }
+  if(sourceKey==='forms'){
+    const fromForms=state.forms.map(f=>f.name);
+    const fromVars=state.variables.map(v=>v.formName).filter(Boolean);
+    items=[...new Set([...fromForms,...fromVars])];
+  }
+  drop.innerHTML=items.length?items.map(name=>`<div class="combo-opt" onclick="pickCombo('${inputId}','${name.replace(/'/g,"\\'")}','${dropId}')">${esc(name)}</div>`).join(''):`<div class="combo-opt" style="color:var(--color-text-tertiary,#aaa);font-style:italic">Nothing defined yet</div>`;
+  drop.classList.toggle('open');
 }
-function closeModal(id){
-  document.getElementById(id).classList.remove('open');
+function pickCombo(inputId,val,dropId){const inp=document.getElementById(inputId);if(inp)inp.value=val;document.getElementById(dropId)?.classList.remove('open');}
+document.addEventListener('click',e=>{if(!e.target.closest('.combo-wrap'))document.querySelectorAll('.combo-drop').forEach(d=>d.classList.remove('open'));});
+
+// ---- Data type helpers ----
+function buildTypeOptions(selId,selectedVal='Text'){
+  const s=document.getElementById(selId);if(!s)return;
+  s.innerHTML=DATA_TYPES.map(t=>`<option value="${t}" ${t===selectedVal?'selected':''}>${t}</option>`).join('');
 }
-
-function toggleMenu(id){
-  closeMenus();
-  document.getElementById(id).classList.toggle('open');
+function getNVDSOptions(){return '<option value="">—</option>'+state.nvds.map(n=>`<option value="${n.id}">${esc(n.name)}</option>`).join('');}
+function getListVarOptions(selectedId){
+  return '<option value="">— Select source variable —</option>'+state.variables.filter(v=>v.type==='List'||v.type==='Ordered List').map(v=>`<option value="${v.id}" ${v.id==selectedId?'selected':''}>${esc(v.mergeField||v.name)}</option>`).join('');
 }
-function closeMenus(){
-  document.querySelectorAll('.dropdown').forEach(d=>d.classList.remove('open'));
-}
-document.addEventListener('click', e=>{
-  if(!e.target.closest('.menu-group')) closeMenus();
-});
-
-// ---- Data type options builder ----
-function buildTypeOptions(selId, selectedVal='Text'){
-  const s=document.getElementById(selId);
-  if(!s) return;
-  s.innerHTML = DATA_TYPES.map(t=>`<option value="${t}" ${t===selectedVal?'selected':''}>${t}</option>`).join('');
-}
-
-// ---- NVDS helpers ----
-function getNVDSOptions(){
-  return '<option value="">—</option>'+state.nvds.map(n=>`<option value="${n.id}">${esc(n.name)}</option>`).join('');
-}
-
-// ---- Variable form builder (shared by New and Edit) ----
-function buildVarFields(containerId, v, disabled){
-  const isInstance = v ? v.type==='Instance' : false;
-  const isList = v ? (v.type==='List'||v.type==='Ordered List'||v.type==='Yes/No') : false;
-  const isDynamic = v ? v.type==='Dynamic List' : false;
-  const isNVDS = v ? (v.type==='List'||v.type==='Ordered List'||v.type==='Yes/No') : false;
-  const d = disabled ? 'disabled' : '';
-  const issues = state.issues.map(i=>`<option value="${i.id}" ${v&&v.issueId==i.id?'selected':''}>${esc(i.name)}</option>`).join('');
-  const forms = state.forms.map(f=>`<option value="${f.id}" ${v&&v.formId==f.id?'selected':''}>${esc(f.name)}</option>`).join('');
-  const nvdsOpts = getNVDSOptions();
-
-  const leftFields = `
-    <div class="field-row"><label class="field-label">Name*</label><div class="field-input"><input type="text" id="${containerId}-name" value="${v?esc(v.name):''}" ${d}></div></div>
-    <div class="field-row"><label class="field-label">Data Type*</label><div class="field-input"><select id="${containerId}-type" onchange="onTypeChange('${containerId}')" ${d}>${DATA_TYPES.map(t=>`<option value="${t}" ${v&&v.type===t?'selected':''}>${t}</option>`).join('')}</select></div></div>
-    <div class="field-row" id="${containerId}-listval-row" style="display:${isList?'flex':'none'}"><label class="field-label" id="${containerId}-listval-label">List Values${isList?'*':''}</label><div class="field-input"><input type="text" id="${containerId}-listvals" value="${v&&v.listValues?esc(v.listValues.join(', ')):''}" ${isList?'':' disabled'} placeholder="Comma separated"></div></div>
-    <div class="field-row" id="${containerId}-valset-row" style="display:${isDynamic?'flex':'none'}"><label class="field-label">Source*</label><div class="field-input"><select id="${containerId}-valset">${getListVarOptions(v&&v.valsetId)}</select></div></div>
-    <div class="field-row" id="${containerId}-nvds-row" style="display:${isNVDS?'flex':'none'}"><label class="field-label">Values Set</label><div class="field-input"><select id="${containerId}-nvds" ${d}>${nvdsOpts}</select></div></div>
-    <div class="field-row"><label class="field-label">Question Text*</label><div class="field-input"><input type="text" id="${containerId}-question" value="${v?esc(v.question):''}" ${d}></div></div>
-    <div class="field-row"><label class="field-label">Hint Text</label><div class="field-input"><input type="text" id="${containerId}-hint" value="${v?esc(v.hint):''}" ${d}></div></div>
-    <div class="field-row"><label class="field-label">Default Answer</label><div class="field-input"><textarea id="${containerId}-default" rows="2" ${d} placeholder="${getDefaultPlaceholder(v?v.type:'Text')}">${v?esc(v.defaultAnswer):''}</textarea></div></div>
-    <div class="field-row"><label class="field-label">Issue</label><div class="field-input"><div class="combo-wrap"><input type="text" id="${containerId}-issue" value="${v&&v.issueName?esc(v.issueName):'First Issue'}" ${d} placeholder="First Issue" autocomplete="off"><button type="button" class="combo-arrow" ${d} onclick="openCombo('${containerId}-issue','${containerId}-issue-drop','issues')">▾</button><div class="combo-drop" id="${containerId}-issue-drop"></div></div></div></div>
-    <div class="field-row"><label class="field-label">Folder</label><div class="field-input"><input type="text" id="${containerId}-folder" value="${v?esc(v.folder||''):''}" ${d}></div></div>
-    <div class="field-row"><label class="field-label">Form</label><div class="field-input"><div class="combo-wrap"><input type="text" id="${containerId}-form" value="${v&&v.formName?esc(v.formName):''}" ${d} placeholder="&lt;Type new form&gt;" autocomplete="off"><button type="button" class="combo-arrow" ${d} onclick="openCombo('${containerId}-form','${containerId}-form-drop','forms')">▾</button><div class="combo-drop" id="${containerId}-form-drop"></div></div></div></div>
-    <div class="field-row"><label class="field-label">Note</label><div class="field-input"><textarea id="${containerId}-note" rows="2" ${d}>${v?esc(v.note||''):''}</textarea></div></div>
-    <div class="checkbox-row"><input type="checkbox" id="${containerId}-is-question" ${v===null||v===undefined||(v&&v.isQuestion!==false)?'checked':''} ${d}><label for="${containerId}-is-question">This is a Question variable</label></div>
-    <div class="checkbox-row"><input type="checkbox" id="${containerId}-is-mv" ${v&&v.isMultiValue?'checked':''} ${v&&v.type==='Yes/No'?'disabled':''}${d}><label for="${containerId}-is-mv">This variable can have multiple values</label></div>
-  `;
-
-  const container = document.getElementById(containerId);
-  if(!container) return;
-
-  if(isInstance){
-    state.tempChildVars = v ? JSON.parse(JSON.stringify(v.children||[])) : [];
-    container.innerHTML = `<div class="instance-layout"><div class="instance-left">${leftFields}<div class="checkbox-row"><input type="checkbox" id="${containerId}-use-children" ${v&&v.useChildrenNow?'checked':''}><label for="${containerId}-use-children">Use child variables in the document now</label></div><div class="checkbox-row" style="margin-left:21px"><input type="checkbox" id="${containerId}-replace-all" disabled><label for="${containerId}-replace-all">Replace all occurrences of the selected text</label></div></div><div class="instance-right"><div style="font-size:12px;font-weight:500;margin-bottom:6px">Child Variables</div><button class="btn btn-sm" onclick="openModal('childVarModal')" style="margin-bottom:8px">New Child Variable</button><div id="${containerId}-children-list"></div></div></div>`;
-    renderChildVarsList(containerId);
-  } else {
-    container.innerHTML = `${leftFields}<div class="checkbox-row"><input type="checkbox" id="${containerId}-use-now" checked ${d}><label for="${containerId}-use-now">Use this variable in the document now</label></div><div class="checkbox-row" style="margin-left:21px"><input type="checkbox" id="${containerId}-replace-all" disabled><label for="${containerId}-replace-all" style="color:var(--color-text-tertiary,#aaa)">Replace all occurrences of the selected text</label></div>`;
+function getDefaultPlaceholder(type){
+  switch(type){
+    case 'Number':return 'Sample: 12,345.68, -12, 345.68';
+    case 'Integer':return 'Sample: 12345, -12, 0';
+    case 'Currency':return 'Sample: $12,345.68, -$12.00';
+    case 'Percent':return 'Sample: 1,234,567.89%, -1, 234, 567.89 %';
+    case 'Date':return 'Sample: 2024-01-31';
+    case 'Time':return 'Sample: 14:30, 2:30 PM';
+    case 'Timestamp':return 'Sample: 2024-01-31 14:30:00';
+    case 'URL':return 'Sample: https://example.com';
+    default:return '';
   }
 }
 
-function getListVarOptions(selectedId){
-  const opts = state.variables.filter(v=>v.type==='List'||v.type==='Ordered List').map(v=>`<option value="${v.id}" ${v.id==selectedId?'selected':''}>${esc(v.mergeField||v.name)}</option>`).join('');
-  return '<option value="">— Select source variable —</option>' + opts;
-}
-
-function getDefaultPlaceholder(type){
-  switch(type){
-    case 'Number':    return 'Sample: 12,345.68, -12, 345.68';
-    case 'Integer':   return 'Sample: 12345, -12, 0';
-    case 'Currency':  return 'Sample: $12,345.68, -$12.00';
-    case 'Percent':   return 'Sample: 1,234,567.89%, -1, 234, 567.89 %';
-    case 'Date':      return 'Sample: 2024-01-31';
-    case 'Time':      return 'Sample: 14:30, 2:30 PM';
-    case 'Timestamp': return 'Sample: 2024-01-31 14:30:00';
-    case 'URL':       return 'Sample: https://example.com';
-    default:          return '';
+// ---- Variable form builder ----
+function buildVarFields(containerId,v,disabled){
+  const isInstance=v?v.type==='Instance':false;
+  const isList=v?(v.type==='List'||v.type==='Ordered List'||v.type==='Yes/No'):false;
+  const isDynamic=v?v.type==='Dynamic List':false;
+  const isNVDS=v?(v.type==='List'||v.type==='Ordered List'||v.type==='Yes/No'):false;
+  const isListRequired=v?(v.type==='List'||v.type==='Ordered List'):false;
+  const d=disabled?'disabled':'';
+  const nvdsOpts=getNVDSOptions();
+  const issueVal=v&&v.issueName?esc(v.issueName):'First Issue';
+  const formVal=v&&v.formName?esc(v.formName):'';
+  const leftFields=`
+    <div class="field-row"><label class="field-label">Name*</label><div class="field-input"><input type="text" id="${containerId}-name" value="${v?esc(v.name):''}" ${d}></div></div>
+    <div class="field-row"><label class="field-label">Data Type*</label><div class="field-input"><select id="${containerId}-type" onchange="onTypeChange('${containerId}')" ${d}>${DATA_TYPES.map(t=>`<option value="${t}" ${v&&v.type===t?'selected':''}>${t}</option>`).join('')}</select></div></div>
+    <div class="field-row" id="${containerId}-listval-row" style="display:${isList?'flex':'none'}"><label class="field-label" id="${containerId}-listval-label">List Values${isListRequired?'*':''}</label><div class="field-input"><input type="text" id="${containerId}-listvals" value="${v&&v.listValues?esc(v.listValues.join(', ')):''}" ${isList?'':'disabled'} placeholder="Comma separated"></div></div>
+    <div class="field-row" id="${containerId}-valset-row" style="display:${isDynamic?'flex':'none'}"><label class="field-label">Source*</label><div class="field-input"><select id="${containerId}-valset">${getListVarOptions(v&&v.valsetId)}</select></div></div>
+    <div class="field-row" id="${containerId}-nvds-row" style="display:${isNVDS?'flex':'none'}"><label class="field-label">Values Set</label><div class="field-input"><select id="${containerId}-nvds" ${d}>${nvdsOpts}</select></div></div>
+    <div class="field-row"><label class="field-label">Question Text*</label><div class="field-input"><input type="text" id="${containerId}-question" value="${v?esc(v.question||''):''}" ${d}></div></div>
+    <div class="field-row"><label class="field-label">Hint Text</label><div class="field-input"><input type="text" id="${containerId}-hint" value="${v?esc(v.hint||''):''}" ${d}></div></div>
+    <div class="field-row"><label class="field-label">Default Answer</label><div class="field-input"><textarea id="${containerId}-default" rows="2" ${d} placeholder="${getDefaultPlaceholder(v?v.type:'Text')}">${v?esc(v.defaultAnswer||''):''}</textarea></div></div>
+    <div class="field-row"><label class="field-label">Issue</label><div class="field-input"><div class="combo-wrap"><input type="text" id="${containerId}-issue" value="${issueVal}" ${d} autocomplete="off"><button type="button" class="combo-arrow" ${d} onclick="openCombo('${containerId}-issue','${containerId}-issue-drop','issues')">▾</button><div class="combo-drop" id="${containerId}-issue-drop"></div></div></div></div>
+    <div class="field-row"><label class="field-label">Folder</label><div class="field-input"><input type="text" id="${containerId}-folder" value="${v?esc(v.folder||''):''}" ${d}></div></div>
+    <div class="field-row"><label class="field-label">Form</label><div class="field-input"><div class="combo-wrap"><input type="text" id="${containerId}-form" value="${formVal}" ${d} placeholder="&lt;Type new form&gt;" autocomplete="off"><button type="button" class="combo-arrow" ${d} onclick="openCombo('${containerId}-form','${containerId}-form-drop','forms')">▾</button><div class="combo-drop" id="${containerId}-form-drop"></div></div></div></div>
+    <div class="field-row"><label class="field-label">Note</label><div class="field-input"><textarea id="${containerId}-note" rows="2" ${d}>${v?esc(v.note||''):''}</textarea></div></div>
+    <div class="checkbox-row"><input type="checkbox" id="${containerId}-is-question" ${v===null||v===undefined||(v&&v.isQuestion!==false)?'checked':''} ${d}><label for="${containerId}-is-question">This is a Question variable</label></div>
+    <div class="checkbox-row"><input type="checkbox" id="${containerId}-is-mv" ${v&&v.isMultiValue?'checked':''} ${v&&v.type==='Yes/No'?'disabled':''} ${d}><label for="${containerId}-is-mv">This variable can have multiple values</label></div>`;
+  const container=document.getElementById(containerId);if(!container)return;
+  if(isInstance){
+    state.tempChildVars=v?JSON.parse(JSON.stringify(v.children||[])):[];
+    container.innerHTML=`<div class="instance-layout"><div class="instance-left">${leftFields}<div class="checkbox-row"><input type="checkbox" id="${containerId}-use-children" ${v&&v.useChildrenNow?'checked':''}><label for="${containerId}-use-children">Use child variables in the document now</label></div><div class="checkbox-row" style="margin-left:21px"><input type="checkbox" id="${containerId}-replace-all" disabled><label for="${containerId}-replace-all">Replace all occurrences of the selected text</label></div></div><div class="instance-right"><div style="font-size:12px;font-weight:500;margin-bottom:6px">Child Variables</div><button class="btn btn-sm" onclick="openModal('childVarModal')" style="margin-bottom:8px">New Child Variable</button><div id="${containerId}-children-list"></div></div></div>`;
+    renderChildVarsList(containerId);
+  } else {
+    container.innerHTML=`${leftFields}<div class="checkbox-row"><input type="checkbox" id="${containerId}-use-now" checked ${d}><label for="${containerId}-use-now">Use this variable in the document now</label></div><div class="checkbox-row" style="margin-left:21px"><input type="checkbox" id="${containerId}-replace-all" disabled><label for="${containerId}-replace-all" style="color:var(--color-text-tertiary,#aaa)">Replace all occurrences of the selected text</label></div>`;
   }
 }
 
 function onTypeChange(containerId){
-  const type = document.getElementById(containerId+'-type')?.value;
-  const isList = type==='List'||type==='Ordered List'||type==='Yes/No';
-  const isDynamic = type==='Dynamic List';
-  const isListRequired = type==='List'||type==='Ordered List';
-  const isNVDS = type==='List'||type==='Ordered List'||type==='Yes/No';
-
-  // List Values row — visible and required for List, Ordered List, Dynamic List
-  const listValRow = document.getElementById(containerId+'-listval-row');
-  const listVal = document.getElementById(containerId+'-listvals');
-  const listLabel = document.getElementById(containerId+'-listval-label');
-  if(listValRow) listValRow.style.display = isList ? 'flex' : 'none';
-  if(listVal){ listVal.disabled = !isList; }
-  if(listLabel){ listLabel.textContent = 'List Values' + (isListRequired?'*':''); }
-
-  // Source dropdown (Dynamic List only)
-  const valsetRow = document.getElementById(containerId+'-valset-row');
-  if(valsetRow){
-    valsetRow.style.display = isDynamic ? 'flex' : 'none';
-    const sel = document.getElementById(containerId+'-valset');
-    if(sel) sel.innerHTML = getListVarOptions(null);
-  }
-
-  // Values Set (NVDS) — for List and Ordered List only
-  const nvdsRow = document.getElementById(containerId+'-nvds-row');
-  if(nvdsRow) nvdsRow.style.display = isNVDS ? 'flex' : 'none';
-
-  // Disable "can have multiple values" for Yes/No
-  const mvCb = document.getElementById(containerId+'-is-mv');
-  if(mvCb){ mvCb.disabled = (type==='Yes/No'); if(type==='Yes/No') mvCb.checked=false; }
-
-  // Default answer placeholder
-  const defEl = document.getElementById(containerId+'-default');
-  if(defEl) defEl.placeholder = getDefaultPlaceholder(type);
-
-  // Re-render if switching to/from Instance
-  if(type==='Instance'){
-    const name = document.getElementById(containerId+'-name')?.value||'';
-    const partial = {type:'Instance', name, question:'', hint:'', defaultAnswer:'', listValues:[], folder:'', note:'', isQuestion:true, isMultiValue:false, children:state.tempChildVars||[]};
-    buildVarFields(containerId, partial, false);
-  }
+  const type=document.getElementById(containerId+'-type')?.value;
+  const isList=type==='List'||type==='Ordered List'||type==='Yes/No';
+  const isDynamic=type==='Dynamic List';
+  const isNVDS=type==='List'||type==='Ordered List'||type==='Yes/No';
+  const isListRequired=type==='List'||type==='Ordered List';
+  const listValRow=document.getElementById(containerId+'-listval-row');
+  const listVal=document.getElementById(containerId+'-listvals');
+  const listLabel=document.getElementById(containerId+'-listval-label');
+  if(listValRow)listValRow.style.display=isList?'flex':'none';
+  if(listVal)listVal.disabled=!isList;
+  if(listLabel)listLabel.textContent='List Values'+(isListRequired?'*':'');
+  const valsetRow=document.getElementById(containerId+'-valset-row');
+  if(valsetRow){valsetRow.style.display=isDynamic?'flex':'none';const sel=document.getElementById(containerId+'-valset');if(sel)sel.innerHTML=getListVarOptions(null);}
+  const nvdsRow=document.getElementById(containerId+'-nvds-row');
+  if(nvdsRow)nvdsRow.style.display=isNVDS?'flex':'none';
+  const mvCb=document.getElementById(containerId+'-is-mv');
+  if(mvCb){mvCb.disabled=(type==='Yes/No');if(type==='Yes/No')mvCb.checked=false;}
+  const defEl=document.getElementById(containerId+'-default');
+  if(defEl)defEl.placeholder=getDefaultPlaceholder(type);
+  if(type==='Instance'){const name=document.getElementById(containerId+'-name')?.value||'';const partial={type:'Instance',name,question:'',hint:'',defaultAnswer:'',listValues:[],folder:'',note:'',isQuestion:true,isMultiValue:false,children:state.tempChildVars||[]};buildVarFields(containerId,partial,false);}
 }
 
 function renderChildVarsList(containerId){
-  const el = document.getElementById(containerId+'-children-list');
-  if(!el) return;
-  if(!state.tempChildVars.length){ el.innerHTML='<div style="font-size:11px;color:var(--color-text-tertiary,#aaa);font-style:italic">No child variables</div>'; return; }
-  el.innerHTML = state.tempChildVars.map((c,i)=>`
-    <div class="child-var-item">
-      <span>${esc(c.name)} <span style="color:var(--color-text-tertiary,#aaa);font-size:10px">(${c.type})</span></span>
-      <button class="btn btn-sm btn-danger" onclick="removeChildVar(${i},'${containerId}')">×</button>
-    </div>`).join('');
+  const el=document.getElementById(containerId+'-children-list');if(!el)return;
+  if(!state.tempChildVars.length){el.innerHTML='<div style="font-size:11px;color:var(--color-text-tertiary,#aaa);font-style:italic">No child variables</div>';return;}
+  el.innerHTML=state.tempChildVars.map((c,i)=>`<div class="child-var-item"><span>${esc(c.name)} <span style="color:var(--color-text-tertiary,#aaa);font-size:10px">(${c.type})</span></span><button class="btn btn-sm btn-danger" onclick="removeChildVar(${i},'${containerId}')">×</button></div>`).join('');
 }
-
-function removeChildVar(idx, containerId){
-  state.tempChildVars.splice(idx,1);
-  renderChildVarsList(containerId);
-}
-
-function onChildTypeChange(){
-  const t = document.getElementById('child-type').value;
-  document.getElementById('child-listval-row').style.display = (t==='List'||t==='Ordered List')?'flex':'none';
-}
-
+function removeChildVar(idx,containerId){state.tempChildVars.splice(idx,1);renderChildVarsList(containerId);}
+function onChildTypeChange(){const t=document.getElementById('child-type').value;document.getElementById('child-listval-row').style.display=(t==='List'||t==='Ordered List')?'flex':'none';}
 function saveChildVar(){
-  const name = document.getElementById('child-name').value.trim();
-  if(!name){ setStatus('Child variable name required','error'); return; }
-  state.tempChildVars.push({
-    name, type: document.getElementById('child-type').value,
-    listValues: document.getElementById('child-listvals').value.split(',').map(s=>s.trim()).filter(Boolean),
-    question: document.getElementById('child-question').value.trim(),
-    hint: document.getElementById('child-hint').value.trim(),
-    defaultAnswer: document.getElementById('child-default').value.trim(),
-    note: document.getElementById('child-note').value.trim(),
-    isQuestion: document.getElementById('child-is-question').checked,
-    isMultiValue: document.getElementById('child-is-mv').checked
-  });
+  const name=document.getElementById('child-name').value.trim();
+  if(!name){setStatus('Child variable name required','error');return;}
+  state.tempChildVars.push({name,type:document.getElementById('child-type').value,listValues:document.getElementById('child-listvals').value.split(',').map(s=>s.trim()).filter(Boolean),question:document.getElementById('child-question').value.trim(),hint:document.getElementById('child-hint').value.trim(),defaultAnswer:document.getElementById('child-default').value.trim(),note:document.getElementById('child-note').value.trim(),isQuestion:document.getElementById('child-is-question').checked,isMultiValue:document.getElementById('child-is-mv').checked});
   closeModal('childVarModal');
-  const activeContainer = document.querySelector('[id$="-children-list"]');
-  if(activeContainer){
-    const cid = activeContainer.id.replace('-children-list','');
-    renderChildVarsList(cid);
-  }
+  const activeList=document.querySelector('[id$="-children-list"]');
+  if(activeList)renderChildVarsList(activeList.id.replace('-children-list',''));
 }
 
 function readVarFields(prefix){
   return {
-    name: document.getElementById(prefix+'-name')?.value.trim()||'',
-    type: document.getElementById(prefix+'-type')?.value||'Text',
-    listValues: (document.getElementById(prefix+'-listvals')?.value||'').split(',').map(s=>s.trim()).filter(Boolean),
-    valsetId: document.getElementById(prefix+'-valset')?.value||'',
-    question: document.getElementById(prefix+'-question')?.value.trim()||'',
-    hint: document.getElementById(prefix+'-hint')?.value.trim()||'',
-    defaultAnswer: document.getElementById(prefix+'-default')?.value.trim()||'',
-    issueName: document.getElementById(prefix+'-issue')?.value.trim()||'First Issue',
-    folder: document.getElementById(prefix+'-folder')?.value.trim()||'',
-    formName: document.getElementById(prefix+'-form')?.value.trim()||'',
-    note: document.getElementById(prefix+'-note')?.value.trim()||'',
-    isQuestion: document.getElementById(prefix+'-is-question')?.checked!==false,
-    isMultiValue: document.getElementById(prefix+'-is-mv')?.checked||false,
-    children: state.tempChildVars||[]
+    name:document.getElementById(prefix+'-name')?.value.trim()||'',
+    type:document.getElementById(prefix+'-type')?.value||'Text',
+    listValues:(document.getElementById(prefix+'-listvals')?.value||'').split(',').map(s=>s.trim()).filter(Boolean),
+    valsetId:document.getElementById(prefix+'-valset')?.value||'',
+    question:document.getElementById(prefix+'-question')?.value.trim()||'',
+    hint:document.getElementById(prefix+'-hint')?.value.trim()||'',
+    defaultAnswer:document.getElementById(prefix+'-default')?.value.trim()||'',
+    issueName:document.getElementById(prefix+'-issue')?.value.trim()||'First Issue',
+    issueId:'',
+    folder:document.getElementById(prefix+'-folder')?.value.trim()||'',
+    formName:document.getElementById(prefix+'-form')?.value.trim()||'',
+    formId:'',
+    note:document.getElementById(prefix+'-note')?.value.trim()||'',
+    isQuestion:document.getElementById(prefix+'-is-question')?.checked!==false,
+    isMultiValue:document.getElementById(prefix+'-is-mv')?.checked||false,
+    children:state.tempChildVars||[]
   };
 }
 
-// ---- Open New Variable ----
+// ---- Validation ----
+function clearFieldErrors(prefix){document.querySelectorAll(`#${prefix} .field-error`).forEach(el=>el.classList.remove('field-error'));document.querySelectorAll(`#${prefix} .field-error-msg`).forEach(el=>el.remove());}
+function showFieldError(fieldId,msg){const el=document.getElementById(fieldId);if(!el)return;el.classList.add('field-error');el.parentElement.querySelectorAll('.field-error-msg').forEach(e=>e.remove());const span=document.createElement('span');span.className='field-error-msg';span.textContent=msg;el.insertAdjacentElement('afterend',span);el.focus();}
+
+// ---- New Variable ----
 function openNewVar(){
   state.tempChildVars=[];
   document.getElementById('var-new-layout').innerHTML='<div id="vnew"></div>';
-
-  // Try to read selected text from Word to pre-populate name
-  if(typeof Word !== 'undefined' && typeof Office !== 'undefined' && Office.context){
+  if(typeof Word!=='undefined'&&typeof Office!=='undefined'&&Office.context){
     Word.run(async ctx=>{
-      const sel = ctx.document.getSelection();
-      sel.load('text');
-      await ctx.sync();
-      const selectedText = sel.text ? sel.text.trim() : '';
-      buildVarFields('vnew', selectedText ? {name: selectedText} : null, false);
+      const sel=ctx.document.getSelection();sel.load('text');await ctx.sync();
+      const selectedText=sel.text?sel.text.trim():'';
+      buildVarFields('vnew',selectedText?{name:selectedText}:null,false);
       buildTypeOptions('vnew-type','Text');
       openModal('varNewModal');
-    }).catch(()=>{
-      buildVarFields('vnew', null, false);
-      buildTypeOptions('vnew-type','Text');
-      openModal('varNewModal');
-    });
-  } else {
-    buildVarFields('vnew', null, false);
-    buildTypeOptions('vnew-type','Text');
-    openModal('varNewModal');
-  }
-}
-
-function clearFieldErrors(prefix){
-  document.querySelectorAll(`#${prefix} .field-error`).forEach(el=>el.classList.remove('field-error'));
-  document.querySelectorAll(`#${prefix} .field-error-msg`).forEach(el=>el.remove());
-}
-function showFieldError(fieldId, msg){
-  const el = document.getElementById(fieldId);
-  if(!el) return;
-  el.classList.add('field-error');
-  // remove existing error msg if any
-  el.parentElement.querySelectorAll('.field-error-msg').forEach(e=>e.remove());
-  const span = document.createElement('span');
-  span.className = 'field-error-msg';
-  span.textContent = msg;
-  el.insertAdjacentElement('afterend', span);
-  el.focus();
+    }).catch(()=>{buildVarFields('vnew',null,false);buildTypeOptions('vnew-type','Text');openModal('varNewModal');});
+  } else {buildVarFields('vnew',null,false);buildTypeOptions('vnew-type','Text');openModal('varNewModal');}
 }
 
 function saveNewVariable(){
   clearFieldErrors('vnew');
-  const v = readVarFields('vnew');
-  let hasError = false;
-  if(!v.name){
-    showFieldError('vnew-name', 'Name is required');
-    hasError = true;
-  }
-  if(!v.question){
-    showFieldError('vnew-question', 'Question Text is required');
-    hasError = true;
-  }
-  if(hasError) return;
-  v.id = state.nextId();
-  v.mergeField = v.name + '/' + (v.issueName||'First Issue') + '/';
-  const useNow = document.getElementById('vnew-use-now')?.checked;
-  const replaceAll = document.getElementById('vnew-replace-all')?.checked;
+  const v=readVarFields('vnew');
+  let hasError=false;
+  if(!v.name){showFieldError('vnew-name','Name is required');hasError=true;}
+  if(!v.question){showFieldError('vnew-question','Question Text is required');hasError=true;}
+  if(hasError)return;
+  v.id=state.nextId();
+  v.mergeField=v.name+'/'+(v.issueName||'First Issue')+'/';
+  const useNow=document.getElementById('vnew-use-now')?.checked;
+  const replaceAll=document.getElementById('vnew-replace-all')?.checked;
   state.variables.push(v);
   closeModal('varNewModal');
   renderVariables();
   setStatus('Variable "'+v.name+'" created');
-  if(useNow) doInsertByVar(v, replaceAll);
+  if(useNow)doInsertByVar(v,replaceAll);
 }
 
 // ---- View/Edit Variable ----
-function openViewEditVar(){
-  refreshVarSelect('edit-var-select', loadVarForEdit);
-  document.getElementById('var-edit-fields').innerHTML='';
-  openModal('varEditModal');
-}
-
-function refreshVarSelect(selId, cb){
-  const s = document.getElementById(selId);
-  if(!s) return;
-  const cur = s.value;
+function openViewEditVar(){refreshVarSelect('edit-var-select',loadVarForEdit);document.getElementById('var-edit-fields').innerHTML='';openModal('varEditModal');}
+function refreshVarSelect(selId,cb){
+  const s=document.getElementById(selId);if(!s)return;
+  const cur=s.value;
   s.innerHTML='<option value="">— Select Variable —</option>'+state.variables.map(v=>`<option value="${v.id}">${esc(v.name)}/${esc(v.issueName||'')}/</option>`).join('');
-  if(cur) s.value=cur;
-  if(cb) cb();
+  if(cur)s.value=cur;if(cb)cb();
 }
-
 function loadVarForEdit(){
-  const id = document.getElementById('edit-var-select').value;
-  const v = state.variables.find(x=>x.id==id);
-  const el = document.getElementById('var-edit-fields');
-  if(!v){ el.innerHTML=''; return; }
+  const id=document.getElementById('edit-var-select').value;
+  const v=state.variables.find(x=>x.id==id);
+  const el=document.getElementById('var-edit-fields');
+  if(!v){el.innerHTML='';return;}
   el.innerHTML='<div id="vedit"></div>';
-  state.tempChildVars = JSON.parse(JSON.stringify(v.children||[]));
-  buildVarFields('vedit', v, false);
+  state.tempChildVars=JSON.parse(JSON.stringify(v.children||[]));
+  buildVarFields('vedit',v,false);
 }
-
 function saveEditVariable(){
-  const id = document.getElementById('edit-var-select').value;
-  if(!id){ setStatus('Select a variable','warn'); return; }
-  const v = readVarFields('vedit');
-  if(!v.name){ setStatus('Name is required','error'); return; }
-  const idx = state.variables.findIndex(x=>x.id==id);
-  if(idx<0) return;
-  v.id=id; v.mergeField=v.name+'/'+(v.issueName||'')+'/';
+  const id=document.getElementById('edit-var-select').value;
+  if(!id){setStatus('Select a variable','warn');return;}
+  const v=readVarFields('vedit');
+  if(!v.name){setStatus('Name is required','error');return;}
+  const idx=state.variables.findIndex(x=>x.id==id);
+  if(idx<0)return;
+  v.id=id;v.mergeField=v.name+'/'+(v.issueName||'First Issue')+'/';
   state.variables[idx]=v;
-  closeModal('varEditModal');
-  renderVariables();
-  setStatus('Variable "'+v.name+'" updated');
+  closeModal('varEditModal');renderVariables();setStatus('Variable "'+v.name+'" updated');
 }
-
 function saveAsNewVar(){
-  const v = readVarFields('vedit');
-  if(!v.name){ setStatus('Name is required','error'); return; }
-  v.id=state.nextId(); v.mergeField=v.name+'/'+(v.issueName||'')+'/';
-  state.variables.push(v);
-  closeModal('varEditModal');
-  renderVariables();
-  setStatus('Variable "'+v.name+'" saved as new');
+  const v=readVarFields('vedit');
+  if(!v.name){setStatus('Name is required','error');return;}
+  v.id=state.nextId();v.mergeField=v.name+'/'+(v.issueName||'First Issue')+'/';
+  state.variables.push(v);closeModal('varEditModal');renderVariables();setStatus('Variable "'+v.name+'" saved as new');
 }
 
 // ---- Delete Variable ----
-function openDeleteVar(){
-  refreshVarSelect('delete-var-select', loadVarForDelete);
-  document.getElementById('var-delete-fields').innerHTML='';
-  openModal('varDeleteModal');
-}
-
+function openDeleteVar(){refreshVarSelect('delete-var-select',loadVarForDelete);document.getElementById('var-delete-fields').innerHTML='';openModal('varDeleteModal');}
 function loadVarForDelete(){
-  const id = document.getElementById('delete-var-select').value;
-  const v = state.variables.find(x=>x.id==id);
-  const el = document.getElementById('var-delete-fields');
-  if(!v){ el.innerHTML=''; return; }
-  el.innerHTML='<div id="vdel"></div>';
-  buildVarFields('vdel', v, true);
+  const id=document.getElementById('delete-var-select').value;
+  const v=state.variables.find(x=>x.id==id);
+  const el=document.getElementById('var-delete-fields');
+  if(!v){el.innerHTML='';return;}
+  el.innerHTML='<div id="vdel"></div>';buildVarFields('vdel',v,true);
 }
-
 function confirmDeleteVar(){
-  const id = document.getElementById('delete-var-select').value;
-  if(!id){ setStatus('Select a variable','warn'); return; }
-  const v = state.variables.find(x=>x.id==id);
-  state.variables = state.variables.filter(x=>x.id!=id);
-  closeModal('varDeleteModal');
-  renderVariables();
-  setStatus('Variable "'+(v?.name||'')+'" deleted');
+  const id=document.getElementById('delete-var-select').value;
+  if(!id){setStatus('Select a variable','warn');return;}
+  const v=state.variables.find(x=>x.id==id);
+  state.variables=state.variables.filter(x=>x.id!=id);
+  closeModal('varDeleteModal');renderVariables();setStatus('Variable "'+(v?.name||'')+'" deleted');
 }
 
 // ---- Use Existing ----
-function openUseExisting(){
-  refreshVarSelect('use-var-select', loadVarForUse);
-  document.getElementById('var-use-fields').innerHTML='';
-  document.getElementById('use-var-replace-row').style.display='none';
-  openModal('varUseModal');
-}
-
+function openUseExisting(){refreshVarSelect('use-var-select',loadVarForUse);document.getElementById('var-use-fields').innerHTML='';document.getElementById('use-var-replace-row').style.display='none';openModal('varUseModal');}
 function loadVarForUse(){
-  const id = document.getElementById('use-var-select').value;
-  const v = state.variables.find(x=>x.id==id);
-  const el = document.getElementById('var-use-fields');
-  if(!v){ el.innerHTML=''; document.getElementById('use-var-replace-row').style.display='none'; return; }
-  el.innerHTML='<div id="vuse"></div>';
-  buildVarFields('vuse', v, true);
+  const id=document.getElementById('use-var-select').value;
+  const v=state.variables.find(x=>x.id==id);
+  const el=document.getElementById('var-use-fields');
+  if(!v){el.innerHTML='';document.getElementById('use-var-replace-row').style.display='none';return;}
+  el.innerHTML='<div id="vuse"></div>';buildVarFields('vuse',v,true);
   document.getElementById('use-var-replace-row').style.display='block';
 }
-
 function doUseExisting(){
-  const id = document.getElementById('use-var-select').value;
-  const v = state.variables.find(x=>x.id==id);
-  if(!v){ setStatus('Select a variable','warn'); return; }
-  const replaceAll = document.getElementById('use-replace-all')?.checked;
-  closeModal('varUseModal');
-  doInsertByVar(v, replaceAll);
+  const id=document.getElementById('use-var-select').value;
+  const v=state.variables.find(x=>x.id==id);
+  if(!v){setStatus('Select a variable','warn');return;}
+  const replaceAll=document.getElementById('use-replace-all')?.checked;
+  closeModal('varUseModal');doInsertByVar(v,replaceAll);
 }
 
 // ---- NVDS ----
-function openNVDS(){
-  renderNVDSTable();
-  openModal('nvdsModal');
-}
-
+function openNVDS(){renderNVDSTable();openModal('nvdsModal');}
 function renderNVDSTable(){
-  const tbody = document.getElementById('nvds-tbody');
-  tbody.innerHTML = state.nvds.length ? state.nvds.map((n,i)=>`<tr onclick="selectNVDS(${i})"><td>${esc(n.name)}</td><td>${esc(n.type)}</td></tr>`).join('') : '<tr><td colspan="2" style="color:var(--color-text-tertiary,#aaa);font-style:italic;text-align:center">No sets defined</td></tr>';
+  const tbody=document.getElementById('nvds-tbody');
+  tbody.innerHTML=state.nvds.length?state.nvds.map((n,i)=>`<tr onclick="selectNVDS(${i})"><td>${esc(n.name)}</td><td>${esc(n.type)}</td></tr>`).join(''):'<tr><td colspan="2" style="color:var(--color-text-tertiary,#aaa);font-style:italic;text-align:center">No sets defined</td></tr>';
 }
-
-function selectNVDS(i){
-  document.querySelectorAll('#nvds-tbody tr').forEach((r,idx)=>r.classList.toggle('selected',idx===i));
-  state._selectedNVDS=i;
-}
-
+function selectNVDS(i){document.querySelectorAll('#nvds-tbody tr').forEach((r,idx)=>r.classList.toggle('selected',idx===i));state._selectedNVDS=i;}
 function addNVDS(){
   const name=document.getElementById('nvds-name').value.trim();
-  if(!name){ setStatus('Enter a name','warn'); return; }
-  state.nvds.push({id:state.nextId(), name, type:document.getElementById('nvds-type').value});
-  document.getElementById('nvds-name').value='';
-  renderNVDSTable();
+  if(!name){setStatus('Enter a name','warn');return;}
+  state.nvds.push({id:state.nextId(),name,type:document.getElementById('nvds-type').value});
+  document.getElementById('nvds-name').value='';renderNVDSTable();
 }
-
 function removeNVDS(){
-  if(state._selectedNVDS===undefined||state._selectedNVDS===null){ setStatus('Select a set to remove','warn'); return; }
-  state.nvds.splice(state._selectedNVDS,1);
-  state._selectedNVDS=null;
-  renderNVDSTable();
+  if(state._selectedNVDS===null||state._selectedNVDS===undefined){setStatus('Select a set to remove','warn');return;}
+  state.nvds.splice(state._selectedNVDS,1);state._selectedNVDS=null;renderNVDSTable();
 }
 
-// ---- Insert merge field into Word ----
-function doInsertByVar(v, replaceAll){
-  if(typeof Word === 'undefined'){ setStatus('Office.js not loaded','error'); return; }
-  const mergeField = v.mergeField || (v.name+'/'+(v.issueName||'First Issue')+'/');
-  const displayText = '\u00AB'+mergeField+'\u00BB';
+// ---- Insert merge field ----
+function doInsertByVar(v,replaceAll){
+  if(typeof Word==='undefined'){setStatus('Office.js not loaded','error');return;}
+  const mergeField=v.mergeField||(v.name+'/'+(v.issueName||'First Issue')+'/');
+  const displayText='\u00AB'+mergeField+'\u00BB';
   Word.run(async ctx=>{
     try{
-      const sel = ctx.document.getSelection();
-      sel.load('text');
-      await ctx.sync();
-      // Insert as a Word field using insertField
-      const range = sel.getRange();
-      range.insertText(displayText, Word.InsertLocation.replace);
+      const sel=ctx.document.getSelection();
+      sel.load('text');await ctx.sync();
+      sel.insertText(displayText,Word.InsertLocation.replace);
       await ctx.sync();
       setStatus('Merge field inserted: '+v.name);
-    } catch(inner){
-      console.error('Insert failed:', inner);
-      setStatus('Insert failed: '+inner.message,'error');
-    }
-  }).catch(e=>{ setStatus('Word API error: '+e.message,'error'); });
+    }catch(inner){setStatus('Insert failed: '+inner.message,'error');}
+  }).catch(e=>setStatus('Word API error: '+e.message,'error'));
 }
 
-// ---- Render variable list ----
+// ---- Render variables ----
 function renderVariables(){
   const el=document.getElementById('var-list');
-  if(!state.variables.length){ el.innerHTML='<div class="empty">No variables defined yet</div>'; return; }
+  if(!state.variables.length){el.innerHTML='<div class="empty">No variables defined yet</div>';return;}
   el.innerHTML=state.variables.map(v=>`
     <div class="card">
       <div class="card-row">
@@ -1047,584 +862,325 @@ function renderVariables(){
       ${v.issueName?`<span class="tag">${esc(v.issueName)}</span>`:''}
     </div>`).join('');
 }
+function quickEdit(id){openViewEditVar();setTimeout(()=>{document.getElementById('edit-var-select').value=id;loadVarForEdit();},100);}
+function quickUse(id){openUseExisting();setTimeout(()=>{document.getElementById('use-var-select').value=id;loadVarForUse();},100);}
+function quickDelete(id){openDeleteVar();setTimeout(()=>{document.getElementById('delete-var-select').value=id;loadVarForDelete();},100);}
 
-function quickEdit(id){
-  openViewEditVar();
-  setTimeout(()=>{ document.getElementById('edit-var-select').value=id; loadVarForEdit(); },100);
-}
-function quickUse(id){
-  openUseExisting();
-  setTimeout(()=>{ document.getElementById('use-var-select').value=id; loadVarForUse(); },100);
-}
-function quickDelete(id){
-  openDeleteVar();
-  setTimeout(()=>{ document.getElementById('delete-var-select').value=id; loadVarForDelete(); },100);
-}
-
-// ---- CONDITIONS ----
-const OPERATORS = [
-  {val:'eq',  label:'== (equals)'},
-  {val:'neq', label:'!= (not equals)'},
-  {val:'gt',  label:'> (greater than)'},
-  {val:'gte', label:'>= (greater or equal)'},
-  {val:'lt',  label:'< (less than)'},
-  {val:'lte', label:'<= (less or equal)'},
-  {val:'contains', label:'contains'}
-];
-
-function addExprRow(expr, targetListId){
-  const listId = targetListId || 'expr-list';
-  const el = document.getElementById(listId);
-  if(!el) return;
-  const vars = state.variables.map(v=>`<option value="${v.id}" ${expr&&expr.varId==v.id?'selected':''}>${esc(v.name)}</option>`).join('');
-  const ops = OPERATORS.map(o=>`<option value="${o.val}" ${expr&&expr.op===o.val?'selected':''}>${o.label}</option>`).join('');
-  const row = document.createElement('div'); row.className='expr-row';
+// ---- Conditions ----
+function addExprRow(expr,targetListId){
+  const listId=targetListId||'expr-list';
+  const el=document.getElementById(listId);if(!el)return;
+  const vars=state.variables.map(v=>`<option value="${v.id}" ${expr&&expr.varId==v.id?'selected':''}>${esc(v.name)}</option>`).join('');
+  const ops=OPERATORS.map(o=>`<option value="${o.val}" ${expr&&expr.op===o.val?'selected':''}>${o.label}</option>`).join('');
+  const row=document.createElement('div');row.className='expr-row';
   row.innerHTML=`<select style="flex:1.5;margin-bottom:0">${vars}</select><select style="margin-bottom:0">${ops}</select><input type="text" placeholder="value" value="${expr?esc(expr.value):''}" style="flex:1;margin-bottom:0"><button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">×</button>`;
   el.appendChild(row);
 }
-
 function readExprRows(listId){
-  const rows = document.getElementById(listId)?.querySelectorAll('.expr-row')||[];
-  return Array.from(rows).map(r=>{
-    const sels=r.querySelectorAll('select');
-    const inp=r.querySelector('input');
-    const varId = sels[0].value;
-    const v = state.variables.find(x=>x.id==varId);
-    return { varId, varName: v?v.name:'', varType: v?v.type:'Text', op: sels[1].value, value: inp.value.trim() };
-  }).filter(e=>e.varId);
+  const rows=document.getElementById(listId)?.querySelectorAll('.expr-row')||[];
+  return Array.from(rows).map(r=>{const sels=r.querySelectorAll('select');const inp=r.querySelector('input');const varId=sels[0].value;const v=state.variables.find(x=>x.id==varId);return{varId,varName:v?v.name:'',varType:v?v.type:'Text',op:sels[1].value,value:inp.value.trim()};}).filter(e=>e.varId);
 }
-
 function saveCondition(){
   const name=document.getElementById('cond-name').value.trim();
-  if(!name){ setStatus('Name is required','error'); return; }
+  if(!name){setStatus('Name is required','error');return;}
   const id=document.getElementById('cond-edit-id').value||state.nextId();
-  const conjunct = document.querySelector('input[name="cond-conjunct"]:checked')?.value||'and';
-  const exprs = readExprRows('expr-list');
-  const issueVal = document.getElementById('cond-issue')?.value.trim()||'First Issue';
-  const issueObj = state.issues.find(i=>i.name===issueVal);
-  const c={
-    id, name,
-    desc: document.getElementById('cond-desc').value.trim(),
-    issueId: issueObj?issueObj.id:'',
-    issueName: issueVal,
-    conjunct,
-    expressions: exprs
-  };
+  const conjunct=document.querySelector('input[name="cond-conjunct"]:checked')?.value||'and';
+  const exprs=readExprRows('expr-list');
+  const issueVal=document.getElementById('cond-issue')?.value.trim()||'First Issue';
+  const issueObj=state.issues.find(i=>i.name===issueVal);
+  const c={id,name,desc:document.getElementById('cond-desc').value.trim(),issueId:issueObj?issueObj.id:'',issueName:issueVal,conjunct,expressions:exprs};
   const idx=state.conditions.findIndex(x=>x.id==id);
-  if(idx>=0) state.conditions[idx]=c; else state.conditions.push(c);
-  closeModal('condNewModal');
-  document.getElementById('cond-edit-id').value='';
-  renderConditions();
-  setStatus('Condition "'+name+'" saved');
+  if(idx>=0)state.conditions[idx]=c;else state.conditions.push(c);
+  closeModal('condNewModal');document.getElementById('cond-edit-id').value='';
+  document.getElementById('expr-list').innerHTML='';
+  document.getElementById('cond-name').value='';
+  renderConditions();setStatus('Condition "'+name+'" saved');
 }
-
-function openViewEditCond(){
-  refreshCondSelect('edit-cond-select');
-  document.getElementById('cond-edit-fields').innerHTML='';
-  openModal('condEditModal');
-}
-
+function openViewEditCond(){refreshCondSelect('edit-cond-select');document.getElementById('cond-edit-fields').innerHTML='';openModal('condEditModal');}
 function refreshCondSelect(selId){
-  const id=selId||'edit-cond-select';
-  const s=document.getElementById(id);
-  if(!s) return;
+  const s=document.getElementById(selId);if(!s)return;
   s.innerHTML='<option value="">— Select Condition —</option>'+state.conditions.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
 }
-
 function loadCondForEdit(){
   const id=document.getElementById('edit-cond-select').value;
   const c=state.conditions.find(x=>x.id==id);
-  const el=document.getElementById('cond-edit-fields');
-  if(!c){ el.innerHTML=''; return; }
-  el.innerHTML=`
-    <div class="field-row"><label class="field-label">Name*</label><div class="field-input"><input type="text" id="cedit-name" value="${esc(c.name)}"></div></div>
-    <div class="field-row"><label class="field-label">Description</label><div class="field-input"><input type="text" id="cedit-desc" value="${esc(c.desc||'')}"></div></div>
-    <div class="field-row"><label class="field-label">Issue</label><div class="field-input"><div class="combo-wrap"><input type="text" id="cedit-issue" value="${esc(c.issueName||'First Issue')}" autocomplete="off"><button type="button" class="combo-arrow" onclick="openCombo('cedit-issue','cedit-issue-drop','issues')">▾</button><div class="combo-drop" id="cedit-issue-drop"></div></div></div></div>
-    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:12px">
-      <span>Conjunct:</span>
-      <label><input type="radio" name="cedit-conjunct" value="and" ${c.conjunct!=='or'?'checked':''}> AND</label>
-      <label><input type="radio" name="cedit-conjunct" value="or" ${c.conjunct==='or'?'checked':''}> OR</label>
-    </div>
-    <div class="section-title">Expressions</div>
-    <div id="cedit-expr-list"></div>
-    <button class="btn btn-sm" onclick="addExprRow(null,'cedit-expr-list')">+ Add expression</button>`;
+  const el=document.getElementById('cond-edit-fields');if(!c){el.innerHTML='';return;}
+  el.innerHTML=`<div class="field-row"><label class="field-label">Name*</label><div class="field-input"><input type="text" id="cedit-name" value="${esc(c.name)}"></div></div><div class="field-row"><label class="field-label">Description</label><div class="field-input"><input type="text" id="cedit-desc" value="${esc(c.desc||'')}"></div></div><div class="field-row"><label class="field-label">Issue</label><div class="field-input"><div class="combo-wrap"><input type="text" id="cedit-issue" value="${esc(c.issueName||'First Issue')}" autocomplete="off"><button type="button" class="combo-arrow" onclick="openCombo('cedit-issue','cedit-issue-drop','issues')">▾</button><div class="combo-drop" id="cedit-issue-drop"></div></div></div></div><div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:12px"><span>Conjunct:</span><label><input type="radio" name="cedit-conjunct" value="and" ${c.conjunct!=='or'?'checked':''}> AND</label><label><input type="radio" name="cedit-conjunct" value="or" ${c.conjunct==='or'?'checked':''}> OR</label></div><div class="section-title">Expressions</div><div id="cedit-expr-list"></div><button class="btn btn-sm" onclick="addExprRow(null,'cedit-expr-list')">+ Add expression</button>`;
   c.expressions.forEach(e=>addExprRow(e,'cedit-expr-list'));
 }
-
 function saveEditCondition(){
-  const id=document.getElementById('edit-cond-select').value;
-  if(!id){ setStatus('Select a condition','warn'); return; }
-  const name=document.getElementById('cedit-name')?.value.trim();
-  if(!name){ setStatus('Name required','error'); return; }
+  const id=document.getElementById('edit-cond-select').value;if(!id){setStatus('Select a condition','warn');return;}
+  const name=document.getElementById('cedit-name')?.value.trim();if(!name){setStatus('Name required','error');return;}
   const conjunct=document.querySelector('input[name="cedit-conjunct"]:checked')?.value||'and';
   const exprs=readExprRows('cedit-expr-list');
   const issueVal=document.getElementById('cedit-issue')?.value.trim()||'First Issue';
   const issueObj=state.issues.find(i=>i.name===issueVal);
-  const idx=state.conditions.findIndex(x=>x.id==id);
-  if(idx<0) return;
+  const idx=state.conditions.findIndex(x=>x.id==id);if(idx<0)return;
   state.conditions[idx]={id,name,desc:document.getElementById('cedit-desc')?.value.trim()||'',issueId:issueObj?issueObj.id:'',issueName:issueVal,conjunct,expressions:exprs};
-  closeModal('condEditModal');
-  renderConditions();
-  setStatus('Condition "'+name+'" updated');
+  closeModal('condEditModal');renderConditions();setStatus('Condition "'+name+'" updated');
 }
-
-function openDeleteCond(){
-  refreshCondSelect('delete-cond-select');
-  openModal('condDeleteModal');
-}
-
+function openDeleteCond(){refreshCondSelect('delete-cond-select');openModal('condDeleteModal');}
 function confirmDeleteCond(){
-  const id=document.getElementById('delete-cond-select').value;
-  if(!id){ setStatus('Select a condition','warn'); return; }
+  const id=document.getElementById('delete-cond-select').value;if(!id){setStatus('Select a condition','warn');return;}
   const c=state.conditions.find(x=>x.id==id);
   state.conditions=state.conditions.filter(x=>x.id!=id);
-  closeModal('condDeleteModal');
-  renderConditions();
-  setStatus('Condition "'+(c?.name||'')+'" deleted');
+  closeModal('condDeleteModal');renderConditions();setStatus('Condition "'+(c?.name||'')+'" deleted');
 }
-
 function openInsertCond(){
   const s=document.getElementById('insert-cond-select');
   s.innerHTML='<option value="">— Select Condition —</option>'+state.conditions.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
   openModal('condInsertModal');
 }
-
 function doInsertCondition(){
   const id=document.getElementById('insert-cond-select').value;
-  const c=state.conditions.find(x=>x.id==id);
-  if(!c){ setStatus('Select a condition','warn'); return; }
+  const c=state.conditions.find(x=>x.id==id);if(!c){setStatus('Select a condition','warn');return;}
   closeModal('condInsertModal');
   if(typeof Word!=='undefined'){
     Word.run(async ctx=>{
-      const sel=ctx.document.getSelection();
-      sel.insertText('[IF:'+c.name+']','Start');
-      sel.insertText('[/IF:'+c.name+']','End');
-      await ctx.sync();
-      setStatus('Condition tags inserted: '+c.name);
+      const sel=ctx.document.getSelection();sel.load('text');await ctx.sync();
+      const txt=sel.text||'';
+      sel.insertText('{IF '+c.name+'::'+txt+'::}','Replace');
+      await ctx.sync();setStatus('Condition tag inserted: '+c.name);
     }).catch(e=>setStatus('Error: '+e.message,'error'));
-  } else {
-    setStatus('[Demo] Condition tags inserted: [IF:'+c.name+']');
-  }
+  }else setStatus('[Demo] Condition tag: {IF '+c.name+'::::}');
 }
-
 function renderConditions(){
   const el=document.getElementById('cond-list');
-  if(!state.conditions.length){ el.innerHTML='<div class="empty">No conditions defined yet</div>'; return; }
-  el.innerHTML=state.conditions.map(c=>`
-    <div class="card">
-      <div class="card-row">
-        <span class="card-name">${esc(c.name)}</span>
-        <span class="card-type cond">Condition</span>
-        <div class="card-actions">
-          <button class="btn btn-sm" onclick="quickEditCond('${c.id}')">Edit</button>
-          <button class="btn btn-sm btn-danger" onclick="quickDeleteCond('${c.id}')">×</button>
-        </div>
-      </div>
-      ${c.issueName?`<span class="tag">${esc(c.issueName)}</span>`:''}
-      ${c.expressions.length?`<div style="margin-top:4px;font-size:11px">${c.expressions.map(e=>`<span class="tag">${esc(e.varName)} ${e.op} "${esc(e.value)}"</span>`).join(' <b>'+c.conjunct.toUpperCase()+'</b> ')}</div>`:''}
-    </div>`).join('');
+  if(!state.conditions.length){el.innerHTML='<div class="empty">No conditions defined yet</div>';return;}
+  el.innerHTML=state.conditions.map(c=>`<div class="card"><div class="card-row"><span class="card-name">${esc(c.name)}</span><span class="card-type cond">Condition</span><div class="card-actions"><button class="btn btn-sm" onclick="quickEditCond('${c.id}')">Edit</button><button class="btn btn-sm btn-danger" onclick="quickDeleteCond('${c.id}')">×</button></div></div>${c.issueName?`<span class="tag">${esc(c.issueName)}</span>`:''} ${c.expressions.length?`<div style="margin-top:4px;font-size:11px">${c.expressions.map(e=>`<span class="tag">${esc(e.varName)} ${e.op} "${esc(e.value)}"</span>`).join(' <b>'+c.conjunct.toUpperCase()+'</b> ')}</div>`:''}</div>`).join('');
 }
+function quickEditCond(id){openViewEditCond();setTimeout(()=>{document.getElementById('edit-cond-select').value=id;loadCondForEdit();},100);}
+function quickDeleteCond(id){openDeleteCond();setTimeout(()=>{document.getElementById('delete-cond-select').value=id;},100);}
 
-function quickEditCond(id){ openViewEditCond(); setTimeout(()=>{ document.getElementById('edit-cond-select').value=id; loadCondForEdit(); },100); }
-function quickDeleteCond(id){ openDeleteCond(); setTimeout(()=>{ document.getElementById('delete-cond-select').value=id; },100); }
-
-// ---- FORMS ----
+// ---- Forms ----
 function saveForm(){
-  const name=document.getElementById('form-name').value.trim();
-  if(!name){ setStatus('Form name required','error'); return; }
+  const name=document.getElementById('form-name').value.trim();if(!name){setStatus('Form name required','error');return;}
   const id=document.getElementById('form-edit-id').value||state.nextId();
   const issueEl=document.getElementById('form-issue');
   const f={id,name,issueId:issueEl.value,issueName:issueEl.options[issueEl.selectedIndex]?.text||''};
-  const idx=state.forms.findIndex(x=>x.id==id);
-  if(idx>=0) state.forms[idx]=f; else state.forms.push(f);
-  document.getElementById('form-edit-id').value='';
-  document.getElementById('form-name').value='';
-  closeModal('formNewModal');
-  renderForms();
-  setStatus('Form "'+name+'" saved');
+  const idx=state.forms.findIndex(x=>x.id==id);if(idx>=0)state.forms[idx]=f;else state.forms.push(f);
+  document.getElementById('form-edit-id').value='';document.getElementById('form-name').value='';
+  closeModal('formNewModal');renderForms();setStatus('Form "'+name+'" saved');
 }
-
-function openViewEditForm(){
-  refreshFormSelect('edit-form-select');
-  document.getElementById('form-edit-fields').innerHTML='';
-  openModal('formEditModal');
-}
-
-function refreshFormSelect(selId){
-  const id=selId||'edit-form-select';
-  const s=document.getElementById(id);
-  if(!s) return;
-  s.innerHTML='<option value="">— Select Form —</option>'+state.forms.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('');
-}
-
+function openViewEditForm(){refreshFormSelect('edit-form-select');document.getElementById('form-edit-fields').innerHTML='';openModal('formEditModal');}
+function refreshFormSelect(selId){const s=document.getElementById(selId);if(!s)return;s.innerHTML='<option value="">— Select Form —</option>'+state.forms.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('');}
 function loadFormForEdit(){
-  const id=document.getElementById('edit-form-select').value;
-  const f=state.forms.find(x=>x.id==id);
-  const el=document.getElementById('form-edit-fields');
-  if(!f){ el.innerHTML=''; return; }
+  const id=document.getElementById('edit-form-select').value;const f=state.forms.find(x=>x.id==id);const el=document.getElementById('form-edit-fields');if(!f){el.innerHTML='';return;}
   const issues=state.issues.map(i=>`<option value="${i.id}" ${f.issueId==i.id?'selected':''}>${esc(i.name)}</option>`).join('');
   el.innerHTML=`<div class="field-row"><label class="field-label">Form name*</label><div class="field-input"><input type="text" id="fedit-name" value="${esc(f.name)}"></div></div><div class="field-row"><label class="field-label">Issue</label><div class="field-input"><select id="fedit-issue"><option value="">—</option>${issues}</select></div></div>`;
 }
-
 function saveEditForm(){
-  const id=document.getElementById('edit-form-select').value;
-  if(!id){ setStatus('Select a form','warn'); return; }
-  const name=document.getElementById('fedit-name')?.value.trim();
-  if(!name){ setStatus('Name required','error'); return; }
+  const id=document.getElementById('edit-form-select').value;if(!id){setStatus('Select a form','warn');return;}
+  const name=document.getElementById('fedit-name')?.value.trim();if(!name){setStatus('Name required','error');return;}
   const issueEl=document.getElementById('fedit-issue');
   const idx=state.forms.findIndex(x=>x.id==id);
   state.forms[idx]={id,name,issueId:issueEl?.value||'',issueName:issueEl?.options[issueEl.selectedIndex]?.text||''};
-  closeModal('formEditModal');
-  renderForms();
-  setStatus('Form updated');
+  closeModal('formEditModal');renderForms();setStatus('Form updated');
 }
-
-function openDeleteForm(){ refreshFormSelect('delete-form-select'); openModal('formDeleteModal'); }
-function confirmDeleteForm(){
-  const id=document.getElementById('delete-form-select').value;
-  if(!id){ setStatus('Select a form','warn'); return; }
-  state.forms=state.forms.filter(x=>x.id!=id);
-  closeModal('formDeleteModal');
-  renderForms();
-  setStatus('Form deleted');
-}
-
+function openDeleteForm(){refreshFormSelect('delete-form-select');openModal('formDeleteModal');}
+function confirmDeleteForm(){const id=document.getElementById('delete-form-select').value;if(!id){setStatus('Select a form','warn');return;}state.forms=state.forms.filter(x=>x.id!=id);closeModal('formDeleteModal');renderForms();setStatus('Form deleted');}
 function renderForms(){
   const el=document.getElementById('form-list');
-  if(!state.forms.length){ el.innerHTML='<div class="empty">No forms defined yet</div>'; return; }
-  el.innerHTML=state.forms.map(f=>`
-    <div class="card">
-      <div class="card-row">
-        <span class="card-name">${esc(f.name)}</span>
-        <span class="card-type form">Form</span>
-        <div class="card-actions">
-          <button class="btn btn-sm" onclick="quickEditForm('${f.id}')">Edit</button>
-          <button class="btn btn-sm btn-danger" onclick="quickDeleteForm('${f.id}')">×</button>
-        </div>
-      </div>
-      ${f.issueName&&f.issueId?`<span class="tag">${esc(f.issueName)}</span>`:''}
-    </div>`).join('');
+  if(!state.forms.length){el.innerHTML='<div class="empty">No forms defined yet</div>';return;}
+  el.innerHTML=state.forms.map(f=>`<div class="card"><div class="card-row"><span class="card-name">${esc(f.name)}</span><span class="card-type form">Form</span><div class="card-actions"><button class="btn btn-sm" onclick="quickEditForm('${f.id}')">Edit</button><button class="btn btn-sm btn-danger" onclick="quickDeleteForm('${f.id}')">×</button></div></div>${f.issueName&&f.issueId?`<span class="tag">${esc(f.issueName)}</span>`:''}</div>`).join('');
 }
+function quickEditForm(id){openViewEditForm();setTimeout(()=>{document.getElementById('edit-form-select').value=id;loadFormForEdit();},100);}
+function quickDeleteForm(id){openDeleteForm();setTimeout(()=>{document.getElementById('delete-form-select').value=id;},100);}
+document.getElementById('formNewModal').addEventListener('click',()=>{const s=document.getElementById('form-issue');s.innerHTML='<option value="">—</option>'+state.issues.map(i=>`<option value="${i.id}">${esc(i.name)}</option>`).join('');});
 
-function quickEditForm(id){ openViewEditForm(); setTimeout(()=>{ document.getElementById('edit-form-select').value=id; loadFormForEdit(); },100); }
-function quickDeleteForm(id){ openDeleteForm(); setTimeout(()=>{ document.getElementById('delete-form-select').value=id; },100); }
-
-// populate form-issue on open
-document.getElementById('formNewModal').addEventListener('click',()=>{
-  const s=document.getElementById('form-issue');
-  s.innerHTML='<option value="">—</option>'+state.issues.map(i=>`<option value="${i.id}">${esc(i.name)}</option>`).join('');
-});
-
-// ---- ISSUES ----
+// ---- Issues ----
 function saveIssue(){
-  const name=document.getElementById('issue-name').value.trim();
-  if(!name){ setStatus('Issue name required','error'); return; }
+  const name=document.getElementById('issue-name').value.trim();if(!name){setStatus('Issue name required','error');return;}
   const id=document.getElementById('issue-edit-id').value||state.nextId();
   const parentEl=document.getElementById('issue-parent');
   const i={id,name,parentId:parentEl.value,parentName:parentEl.options[parentEl.selectedIndex]?.text||''};
-  const idx=state.issues.findIndex(x=>x.id==id);
-  if(idx>=0) state.issues[idx]=i; else state.issues.push(i);
-  document.getElementById('issue-edit-id').value='';
-  document.getElementById('issue-name').value='';
-  closeModal('issueNewModal');
-  renderIssues();
-  setStatus('Issue "'+name+'" saved');
+  const idx=state.issues.findIndex(x=>x.id==id);if(idx>=0)state.issues[idx]=i;else state.issues.push(i);
+  document.getElementById('issue-edit-id').value='';document.getElementById('issue-name').value='';
+  closeModal('issueNewModal');renderIssues();setStatus('Issue "'+name+'" saved');
 }
-
-function openViewEditIssue(){ refreshIssueSelect('edit-issue-select'); document.getElementById('issue-edit-fields').innerHTML=''; openModal('issueEditModal'); }
-
-function refreshIssueSelect(selId){
-  const id=selId||'edit-issue-select';
-  const s=document.getElementById(id);
-  if(!s) return;
-  s.innerHTML='<option value="">— Select Issue —</option>'+state.issues.map(i=>`<option value="${i.id}">${esc(i.name)}</option>`).join('');
-}
-
+function openViewEditIssue(){refreshIssueSelect('edit-issue-select');document.getElementById('issue-edit-fields').innerHTML='';openModal('issueEditModal');}
+function refreshIssueSelect(selId){const s=document.getElementById(selId);if(!s)return;s.innerHTML='<option value="">— Select Issue —</option>'+state.issues.map(i=>`<option value="${i.id}">${esc(i.name)}</option>`).join('');}
 function loadIssueForEdit(){
-  const id=document.getElementById('edit-issue-select').value;
-  const iss=state.issues.find(x=>x.id==id);
-  const el=document.getElementById('issue-edit-fields');
-  if(!iss){ el.innerHTML=''; return; }
+  const id=document.getElementById('edit-issue-select').value;const iss=state.issues.find(x=>x.id==id);const el=document.getElementById('issue-edit-fields');if(!iss){el.innerHTML='';return;}
   const parents=state.issues.filter(x=>x.id!=id).map(i=>`<option value="${i.id}" ${iss.parentId==i.id?'selected':''}>${esc(i.name)}</option>`).join('');
   el.innerHTML=`<div class="field-row"><label class="field-label">Issue name*</label><div class="field-input"><input type="text" id="iedit-name" value="${esc(iss.name)}"></div></div><div class="field-row"><label class="field-label">Parent issue</label><div class="field-input"><select id="iedit-parent"><option value="">— Top level —</option>${parents}</select></div></div>`;
 }
-
 function saveEditIssue(){
-  const id=document.getElementById('edit-issue-select').value;
-  if(!id){ setStatus('Select an issue','warn'); return; }
-  const name=document.getElementById('iedit-name')?.value.trim();
-  if(!name){ setStatus('Name required','error'); return; }
+  const id=document.getElementById('edit-issue-select').value;if(!id){setStatus('Select an issue','warn');return;}
+  const name=document.getElementById('iedit-name')?.value.trim();if(!name){setStatus('Name required','error');return;}
   const parentEl=document.getElementById('iedit-parent');
   const idx=state.issues.findIndex(x=>x.id==id);
   state.issues[idx]={id,name,parentId:parentEl?.value||'',parentName:parentEl?.options[parentEl.selectedIndex]?.text||''};
-  closeModal('issueEditModal');
-  renderIssues();
-  setStatus('Issue updated');
+  closeModal('issueEditModal');renderIssues();setStatus('Issue updated');
 }
-
-function openDeleteIssue(){ refreshIssueSelect('delete-issue-select'); openModal('issueDeleteModal'); }
-function confirmDeleteIssue(){
-  const id=document.getElementById('delete-issue-select').value;
-  if(!id){ setStatus('Select an issue','warn'); return; }
-  state.issues=state.issues.filter(x=>x.id!=id);
-  closeModal('issueDeleteModal');
-  renderIssues();
-  setStatus('Issue deleted');
-}
-
+function openDeleteIssue(){refreshIssueSelect('delete-issue-select');openModal('issueDeleteModal');}
+function confirmDeleteIssue(){const id=document.getElementById('delete-issue-select').value;if(!id){setStatus('Select an issue','warn');return;}state.issues=state.issues.filter(x=>x.id!=id);closeModal('issueDeleteModal');renderIssues();setStatus('Issue deleted');}
 function renderIssues(){
   const el=document.getElementById('issue-list');
-  if(!state.issues.length){ el.innerHTML='<div class="empty">No issues defined yet</div>'; return; }
-  el.innerHTML=state.issues.map(i=>`
-    <div class="card">
-      <div class="card-row">
-        <span class="card-name">${esc(i.name)}</span>
-        <span class="card-type issue">Issue</span>
-        <div class="card-actions">
-          <button class="btn btn-sm" onclick="quickEditIssue('${i.id}')">Edit</button>
-          <button class="btn btn-sm btn-danger" onclick="quickDeleteIssue('${i.id}')">×</button>
-        </div>
-      </div>
-      ${i.parentId?`<span class="tag">Under: ${esc(i.parentName)}</span>`:'<span class="tag">Top level</span>'}
-    </div>`).join('');
+  if(!state.issues.length){el.innerHTML='<div class="empty">No issues defined yet</div>';return;}
+  el.innerHTML=state.issues.map(i=>`<div class="card"><div class="card-row"><span class="card-name">${esc(i.name)}</span><span class="card-type issue">Issue</span><div class="card-actions"><button class="btn btn-sm" onclick="quickEditIssue('${i.id}')">Edit</button><button class="btn btn-sm btn-danger" onclick="quickDeleteIssue('${i.id}')">×</button></div></div>${i.parentId?`<span class="tag">Under: ${esc(i.parentName)}</span>`:'<span class="tag">Top level</span>'}</div>`).join('');
 }
+function quickEditIssue(id){openViewEditIssue();setTimeout(()=>{document.getElementById('edit-issue-select').value=id;loadIssueForEdit();},100);}
+function quickDeleteIssue(id){openDeleteIssue();setTimeout(()=>{document.getElementById('delete-issue-select').value=id;},100);}
+document.getElementById('issueNewModal').addEventListener('click',()=>{const s=document.getElementById('issue-parent');s.innerHTML='<option value="">— Top level —</option>'+state.issues.map(i=>`<option value="${i.id}">${esc(i.name)}</option>`).join('');});
 
-function quickEditIssue(id){ openViewEditIssue(); setTimeout(()=>{ document.getElementById('edit-issue-select').value=id; loadIssueForEdit(); },100); }
-function quickDeleteIssue(id){ openDeleteIssue(); setTimeout(()=>{ document.getElementById('delete-issue-select').value=id; },100); }
-
-// populate issue-parent on open
-document.getElementById('issueNewModal').addEventListener('click',()=>{
-  const s=document.getElementById('issue-parent');
-  s.innerHTML='<option value="">— Top level —</option>'+state.issues.map(i=>`<option value="${i.id}">${esc(i.name)}</option>`).join('');
-});
-
-// ---- REPEAT ----
+// ---- Repeat ----
 function openRepeatModal(){
   const s=document.getElementById('repeat-var');
   s.innerHTML='<option value="">— Select variable —</option>'+state.variables.filter(v=>v.isMultiValue||v.type==='Instance').map(v=>`<option value="${v.id}">${esc(v.name)} (${v.type})</option>`).join('');
   openModal('repeatModal');
 }
-
 function saveRepeat(){
-  const id=document.getElementById('repeat-var').value;
-  const v=state.variables.find(x=>x.id==id);
-  if(!v){ setStatus('Select a variable','warn'); return; }
-  const r={id:state.nextId(),varId:id,varName:v.name,varType:v.type};
-  state.repeats.push(r);
-  closeModal('repeatModal');
-  renderRepeats();
-  if(typeof Word!=='undefined'){
-    Word.run(async ctx=>{
-      const sel=ctx.document.getSelection();
-      sel.insertText('[REPEAT:'+v.name+'] <Insert Text> [/REPEAT:'+v.name+']','Replace');
-      await ctx.sync();
-      setStatus('Repeat tag inserted for: '+v.name);
-    }).catch(e=>setStatus('Error: '+e.message,'error'));
-  } else {
-    setStatus('[Demo] Repeat tag inserted for: '+v.name);
-  }
+  const id=document.getElementById('repeat-var').value;const v=state.variables.find(x=>x.id==id);if(!v){setStatus('Select a variable','warn');return;}
+  const r={id:state.nextId(),varId:id,varName:v.name,varType:v.type};state.repeats.push(r);
+  closeModal('repeatModal');renderRepeats();
+  if(typeof Word!=='undefined'){Word.run(async ctx=>{const sel=ctx.document.getSelection();sel.insertText('[REPEAT:'+v.name+'] <Insert Text> [/REPEAT:'+v.name+']','Replace');await ctx.sync();setStatus('Repeat tag inserted for: '+v.name);}).catch(e=>setStatus('Error: '+e.message,'error'));}
+  else setStatus('[Demo] Repeat tag inserted for: '+v.name);
 }
-
 function renderRepeats(){
   const el=document.getElementById('repeat-list');
-  if(!state.repeats.length){ el.innerHTML='<div class="empty">No repeat tags inserted</div>'; return; }
-  el.innerHTML=state.repeats.map(r=>`
-    <div class="card">
-      <div class="card-row">
-        <span class="card-name">${esc(r.varName)}</span>
-        <span class="card-type repeat">${esc(r.varType)}</span>
-        <div class="card-actions"><button class="btn btn-sm btn-danger" onclick="deleteRepeat('${r.id}')">×</button></div>
-      </div>
-    </div>`).join('');
+  if(!state.repeats.length){el.innerHTML='<div class="empty">No repeat tags inserted</div>';return;}
+  el.innerHTML=state.repeats.map(r=>`<div class="card"><div class="card-row"><span class="card-name">${esc(r.varName)}</span><span class="card-type repeat">${esc(r.varType)}</span><div class="card-actions"><button class="btn btn-sm btn-danger" onclick="deleteRepeat('${r.id}')">×</button></div></div></div>`).join('');
 }
+function deleteRepeat(id){state.repeats=state.repeats.filter(x=>x.id!=id);renderRepeats();}
 
-function deleteRepeat(id){ state.repeats=state.repeats.filter(x=>x.id!=id); renderRepeats(); }
-
-// Fix repeat button
-document.querySelector('#panel-repeat .btn-primary').onclick = openRepeatModal;
-
-// ---- ORGANIZER ----
+// ---- Organizer ----
 function renderOrganizer(){
   const el=document.getElementById('organizer-tree');
-  if(!state.issues.length&&!state.variables.length){ el.innerHTML='<div class="empty">No elements defined yet</div>'; return; }
-  const topIssues=state.issues.filter(i=>!i.parentId);
-  let html='<div class="tree">';
-  topIssues.forEach(issue=>{ html+=renderIssueTree(issue); });
-  const unassigned=state.variables.filter(v=>!v.issueId);
-  if(unassigned.length){ html+=`<div class="tree-issue"><div class="tree-issue-name"><span class="badge var"></span>Unassigned variables</div><div class="tree-children">${unassigned.map(v=>`<div class="tree-item"><span class="badge var"></span>${esc(v.name)} <span style="font-size:10px;color:var(--color-text-tertiary,#aaa)">(${v.type})</span></div>`).join('')}</div></div>`; }
-  if(state.conditions.length){ html+=`<div class="tree-issue"><div class="tree-issue-name"><span class="badge cond"></span>Conditions</div><div class="tree-children">${state.conditions.map(c=>`<div class="tree-item"><span class="badge cond"></span>${esc(c.name)}</div>`).join('')}</div></div>`; }
-  html+='</div>';
-  el.innerHTML=html;
+  if(!state.issues.length&&!state.variables.length){el.innerHTML='<div class="empty">No elements defined yet</div>';return;}
+  const topIssues=state.issues.filter(i=>!i.parentId);let html='<div class="tree">';
+  topIssues.forEach(issue=>{html+=renderIssueTree(issue);});
+  const unassigned=state.variables.filter(v=>!v.issueName);
+  if(unassigned.length){html+=`<div class="tree-issue"><div class="tree-issue-name"><span class="badge var"></span>Unassigned variables</div><div class="tree-children">${unassigned.map(v=>`<div class="tree-item"><span class="badge var"></span>${esc(v.name)} <span style="font-size:10px;color:var(--color-text-tertiary,#aaa)">(${v.type})</span></div>`).join('')}</div></div>`;}
+  if(state.conditions.length){html+=`<div class="tree-issue"><div class="tree-issue-name"><span class="badge cond"></span>Conditions</div><div class="tree-children">${state.conditions.map(c=>`<div class="tree-item"><span class="badge cond"></span>${esc(c.name)}</div>`).join('')}</div></div>`;}
+  html+='</div>';el.innerHTML=html;
 }
-
 function renderIssueTree(issue){
   const children=state.issues.filter(i=>i.parentId==issue.id);
-  const vars=state.variables.filter(v=>v.issueId==issue.id);
-  const forms=state.forms.filter(f=>f.issueId==issue.id);
+  const vars=state.variables.filter(v=>v.issueName===issue.name);
+  const forms=state.forms.filter(f=>f.issueName===issue.name);
   let html=`<div class="tree-issue"><div class="tree-issue-name"><span class="badge" style="background:#185FA5"></span>${esc(issue.name)}</div><div class="tree-children">`;
-  forms.forEach(f=>{ html+=`<div class="tree-item"><span class="badge form"></span>${esc(f.name)} <span style="font-size:10px;color:var(--color-text-tertiary,#aaa)">(Form)</span></div>`; });
-  vars.forEach(v=>{ html+=`<div class="tree-item"><span class="badge var"></span>${esc(v.name)} <span style="font-size:10px;color:var(--color-text-tertiary,#aaa)">(${v.type})</span></div>`; });
-  children.forEach(c=>{ html+=renderIssueTree(c); });
-  html+='</div></div>';
-  return html;
+  forms.forEach(f=>{html+=`<div class="tree-item"><span class="badge form"></span>${esc(f.name)} <span style="font-size:10px;color:var(--color-text-tertiary,#aaa)">(Form)</span></div>`;});
+  vars.forEach(v=>{html+=`<div class="tree-item"><span class="badge var"></span>${esc(v.name)} <span style="font-size:10px;color:var(--color-text-tertiary,#aaa)">(${v.type})</span></div>`;});
+  children.forEach(c=>{html+=renderIssueTree(c);});
+  html+='</div></div>';return html;
 }
 
-// ---- TOOLS ----
+// ---- Tools ----
 function checkDocument(){
   const results=[];
-  state.variables.forEach(v=>{
-    if(!v.question) results.push({ok:false,msg:'Variable "'+v.name+'" has no question text'});
-    else results.push({ok:true,msg:'Variable "'+v.name+'" ('+v.type+') — OK'});
-  });
-  state.conditions.forEach(c=>{
-    if(!c.expressions.length) results.push({ok:false,msg:'Condition "'+c.name+'" has no expressions'});
-    else results.push({ok:true,msg:'Condition "'+c.name+'" — OK'});
-  });
-  if(!results.length) results.push({ok:true,msg:'No variables or conditions defined'});
+  state.variables.forEach(v=>{if(!v.question)results.push({ok:false,msg:'Variable "'+v.name+'" has no question text'});else results.push({ok:true,msg:'Variable "'+v.name+'" ('+v.type+') — OK'});});
+  state.conditions.forEach(c=>{if(!c.expressions.length)results.push({ok:false,msg:'Condition "'+c.name+'" has no expressions'});else results.push({ok:true,msg:'Condition "'+c.name+'" — OK'});});
+  if(!results.length)results.push({ok:true,msg:'No variables or conditions defined'});
   const el=document.getElementById('check-results');
-  el.innerHTML=results.map(r=>`<div class="check-item"><span class="${r.ok?'check-ok':'check-warn'}">${r.ok?'✓':'✗'}</span><span style="font-size:12px">${esc(r.msg)}</span></div>`).join('');
+  el.innerHTML=results.map(r=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary,#e5e5e5)"><span style="color:${r.ok?'#1d9e75':'#e24b4a'};font-size:14px;flex-shrink:0">${r.ok?'✓':'✗'}</span><span style="font-size:12px">${esc(r.msg)}</span></div>`).join('');
   const errors=results.filter(r=>!r.ok).length;
   setStatus(errors?errors+' issue(s) found':'Document check passed',errors?'warn':'');
 }
-
 function showDataTable(){
   const el=document.getElementById('data-table-container');
-  if(!state.variables.length&&!state.conditions.length){ el.innerHTML='<div class="empty">No data to display</div>'; return; }
+  if(!state.variables.length&&!state.conditions.length){el.innerHTML='<div class="empty">No data to display</div>';return;}
   let html='<hr class="divider"><div class="section-title">Data table</div><div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Name</th><th>Type</th><th>Issue</th><th>Question</th></tr></thead><tbody>';
-  state.variables.forEach(v=>{ html+=`<tr><td>${esc(v.name)}</td><td>${esc(v.type)}</td><td>${esc(v.issueName||'—')}</td><td>${esc(v.question||'—')}</td></tr>`; });
-  state.conditions.forEach(c=>{ html+=`<tr><td>${esc(c.name)}</td><td>Condition</td><td>—</td><td>${c.expressions.map(e=>e.variable+' '+e.op+' "'+e.value+'"').join(' AND ')||'—'}</td></tr>`; });
-  html+='</tbody></table></div>';
-  el.innerHTML=html;
+  state.variables.forEach(v=>{html+=`<tr><td>${esc(v.name)}</td><td>${esc(v.type)}</td><td>${esc(v.issueName||'—')}</td><td>${esc(v.question||'—')}</td></tr>`;});
+  state.conditions.forEach(c=>{html+=`<tr><td>${esc(c.name)}</td><td>Condition</td><td>—</td><td>${c.expressions.map(e=>e.varName+' '+e.op+' "'+e.value+'"').join(' AND ')||'—'}</td></tr>`;});
+  html+='</tbody></table></div>';el.innerHTML=html;
 }
-
 function prepareDocument(){
-  if(!confirm('This will remove all Neota markup from the document. Continue?')) return;
+  if(!confirm('This will remove all Neota markup from the document. Continue?'))return;
   if(typeof Word!=='undefined'){
     Word.run(async ctx=>{
-      // Remove all Neota content controls if any exist
-      try{
-        const ccs = ctx.document.contentControls;
-        ccs.load('items,title');
-        await ctx.sync();
-        ccs.items.filter(c=>c.title&&c.title.startsWith('NL_')).forEach(c=>c.delete(true));
-        await ctx.sync();
-      }catch(e){ console.log('No content controls to remove'); }
+      try{const ccs=ctx.document.contentControls;ccs.load('items,title');await ctx.sync();ccs.items.filter(c=>c.title&&c.title.startsWith('NL_')).forEach(c=>c.delete(true));await ctx.sync();}catch(e){console.log('No content controls to remove');}
       setStatus('Document prepared — all Neota markup removed');
     }).catch(e=>setStatus('Error: '+e.message,'error'));
-  } else {
-    setStatus('[Demo] Document prepared');
-  }
+  }else setStatus('[Demo] Document prepared');
 }
+function toggleShading(){setStatus('Field shading toggled');}
+function toggleFieldCodes(){setStatus('Field codes toggled');}
 
-function toggleShading(){ setStatus('Field shading toggled'); }
-function toggleFieldCodes(){ setStatus('Field codes toggled'); }
-
-function exportXML(){
-  let xml=`<?xml version="1.0" encoding="UTF-8"?>\n<nl xmlns="http://www.neotalogic.com">\n  <nl_version>3.18.0</nl_version>\n  <variables>\n`;
+// ---- Build XML ----
+function buildXML(){
+  const issueMap={};
+  state.issues.forEach(i=>{issueMap[i.name]=i.id;});
+  state.variables.forEach(v=>{if(v.issueName&&!issueMap[v.issueName])issueMap[v.issueName]=Date.now()+Math.floor(Math.random()*9999);});
+  state.conditions.forEach(c=>{if(c.issueName&&!issueMap[c.issueName])issueMap[c.issueName]=Date.now()+Math.floor(Math.random()*9999);});
+  if(!issueMap['Top Issue'])issueMap['Top Issue']=Date.now()-1;
+  const allIssues=[{id:issueMap['Top Issue'],name:'Top Issue'},...Object.entries(issueMap).filter(([name])=>name!=='Top Issue').map(([name,id])=>({id,name}))];
+  let xml=`<?xml version="1.0" encoding="UTF-8"?>\n<nl xmlns="http://www.neotalogic.com">\n  <nl_version>3.18.0</nl_version>\n  <nl_source>blank</nl_source>\n  <nl_doc_type>self</nl_doc_type>\n  <nl_doc_paths></nl_doc_paths>\n  <nl_mode>studio</nl_mode>\n  <nl_imported></nl_imported>\n  <variables>\n`;
   state.variables.forEach((v,i)=>{
-    xml+=`    <variable var_issue_sequence="${i+1}">\n      <variable_id>${v.id}</variable_id>\n      <issue>${xmlEsc(v.issueName||'')}</issue>\n      <issue_id>${v.issueId||''}</issue_id>\n      <variable_name>${xmlEsc(v.name)}</variable_name>\n      <data_type>${xmlEsc(v.type)}</data_type>\n      <question_text>${xmlEsc(v.question)}</question_text>\n      <values>${(v.listValues||[]).map(l=>`<value>${xmlEsc(l)}</value>`).join('')}</values>\n      <hint_text>${xmlEsc(v.hint||'')}</hint_text>\n      <default_answers>${xmlEsc(v.defaultAnswer||'')}</default_answers>\n      <mv>${v.isMultiValue?'MV':''}</mv>\n      <form_id>${v.formId||''}</form_id>\n      <folder>${xmlEsc(v.folder||'')}</folder>\n      <notes>${xmlEsc(v.note||'')}</notes>\n      <merge_field>${xmlEsc(v.mergeField||'')}</merge_field>\n    </variable>\n`;
+    const issueId=issueMap[v.issueName||'']||'';
+    xml+=`    <variable var_issue_sequence="${i+1}" var_form_sequence="${v.formName?i+1:0}">\n      <variable_id>${v.id}</variable_id>\n      <parent_id></parent_id>\n      <parent_name></parent_name>\n      <child_ids></child_ids>\n      <issue>${xmlEsc(v.issueName||'')}</issue>\n      <issue_id>${issueId}</issue_id>\n      <variable_name>${xmlEsc(v.name)}</variable_name>\n      <data_type>${xmlEsc(v.type)}</data_type>\n      <var_named_value_display_set_id></var_named_value_display_set_id>\n      <var_named_value_display_set_name></var_named_value_display_set_name>\n      <dynamic_list_source><source_var_id>${v.valsetId||''}</source_var_id><source_var_name></source_var_name></dynamic_list_source>\n      <question_text>${xmlEsc(v.question)}</question_text>\n      <values>${(v.listValues||[]).map(l=>`<value>${xmlEsc(l)}</value>`).join('')}</values>\n      <hint_text>${xmlEsc(v.hint||'')}</hint_text>\n      <default_answers>${xmlEsc(v.defaultAnswer||'')}</default_answers>\n      <mv>${v.isMultiValue?'MV':''}</mv>\n      <form_id>${v.formId||''}</form_id>\n      <folder>${xmlEsc(v.folder||'')}</folder>\n      <notes>${xmlEsc(v.note||'')}</notes>\n      <merge_field>${xmlEsc(v.mergeField||'')}</merge_field>\n    </variable>\n`;
   });
   xml+=`  </variables>\n  <conditions>\n`;
   state.conditions.forEach((c,seq)=>{
-    xml+=`    <condition condition_issue_sequence="${seq+1}">\n`;
-    xml+=`      <condition_id>${c.id}</condition_id>\n`;
-    xml+=`      <condition_name>${xmlEsc(c.name)}</condition_name>\n`;
-    xml+=`      <condition_issue_id>${c.issueId||''}</condition_issue_id>\n`;
-    xml+=`      <condition_issue_name>${xmlEsc(c.issueName||'')}</condition_issue_name>\n`;
-    xml+=`      <condition_description>${xmlEsc(c.desc||'')}</condition_description>\n`;
-    xml+=`      <conjunct_expression conjunct="${c.conjunct||'and'}">\n`;
-    c.expressions.forEach(e=>{
-      xml+=`        <expression operator="${e.op}">\n`;
-      xml+=`          <variable>${e.varId}</variable>\n`;
-      xml+=`          <constant type="${xmlEsc(e.varType)}">${xmlEsc(e.value)}</constant>\n`;
-      xml+=`        </expression>\n`;
-    });
-    xml+=`      </conjunct_expression>\n`;
-    xml+=`    </condition>\n`;
+    const cIssueId=issueMap[c.issueName||'']||'';
+    xml+=`    <condition condition_issue_sequence="${seq+1}">\n      <condition_id>${c.id}</condition_id>\n      <condition_name>${xmlEsc(c.name)}</condition_name>\n      <condition_issue_id>${cIssueId}</condition_issue_id>\n      <condition_issue_name>${xmlEsc(c.issueName||'')}</condition_issue_name>\n      <condition_description>${xmlEsc(c.desc||'')}</condition_description>\n      <conjunct_expression conjunct="${c.conjunct||'and'}">\n`;
+    c.expressions.forEach(e=>{xml+=`        <expression operator="${e.op}">\n          <variable>${e.varId}</variable>\n          <constant type="${xmlEsc(e.varType)}">${xmlEsc(e.value)}</constant>\n        </expression>\n`;});
+    xml+=`      </conjunct_expression>\n    </condition>\n`;
   });
   xml+=`  </conditions>\n  <forms>\n`;
-  state.forms.forEach(f=>{ xml+=`    <form><form_id>${f.id}</form_id><form_name>${xmlEsc(f.name)}</form_name><issue_id>${f.issueId||''}</issue_id></form>\n`; });
+  state.forms.forEach((f,seq)=>{xml+=`    <form form_issue_sequence="${seq+1}">\n      <form_id>${f.id}</form_id>\n      <form_issue>${xmlEsc(f.issueName||'')}</form_issue>\n      <form_issue_id>${issueMap[f.issueName||'']||''}</form_issue_id>\n      <form_name>${xmlEsc(f.name)}</form_name>\n    </form>\n`;});
   xml+=`  </forms>\n  <issues>\n`;
-  // Always add Top Issue first if not present
-  if(!hasTopIssue){
-    xml+=`    <issue issue_top_sequence="0">\n      <issue_id>${topIssueId}</issue_id>\n      <issue_name>Top Issue</issue_name>\n    </issue>\n`;
-  }
-  state.issues.forEach((i,seq)=>{ xml+=`    <issue issue_top_sequence="${seq}"><issue_id>${i.id}</issue_id><issue_name>${xmlEsc(i.name)}</issue_name><parent_id>${i.parentId||''}</parent_id></issue>\n`; });
-  xml+=`  </issues>\n  <named_value_display_sets>\n`;
-  state.nvds.forEach(n=>{ xml+=`    <nvds><id>${n.id}</id><name>${xmlEsc(n.name)}</name><type>${xmlEsc(n.type)}</type></nvds>\n`; });
-  xml+=`  </named_value_display_sets>\n  <deleted/>\n</nl>`;
-  const blob=new Blob([xml],{type:'application/xml'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a'); a.href=url; a.download='item1.xml'; a.click();
-  URL.revokeObjectURL(url);
-  setStatus('item1.xml exported');
+  allIssues.forEach((iss,seq)=>{xml+=`    <issue issue_top_sequence="${seq}">\n      <issue_id>${iss.id}</issue_id>\n      <issue_name>${xmlEsc(iss.name)}</issue_name>\n    </issue>\n`;});
+  xml+=`  </issues>\n  <named_value_display_sets/>\n  <deleted/>\n</nl>`;
+  return xml;
 }
 
-// Combo box helpers
-function openCombo(inputId, dropId, sourceKey){
-  document.querySelectorAll('.combo-drop').forEach(d=>{ if(d.id!==dropId) d.classList.remove('open'); });
-  const drop = document.getElementById(dropId);
-  if(!drop) return;
-  // Build options fresh from current state each time
-  let items = [];
-  if(sourceKey==='issues'){
-    const fromIssues = state.issues.map(i=>i.name);
-    const fromVars = state.variables.map(v=>v.issueName).filter(Boolean);
-    items = [...new Set([...fromIssues, ...fromVars])];
-  }
-  if(sourceKey==='forms'){
-    // collect all unique form names from state.forms + from variables that have a formName
-    const fromForms = state.forms.map(f=>f.name);
-    const fromVars = state.variables.map(v=>v.formName).filter(Boolean);
-    items = [...new Set([...fromForms, ...fromVars])];
-  }
-  drop.innerHTML = items.length
-    ? items.map(name=>`<div class="combo-opt" onclick="pickCombo('${inputId}','${name.replace(/'/g,"\\'")}','${dropId}')">${esc(name)}</div>`).join('')
-    : `<div class="combo-opt" style="color:var(--color-text-tertiary,#aaa);font-style:italic">Nothing defined yet</div>`;
-  drop.classList.toggle('open');
-}
-function toggleCombo(inputId, dropId){
-  document.querySelectorAll('.combo-drop').forEach(d=>{ if(d.id!==dropId) d.classList.remove('open'); });
-  document.getElementById(dropId)?.classList.toggle('open');
-}
-function pickCombo(inputId, val, dropId){
-  const inp = document.getElementById(inputId);
-  if(inp) inp.value = val;
-  document.getElementById(dropId)?.classList.remove('open');
-}
-document.addEventListener('click', e=>{
-  if(!e.target.closest('.combo-wrap')) document.querySelectorAll('.combo-drop').forEach(d=>d.classList.remove('open'));
-});
-
-function handleSaveToDoc(){ 
-  console.log('handleSaveToDoc called');
-  console.log('saveXMLToDocument type:', typeof saveXMLToDocument);
-  if(typeof saveXMLToDocument === 'function'){
-    saveXMLToDocument();
-  } else {
-    setStatus('Error: saveXMLToDocument not found — check console','error');
-  }
-}
-function handleLoadFromDoc(){ loadXMLFromDocument(); }
-
-// Init child type select
-buildTypeOptions('child-type','Text');
-
-// Wire up tool buttons after DOM is ready
-document.addEventListener('DOMContentLoaded', ()=>{
-  const saveBtn = document.getElementById('save-to-doc-btn');
-  const loadBtn = document.getElementById('load-from-doc-btn');
-  if(saveBtn) saveBtn.addEventListener('click', saveXMLToDocument);
-  if(loadBtn) loadBtn.addEventListener('click', loadXMLFromDocument);
-});
-
-// Initialise Office.js if available
-if(typeof Office !== 'undefined'){
-  Office.onReady(info => {
-    if(info.host === Office.HostType.Word){
-      setStatus('Connected to Word');
+// ---- Save XML to document ----
+function saveXMLToDocument(){
+  if(typeof Word==='undefined'){setStatus('Not running inside Word','error');return;}
+  if(!state.variables.length){setStatus('No variables to save','warn');return;}
+  setStatus('Saving XML to document...');
+  const xml=buildXML();
+  const NS='http://www.neotalogic.com';
+  console.log('Saving XML, first 300 chars:',xml.substring(0,300));
+  Word.run(async ctx=>{
+    try{
+      try{
+        const existing=ctx.document.customXmlParts.getByNamespace(NS);
+        existing.load('items');await ctx.sync();
+        existing.items.forEach(p=>p.delete());await ctx.sync();
+      }catch(e){console.log('No existing parts to delete:',e.message);}
+      ctx.document.customXmlParts.add(xml);
+      await ctx.sync();
+      setStatus('Neota XML saved — now press Ctrl+S to save the document');
+    }catch(inner){
+      console.error('Save failed:',inner);
+      setStatus('Save failed: '+inner.message,'error');
     }
-  });
+  }).catch(e=>{console.error('Word.run error:',e);setStatus('Word API error: '+e.message,'error');});
+}
+
+// ---- Load XML from document ----
+function loadXMLFromDocument(){
+  if(typeof Word==='undefined'){setStatus('Not running inside Word','error');return;}
+  const NS='http://www.neotalogic.com';
+  Word.run(async ctx=>{
+    try{
+      const parts=ctx.document.customXmlParts.getByNamespace(NS);
+      parts.load('items');await ctx.sync();
+      if(!parts.items.length){setStatus('No Neota XML found in document','warn');return;}
+      const part=parts.items[0];part.load('xml');await ctx.sync();
+      parseXMLIntoState(part.xml);
+      renderVariables();renderConditions();renderForms();renderIssues();renderRepeats();
+      setStatus('Data loaded from document successfully');
+    }catch(inner){setStatus('Load failed: '+inner.message,'error');}
+  }).catch(e=>setStatus('Word API error: '+e.message,'error'));
+}
+
+// ---- Parse XML into state ----
+function parseXMLIntoState(xmlStr){
+  const parser=new DOMParser();const doc=parser.parseFromString(xmlStr,'application/xml');
+  const getText=(el,tag)=>el.querySelector(tag)?.textContent?.trim()||'';
+  state.variables=Array.from(doc.querySelectorAll('variable')).map(v=>({id:getText(v,'variable_id'),name:getText(v,'variable_name'),type:getText(v,'data_type'),question:getText(v,'question_text'),hint:getText(v,'hint_text'),defaultAnswer:getText(v,'default_answers'),issueName:getText(v,'issue'),issueId:getText(v,'issue_id'),formId:getText(v,'form_id'),formName:'',folder:getText(v,'folder'),note:getText(v,'notes'),mergeField:getText(v,'merge_field'),isMultiValue:getText(v,'mv')==='MV',isQuestion:true,listValues:Array.from(v.querySelectorAll('value')).map(n=>n.textContent.trim()),children:[]}));
+  state.conditions=Array.from(doc.querySelectorAll('condition')).map(c=>({id:getText(c,'condition_id'),name:getText(c,'condition_name'),desc:getText(c,'condition_description'),issueId:getText(c,'condition_issue_id'),issueName:getText(c,'condition_issue_name'),conjunct:c.querySelector('conjunct_expression')?.getAttribute('conjunct')||'and',expressions:Array.from(c.querySelectorAll('expression')).map(e=>({varId:e.querySelector('variable')?.textContent?.trim()||'',varName:state.variables.find(v=>v.id===e.querySelector('variable')?.textContent?.trim())?.name||'',varType:e.querySelector('constant')?.getAttribute('type')||'Text',op:e.getAttribute('operator')||'eq',value:e.querySelector('constant')?.textContent?.trim()||''}))}));
+  state.forms=Array.from(doc.querySelectorAll('form')).map(f=>({id:getText(f,'form_id'),name:getText(f,'form_name'),issueId:getText(f,'form_issue_id'),issueName:getText(f,'form_issue')}));
+  state.issues=Array.from(doc.querySelectorAll('issue')).map(i=>({id:getText(i,'issue_id'),name:getText(i,'issue_name'),parentId:'',parentName:''}));
+}
+
+// ---- Init ----
+buildTypeOptions('child-type','Text');
+if(typeof Office!=='undefined'){
+  Office.onReady(info=>{if(info.host===Office.HostType.Word)setStatus('Connected to Word');});
 }
 </script>
 </body>
