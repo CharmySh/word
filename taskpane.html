@@ -132,7 +132,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span class="topbar-title">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.0.7</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.0.8</span>
 </div>
 
 <div class="nav">
@@ -248,11 +248,11 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
       <div class="card-row"><span class="card-name">Check document</span></div>
       <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Scan for errors in template markup</div>
     </div>
-    <div class="card" style="cursor:pointer;margin-bottom:6px" id="save-to-doc-btn">
+    <div class="card" style="cursor:pointer;margin-bottom:6px" id="save-to-doc-btn" onclick="handleSaveToDoc()">
       <div class="card-row"><span class="card-name">Save to document</span></div>
       <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Embed Neota XML into the Word document (required for Studio import)</div>
     </div>
-    <div class="card" style="cursor:pointer;margin-bottom:6px" id="load-from-doc-btn">
+    <div class="card" style="cursor:pointer;margin-bottom:6px" id="load-from-doc-btn" onclick="handleLoadFromDoc()">
       <div class="card-row"><span class="card-name">Load from document</span></div>
       <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Reload variables and conditions from embedded XML</div>
     </div>
@@ -1010,50 +1010,20 @@ function removeNVDS(){
 function doInsertByVar(v, replaceAll){
   if(typeof Word === 'undefined'){ setStatus('Office.js not loaded','error'); return; }
   const mergeField = v.mergeField || (v.name+'/'+(v.issueName||'First Issue')+'/');
-  const fieldCode = ` MERGEFIELD ${mergeField} \\* MERGEFORMAT `;
-  const displayText = `\u00AB${mergeField}\u00BB`;
+  const displayText = '\u00AB'+mergeField+'\u00BB';
   Word.run(async ctx=>{
     try{
       const sel = ctx.document.getSelection();
+      sel.load('text');
       await ctx.sync();
-      // Insert the field using OOXML so it matches exactly what the desktop add-in produces
-      const ooxml = `
-        <pkg:package xmlns:pkg="http://schemas.microsoft.com/office/2006/xmlPackage">
-          <pkg:part pkg:name="/_rels/.rels" pkg:contentType="application/vnd.openxmlformats-package.relationships+xml">
-            <pkg:xmlData><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-              <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
-            </Relationships></pkg:xmlData>
-          </pkg:part>
-          <pkg:part pkg:name="/word/document.xml" pkg:contentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml">
-            <pkg:xmlData>
-              <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-                <w:body>
-                  <w:p>
-                    <w:r><w:fldChar w:fldCharType="begin"/></w:r>
-                    <w:r><w:rPr><w:color w:val="0000FF"/></w:rPr><w:instrText xml:space="preserve">${fieldCode}</w:instrText></w:r>
-                    <w:r><w:fldChar w:fldCharType="separate"/></w:r>
-                    <w:r><w:rPr><w:noProof/><w:color w:val="0000FF"/></w:rPr><w:t>${displayText}</w:t></w:r>
-                    <w:r><w:fldChar w:fldCharType="end"/></w:r>
-                  </w:p>
-                </w:body>
-              </w:document>
-            </pkg:xmlData>
-          </pkg:part>
-        </pkg:package>`;
-      sel.insertOoxml(ooxml.trim(), Word.InsertLocation.replace);
+      // Insert as a Word field using insertField
+      const range = sel.getRange();
+      range.insertText(displayText, Word.InsertLocation.replace);
       await ctx.sync();
-      setStatus('Merge field inserted: ' + v.name);
+      setStatus('Merge field inserted: '+v.name);
     } catch(inner){
-      console.error('OOXML insert failed, falling back to plain text:', inner);
-      // Fallback to plain text if OOXML fails
-      try{
-        const sel2 = ctx.document.getSelection();
-        sel2.insertText(displayText, Word.InsertLocation.replace);
-        await ctx.sync();
-        setStatus('Merge field inserted (plain text): ' + v.name);
-      } catch(e2){
-        setStatus('Insert failed: '+e2.message,'error');
-      }
+      console.error('Insert failed:', inner);
+      setStatus('Insert failed: '+inner.message,'error');
     }
   }).catch(e=>{ setStatus('Word API error: '+e.message,'error'); });
 }
@@ -1626,12 +1596,19 @@ document.addEventListener('click', e=>{
   if(!e.target.closest('.combo-wrap')) document.querySelectorAll('.combo-drop').forEach(d=>d.classList.remove('open'));
 });
 
+function handleSaveToDoc(){ saveXMLToDocument(); }
+function handleLoadFromDoc(){ loadXMLFromDocument(); }
+
 // Init child type select
 buildTypeOptions('child-type','Text');
 
 // Wire up tool buttons after DOM is ready
-document.getElementById('save-to-doc-btn').addEventListener('click', saveXMLToDocument);
-document.getElementById('load-from-doc-btn').addEventListener('click', loadXMLFromDocument);
+document.addEventListener('DOMContentLoaded', ()=>{
+  const saveBtn = document.getElementById('save-to-doc-btn');
+  const loadBtn = document.getElementById('load-from-doc-btn');
+  if(saveBtn) saveBtn.addEventListener('click', saveXMLToDocument);
+  if(loadBtn) loadBtn.addEventListener('click', loadXMLFromDocument);
+});
 
 // Initialise Office.js if available
 if(typeof Office !== 'undefined'){
