@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Neota Word Add-in</title>
 <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font-sans,system-ui,sans-serif);font-size:13px;color:var(--color-text-primary,#1a1a1a);background:var(--color-background-primary,#fff);height:100vh;display:flex;flex-direction:column;overflow:hidden}
@@ -101,7 +102,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span class="topbar-title">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.1.7</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.1.8</span>
 </div>
 <div class="nav">
   <button class="nav-btn active" onclick="showPanel('variables')"><span class="nav-icon">(x)</span>Variables</button>
@@ -1158,34 +1159,119 @@ function buildXML(){
 function downloadAsTemplate(){
   if(typeof Word==='undefined'){setStatus('Not running inside Word','error');return;}
   if(!state.variables.length){setStatus('No variables to save','warn');return;}
-  setStatus('Saving XML and preparing download...');
-  const xml=buildXML();
-  const NS='http://www.neotalogic.com';
+  if(typeof JSZip==='undefined'){setStatus('JSZip not loaded — please refresh','error');return;}
+  setStatus('Building template document...');
+  const neotaXml=buildXML();
   Word.run(async ctx=>{
     try{
-      // Save XML part first
-      try{
-        const existing=ctx.document.customXmlParts.getByNamespace(NS);
-        existing.load('items');await ctx.sync();
-        existing.items.forEach(p=>p.delete());await ctx.sync();
-      }catch(e){console.log('No existing parts:',e.message);}
-      ctx.document.customXmlParts.add(xml);
-      await ctx.sync();
-      // Get document name and trigger download
+      // Get the full document OOXML
+      const body=ctx.document.body;
+      body.load('ooxml');
       const docProps=ctx.document.properties;
       docProps.load('title');
       await ctx.sync();
-      // Use Office dialog to trigger save-as, or instruct user
-      setStatus('XML saved! Now use File → Save As → Download a copy');
-      // Show a more prominent instruction
-      if(confirm('Neota XML has been saved to the document.\n\nClick OK to be reminded to:\n1. Press Ctrl+S to save\n2. Go to File → Save As → Download a copy\n3. Rename the file with -Template suffix before importing to Studio')){
-        setStatus('Remember to download with -Template in the filename');
-      }
+      const docOoxml=body.ooxml;
+      const docTitle=docProps.title||'Document';
+      // Extract document.xml content from the body OOXML
+      // The body OOXML is just the body, we need to wrap it in a full document
+      buildAndDownloadDocx(docOoxml, neotaXml, docTitle);
     }catch(inner){
-      console.error('Download as template failed:',inner);
-      setStatus('Failed: '+inner.message,'error');
+      console.error('Download failed:',inner);
+      setStatus('Download failed: '+inner.message,'error');
     }
   }).catch(e=>setStatus('Word API error: '+e.message,'error'));
+}
+
+function buildAndDownloadDocx(bodyOoxml, neotaXml, docTitle){
+  try{
+    const zip=new JSZip();
+
+    // _rels/.rels
+    zip.file('_rels/.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+  <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/custom-xml" Target="customXml/item1.xml"/>
+</Relationships>`);
+
+    // [Content_Types].xml
+    zip.file('[Content_Types].xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+  <Override PartName="/customXml/itemProps1.xml" ContentType="application/vnd.openxmlformats-officedocument.customXmlProperties+xml"/>
+</Types>`);
+
+    // customXml/item1.xml — the Neota XML
+    zip.file('customXml/item1.xml', neotaXml);
+
+    // customXml/itemProps1.xml
+    zip.file('customXml/itemProps1.xml',`<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ds:datastoreItem ds:itemID="{${generateGuid()}}" xmlns:ds="http://schemas.openxmlformats.org/officeDocument/2006/customXml">
+  <ds:schemaRefs>
+    <ds:schemaRef ds:uri="http://www.neotalogic.com"/>
+  </ds:schemaRefs>
+</ds:datastoreItem>`);
+
+    // customXml/_rels/item1.xml.rels
+    zip.file('customXml/_rels/item1.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps" Target="itemProps1.xml"/>
+</Relationships>`);
+
+    // word/document.xml — build from body OOXML
+    const docXml=buildDocumentXml(bodyOoxml);
+    zip.file('word/document.xml', docXml);
+
+    // word/_rels/document.xml.rels
+    zip.file('word/_rels/document.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>
+</Relationships>`);
+
+    // Generate and download
+    zip.generateAsync({type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}).then(blob=>{
+      const safeName=(docTitle||'Document').replace(/[-\s]*Template\s*$/i,'').replace(/[^a-zA-Z0-9\s-_]/g,'').trim()||'Document';
+      const filename=safeName+'-Template.docx';
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');a.href=url;a.download=filename;
+      document.body.appendChild(a);a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      setStatus('Downloaded: '+filename);
+    }).catch(e=>setStatus('Zip generation failed: '+e.message,'error'));
+  }catch(e){
+    console.error('buildAndDownloadDocx error:',e);
+    setStatus('Build failed: '+e.message,'error');
+  }
+}
+
+function buildDocumentXml(bodyOoxml){
+  // bodyOoxml from Office.js is the body content — wrap in full document XML
+  // Extract just the inner content between <w:body> tags if present
+  let bodyContent=bodyOoxml||'<w:p><w:r><w:t>Document content</w:t></w:r></w:p>';
+  // If it contains w:body tags already, extract the inner content
+  const bodyMatch=bodyContent.match(/<w:body[^>]*>([\s\S]*?)<\/w:body>/i);
+  if(bodyMatch) bodyContent=bodyMatch[1];
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+  xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"
+  xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+  xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"
+  xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml"
+  mc:Ignorable="w14 w15">
+  <w:body>
+    ${bodyContent}
+  </w:body>
+</w:document>`;
+}
+
+function generateGuid(){
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{
+    const r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16).toUpperCase();
+  });
 }
 
 // ---- Save XML to document ----
