@@ -102,7 +102,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span class="topbar-title">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.2.4</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.2.5</span>
 </div>
 <div class="nav">
   <button class="nav-btn active" onclick="showPanel('variables')"><span class="nav-icon">(x)</span>Variables</button>
@@ -1356,35 +1356,45 @@ function saveXMLToDocument(){
 function autoLoadFromDocument(){
   if(typeof Word==='undefined') return;
   const NS='http://www.neotalogic.com';
+
+  // Step 1: get count of custom xml parts
   Word.run(async ctx=>{
-    try{
-      const allParts=ctx.document.customXmlParts;
-      allParts.load('items');
-      await ctx.sync();
-      console.log('Total custom XML parts:',allParts.items.length);
-      if(!allParts.items.length){setStatus('Ready');return;}
-      // Load xml for ALL parts in one batch before syncing
-      allParts.items.forEach(p=>p.load('xml,namespaceUri'));
-      await ctx.sync();
-      // Now safely read the loaded properties
-      const neotaPart=allParts.items.find(p=>
-        (p.namespaceUri&&p.namespaceUri===NS)||
-        (p.xml&&p.xml.includes('http://www.neotalogic.com'))
-      );
-      if(!neotaPart){
-        console.log('No Neota XML part found');
-        setStatus('Ready — no Neota data found in document');
-        return;
-      }
-      console.log('Found Neota XML part, length:',neotaPart.xml.length);
-      parseXMLIntoState(neotaPart.xml);
+    const allParts=ctx.document.customXmlParts;
+    allParts.load('items/id');
+    await ctx.sync();
+    const count=allParts.items.length;
+    console.log('Total custom XML parts:',count);
+    if(!count){setStatus('Ready');return;}
+    // Get all IDs first
+    const ids=allParts.items.map(p=>p.id);
+    // Step 2: load each part's XML by ID in separate Word.run calls
+    loadPartByIds(ids, 0, NS);
+  }).catch(e=>{console.log('Auto-load step1 error:',e.message);setStatus('Ready');});
+}
+
+function loadPartByIds(ids, index, NS){
+  if(index>=ids.length){
+    setStatus('Ready — no Neota data found in document');
+    return;
+  }
+  Word.run(async ctx=>{
+    const part=ctx.document.customXmlParts.getItem(ids[index]);
+    part.load('xml,namespaceUri');
+    await ctx.sync();
+    console.log('Part',index,'id:',ids[index],'ns:',part.namespaceUri,'xmlLen:',part.xml?.length);
+    if(part.xml&&part.xml.includes('http://www.neotalogic.com')){
+      console.log('Found Neota XML part!');
+      parseXMLIntoState(part.xml);
       renderVariables();renderConditions();renderForms();renderIssues();renderRepeats();
       setStatus('Document data loaded — '+state.variables.length+' variable(s) found');
-    }catch(e){
-      console.error('Auto-load error:',e.message);
-      setStatus('Ready');
+    } else {
+      // Try next part
+      loadPartByIds(ids, index+1, NS);
     }
-  }).catch(e=>{console.log('Auto-load error:',e.message);setStatus('Ready');});
+  }).catch(e=>{
+    console.log('Part',index,'load error:',e.message);
+    loadPartByIds(ids, index+1, NS);
+  });
 }
 
 // ---- Load XML from document ----
