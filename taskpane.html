@@ -390,12 +390,18 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 
 <!-- ==================== CONDITION MODALS ==================== -->
 <div class="modal-overlay" id="condNewModal">
-<div class="modal" style="max-width:480px">
+<div class="modal" style="max-width:520px">
   <div class="modal-title">New Condition <button class="modal-close" onclick="closeModal('condNewModal')">×</button></div>
   <input type="hidden" id="cond-edit-id">
   <div class="field-row"><label class="field-label">Name*</label><div class="field-input"><input type="text" id="cond-name" placeholder="e.g. ShowCopyrightClause"></div></div>
   <div class="field-row"><label class="field-label">Description</label><div class="field-input"><input type="text" id="cond-desc"></div></div>
-  <div class="section-title" style="margin-top:10px">Expressions</div>
+  <div class="field-row"><label class="field-label">Issue</label><div class="field-input"><div class="combo-wrap"><input type="text" id="cond-issue" value="First Issue" autocomplete="off"><button type="button" class="combo-arrow" onclick="openCombo('cond-issue','cond-issue-drop','issues')">▾</button><div class="combo-drop" id="cond-issue-drop"></div></div></div></div>
+  <div class="section-title" style="margin-top:10px">Expressions <span style="font-size:11px;font-weight:400;color:var(--color-text-secondary,#666)">(top-level conjunction)</span></div>
+  <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:12px">
+    <span>Conjunct:</span>
+    <label><input type="radio" name="cond-conjunct" value="and" checked> AND</label>
+    <label><input type="radio" name="cond-conjunct" value="or"> OR</label>
+  </div>
   <div id="expr-list"></div>
   <button class="btn btn-sm" onclick="addExprRow()">+ Add expression</button>
   <div class="modal-footer">
@@ -1064,25 +1070,58 @@ function quickDelete(id){
 }
 
 // ---- CONDITIONS ----
-function addExprRow(expr){
-  const el=document.getElementById('expr-list');
-  const vars=state.variables.map(v=>`<option value="${esc(v.name)}" ${expr&&expr.variable===v.name?'selected':''}>${esc(v.name)}</option>`).join('');
-  const ops=['==','!=','>','>=','<','<=','contains'].map(o=>`<option value="${o}" ${expr&&expr.op===o?'selected':''}>${o}</option>`).join('');
-  const row=document.createElement('div'); row.className='expr-row';
+const OPERATORS = [
+  {val:'eq',  label:'== (equals)'},
+  {val:'neq', label:'!= (not equals)'},
+  {val:'gt',  label:'> (greater than)'},
+  {val:'gte', label:'>= (greater or equal)'},
+  {val:'lt',  label:'< (less than)'},
+  {val:'lte', label:'<= (less or equal)'},
+  {val:'contains', label:'contains'}
+];
+
+function addExprRow(expr, targetListId){
+  const listId = targetListId || 'expr-list';
+  const el = document.getElementById(listId);
+  if(!el) return;
+  const vars = state.variables.map(v=>`<option value="${v.id}" ${expr&&expr.varId==v.id?'selected':''}>${esc(v.name)}</option>`).join('');
+  const ops = OPERATORS.map(o=>`<option value="${o.val}" ${expr&&expr.op===o.val?'selected':''}>${o.label}</option>`).join('');
+  const row = document.createElement('div'); row.className='expr-row';
   row.innerHTML=`<select style="flex:1.5;margin-bottom:0">${vars}</select><select style="margin-bottom:0">${ops}</select><input type="text" placeholder="value" value="${expr?esc(expr.value):''}" style="flex:1;margin-bottom:0"><button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">×</button>`;
   el.appendChild(row);
+}
+
+function readExprRows(listId){
+  const rows = document.getElementById(listId)?.querySelectorAll('.expr-row')||[];
+  return Array.from(rows).map(r=>{
+    const sels=r.querySelectorAll('select');
+    const inp=r.querySelector('input');
+    const varId = sels[0].value;
+    const v = state.variables.find(x=>x.id==varId);
+    return { varId, varName: v?v.name:'', varType: v?v.type:'Text', op: sels[1].value, value: inp.value.trim() };
+  }).filter(e=>e.varId);
 }
 
 function saveCondition(){
   const name=document.getElementById('cond-name').value.trim();
   if(!name){ setStatus('Name is required','error'); return; }
   const id=document.getElementById('cond-edit-id').value||state.nextId();
-  const rows=document.getElementById('expr-list').querySelectorAll('.expr-row');
-  const exprs=Array.from(rows).map(r=>{const sels=r.querySelectorAll('select');const inp=r.querySelector('input');return{variable:sels[0].value,op:sels[1].value,value:inp.value.trim()};}).filter(e=>e.variable);
-  const c={id,name,desc:document.getElementById('cond-desc').value.trim(),expressions:exprs};
+  const conjunct = document.querySelector('input[name="cond-conjunct"]:checked')?.value||'and';
+  const exprs = readExprRows('expr-list');
+  const issueVal = document.getElementById('cond-issue')?.value.trim()||'First Issue';
+  const issueObj = state.issues.find(i=>i.name===issueVal);
+  const c={
+    id, name,
+    desc: document.getElementById('cond-desc').value.trim(),
+    issueId: issueObj?issueObj.id:'',
+    issueName: issueVal,
+    conjunct,
+    expressions: exprs
+  };
   const idx=state.conditions.findIndex(x=>x.id==id);
   if(idx>=0) state.conditions[idx]=c; else state.conditions.push(c);
   closeModal('condNewModal');
+  document.getElementById('cond-edit-id').value='';
   renderConditions();
   setStatus('Condition "'+name+'" saved');
 }
@@ -1105,31 +1144,33 @@ function loadCondForEdit(){
   const c=state.conditions.find(x=>x.id==id);
   const el=document.getElementById('cond-edit-fields');
   if(!c){ el.innerHTML=''; return; }
-  el.innerHTML=`<div class="field-row"><label class="field-label">Name*</label><div class="field-input"><input type="text" id="cedit-name" value="${esc(c.name)}"></div></div><div class="field-row"><label class="field-label">Description</label><div class="field-input"><input type="text" id="cedit-desc" value="${esc(c.desc||'')}"></div></div><div class="section-title" style="margin-top:10px">Expressions</div><div id="cedit-expr-list"></div><button class="btn btn-sm" onclick="addCEditExprRow()">+ Add expression</button>`;
-  const exprEl=document.getElementById('cedit-expr-list');
-  c.expressions.forEach(e=>{ addExprRowTo(exprEl,e); });
+  el.innerHTML=`
+    <div class="field-row"><label class="field-label">Name*</label><div class="field-input"><input type="text" id="cedit-name" value="${esc(c.name)}"></div></div>
+    <div class="field-row"><label class="field-label">Description</label><div class="field-input"><input type="text" id="cedit-desc" value="${esc(c.desc||'')}"></div></div>
+    <div class="field-row"><label class="field-label">Issue</label><div class="field-input"><div class="combo-wrap"><input type="text" id="cedit-issue" value="${esc(c.issueName||'First Issue')}" autocomplete="off"><button type="button" class="combo-arrow" onclick="openCombo('cedit-issue','cedit-issue-drop','issues')">▾</button><div class="combo-drop" id="cedit-issue-drop"></div></div></div></div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:12px">
+      <span>Conjunct:</span>
+      <label><input type="radio" name="cedit-conjunct" value="and" ${c.conjunct!=='or'?'checked':''}> AND</label>
+      <label><input type="radio" name="cedit-conjunct" value="or" ${c.conjunct==='or'?'checked':''}> OR</label>
+    </div>
+    <div class="section-title">Expressions</div>
+    <div id="cedit-expr-list"></div>
+    <button class="btn btn-sm" onclick="addExprRow(null,'cedit-expr-list')">+ Add expression</button>`;
+  c.expressions.forEach(e=>addExprRow(e,'cedit-expr-list'));
 }
-
-function addExprRowTo(el,expr){
-  const vars=state.variables.map(v=>`<option value="${esc(v.name)}" ${expr&&expr.variable===v.name?'selected':''}>${esc(v.name)}</option>`).join('');
-  const ops=['==','!=','>','>=','<','<=','contains'].map(o=>`<option value="${o}" ${expr&&expr.op===o?'selected':''}>${o}</option>`).join('');
-  const row=document.createElement('div'); row.className='expr-row';
-  row.innerHTML=`<select style="flex:1.5;margin-bottom:0">${vars}</select><select style="margin-bottom:0">${ops}</select><input type="text" value="${expr?esc(expr.value):''}" style="flex:1;margin-bottom:0"><button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">×</button>`;
-  el.appendChild(row);
-}
-
-function addCEditExprRow(){ addExprRowTo(document.getElementById('cedit-expr-list'),null); }
 
 function saveEditCondition(){
   const id=document.getElementById('edit-cond-select').value;
   if(!id){ setStatus('Select a condition','warn'); return; }
   const name=document.getElementById('cedit-name')?.value.trim();
   if(!name){ setStatus('Name required','error'); return; }
-  const rows=document.getElementById('cedit-expr-list')?.querySelectorAll('.expr-row')||[];
-  const exprs=Array.from(rows).map(r=>{const sels=r.querySelectorAll('select');const inp=r.querySelector('input');return{variable:sels[0].value,op:sels[1].value,value:inp.value.trim()};}).filter(e=>e.variable);
+  const conjunct=document.querySelector('input[name="cedit-conjunct"]:checked')?.value||'and';
+  const exprs=readExprRows('cedit-expr-list');
+  const issueVal=document.getElementById('cedit-issue')?.value.trim()||'First Issue';
+  const issueObj=state.issues.find(i=>i.name===issueVal);
   const idx=state.conditions.findIndex(x=>x.id==id);
   if(idx<0) return;
-  state.conditions[idx]={id,name,desc:document.getElementById('cedit-desc')?.value.trim()||'',expressions:exprs};
+  state.conditions[idx]={id,name,desc:document.getElementById('cedit-desc')?.value.trim()||'',issueId:issueObj?issueObj.id:'',issueName:issueVal,conjunct,expressions:exprs};
   closeModal('condEditModal');
   renderConditions();
   setStatus('Condition "'+name+'" updated');
@@ -1187,7 +1228,8 @@ function renderConditions(){
           <button class="btn btn-sm btn-danger" onclick="quickDeleteCond('${c.id}')">×</button>
         </div>
       </div>
-      ${c.expressions.length?`<div style="margin-top:4px;font-size:11px">${c.expressions.map(e=>`<span class="tag">${esc(e.variable)} ${e.op} "${esc(e.value)}"</span>`).join(' AND ')}</div>`:''}
+      ${c.issueName?`<span class="tag">${esc(c.issueName)}</span>`:''}
+      ${c.expressions.length?`<div style="margin-top:4px;font-size:11px">${c.expressions.map(e=>`<span class="tag">${esc(e.varName)} ${e.op} "${esc(e.value)}"</span>`).join(' <b>'+c.conjunct.toUpperCase()+'</b> ')}</div>`:''}
     </div>`).join('');
 }
 
@@ -1485,10 +1527,26 @@ function toggleFieldCodes(){ setStatus('Field codes toggled'); }
 function exportXML(){
   let xml=`<?xml version="1.0" encoding="UTF-8"?>\n<nl xmlns="http://www.neotalogic.com">\n  <nl_version>3.18.0</nl_version>\n  <variables>\n`;
   state.variables.forEach((v,i)=>{
-    xml+=`    <variable var_issue_sequence="${i+1}">\n      <variable_id>${v.id}</variable_id>\n      <issue>${xmlEsc(v.issueName||'')}</issue>\n      <issue_id>${v.issueId||''}</issue_id>\n      <variable_name>${xmlEsc(v.name)}</variable_name>\n      <data_type>${xmlEsc(v.type)}</data_type>\n      <question_text>${xmlEsc(v.question)}</question_text>\n      <values>${(v.listValues||[]).map(l=>`<value>${xmlEsc(l)}</value>`).join('')}</values>\n      <hint_text>${xmlEsc(v.hint||'')}</hint_text>\n      <default_answers>${xmlEsc(v.defaultAnswer||'')}</default_answers>\n      <mv>${v.isMultiValue?'true':''}</mv>\n      <form_id>${v.formId||''}</form_id>\n      <folder>${xmlEsc(v.folder||'')}</folder>\n      <notes>${xmlEsc(v.note||'')}</notes>\n      <merge_field>${xmlEsc(v.mergeField||'')}</merge_field>\n    </variable>\n`;
+    xml+=`    <variable var_issue_sequence="${i+1}">\n      <variable_id>${v.id}</variable_id>\n      <issue>${xmlEsc(v.issueName||'')}</issue>\n      <issue_id>${v.issueId||''}</issue_id>\n      <variable_name>${xmlEsc(v.name)}</variable_name>\n      <data_type>${xmlEsc(v.type)}</data_type>\n      <question_text>${xmlEsc(v.question)}</question_text>\n      <values>${(v.listValues||[]).map(l=>`<value>${xmlEsc(l)}</value>`).join('')}</values>\n      <hint_text>${xmlEsc(v.hint||'')}</hint_text>\n      <default_answers>${xmlEsc(v.defaultAnswer||'')}</default_answers>\n      <mv>${v.isMultiValue?'MV':''}</mv>\n      <form_id>${v.formId||''}</form_id>\n      <folder>${xmlEsc(v.folder||'')}</folder>\n      <notes>${xmlEsc(v.note||'')}</notes>\n      <merge_field>${xmlEsc(v.mergeField||'')}</merge_field>\n    </variable>\n`;
   });
   xml+=`  </variables>\n  <conditions>\n`;
-  state.conditions.forEach(c=>{ xml+=`    <condition>\n      <condition_id>${c.id}</condition_id>\n      <condition_name>${xmlEsc(c.name)}</condition_name>\n      <description>${xmlEsc(c.desc||'')}</description>\n      <expressions>${c.expressions.map(e=>`<expression><variable>${xmlEsc(e.variable)}</variable><operator>${e.op}</operator><value>${xmlEsc(e.value)}</value></expression>`).join('')}</expressions>\n    </condition>\n`; });
+  state.conditions.forEach((c,seq)=>{
+    xml+=`    <condition condition_issue_sequence="${seq+1}">\n`;
+    xml+=`      <condition_id>${c.id}</condition_id>\n`;
+    xml+=`      <condition_name>${xmlEsc(c.name)}</condition_name>\n`;
+    xml+=`      <condition_issue_id>${c.issueId||''}</condition_issue_id>\n`;
+    xml+=`      <condition_issue_name>${xmlEsc(c.issueName||'')}</condition_issue_name>\n`;
+    xml+=`      <condition_description>${xmlEsc(c.desc||'')}</condition_description>\n`;
+    xml+=`      <conjunct_expression conjunct="${c.conjunct||'and'}">\n`;
+    c.expressions.forEach(e=>{
+      xml+=`        <expression operator="${e.op}">\n`;
+      xml+=`          <variable>${e.varId}</variable>\n`;
+      xml+=`          <constant type="${xmlEsc(e.varType)}">${xmlEsc(e.value)}</constant>\n`;
+      xml+=`        </expression>\n`;
+    });
+    xml+=`      </conjunct_expression>\n`;
+    xml+=`    </condition>\n`;
+  });
   xml+=`  </conditions>\n  <forms>\n`;
   state.forms.forEach(f=>{ xml+=`    <form><form_id>${f.id}</form_id><form_name>${xmlEsc(f.name)}</form_name><issue_id>${f.issueId||''}</issue_id></form>\n`; });
   xml+=`  </forms>\n  <issues>\n`;
