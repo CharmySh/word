@@ -102,7 +102,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span class="topbar-title">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.2.2</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.2.4</span>
 </div>
 <div class="nav">
   <button class="nav-btn active" onclick="showPanel('variables')"><span class="nav-icon">(x)</span>Variables</button>
@@ -715,15 +715,21 @@ function showFieldError(fieldId,msg){const el=document.getElementById(fieldId);i
 function openNewVar(){
   state.tempChildVars=[];
   document.getElementById('var-new-layout').innerHTML='<div id="vnew"></div>';
+  const openWithText=(selectedText)=>{
+    buildVarFields('vnew', selectedText?{name:selectedText}:null, false);
+    buildTypeOptions('vnew-type','Text');
+    openModal('varNewModal');
+  };
   if(typeof Word!=='undefined'&&typeof Office!=='undefined'&&Office.context){
     Word.run(async ctx=>{
-      const sel=ctx.document.getSelection();sel.load('text');await ctx.sync();
-      const selectedText=sel.text?sel.text.trim():'';
-      buildVarFields('vnew',selectedText?{name:selectedText}:null,false);
-      buildTypeOptions('vnew-type','Text');
-      openModal('varNewModal');
-    }).catch(()=>{buildVarFields('vnew',null,false);buildTypeOptions('vnew-type','Text');openModal('varNewModal');});
-  } else {buildVarFields('vnew',null,false);buildTypeOptions('vnew-type','Text');openModal('varNewModal');}
+      const sel=ctx.document.getSelection();
+      sel.load('text');
+      await ctx.sync();
+      openWithText(sel.text?sel.text.trim():'');
+    }).catch(()=>openWithText(''));
+  } else {
+    openWithText('');
+  }
 }
 
 function saveNewVariable(){
@@ -1352,31 +1358,33 @@ function autoLoadFromDocument(){
   const NS='http://www.neotalogic.com';
   Word.run(async ctx=>{
     try{
-      // Step 1: get all custom xml part IDs
       const allParts=ctx.document.customXmlParts;
       allParts.load('items');
       await ctx.sync();
       console.log('Total custom XML parts:',allParts.items.length);
       if(!allParts.items.length){setStatus('Ready');return;}
-      // Step 2: load each part's xml and find the Neota one
-      for(let i=0;i<allParts.items.length;i++){
-        const part=allParts.items[i];
-        part.load('xml,namespaceUri');
-        await ctx.sync();
-        console.log('Part',i,'namespace:',part.namespaceUri,'xml length:',part.xml?.length);
-        if(part.namespaceUri===NS||part.xml?.includes('http://www.neotalogic.com')){
-          parseXMLIntoState(part.xml);
-          renderVariables();renderConditions();renderForms();renderIssues();renderRepeats();
-          setStatus('Document data loaded — '+state.variables.length+' variable(s) found');
-          return;
-        }
+      // Load xml for ALL parts in one batch before syncing
+      allParts.items.forEach(p=>p.load('xml,namespaceUri'));
+      await ctx.sync();
+      // Now safely read the loaded properties
+      const neotaPart=allParts.items.find(p=>
+        (p.namespaceUri&&p.namespaceUri===NS)||
+        (p.xml&&p.xml.includes('http://www.neotalogic.com'))
+      );
+      if(!neotaPart){
+        console.log('No Neota XML part found');
+        setStatus('Ready — no Neota data found in document');
+        return;
       }
-      setStatus('Ready — no Neota data found in document');
+      console.log('Found Neota XML part, length:',neotaPart.xml.length);
+      parseXMLIntoState(neotaPart.xml);
+      renderVariables();renderConditions();renderForms();renderIssues();renderRepeats();
+      setStatus('Document data loaded — '+state.variables.length+' variable(s) found');
     }catch(e){
-      console.log('Auto-load error:',e.message);
+      console.error('Auto-load error:',e.message);
       setStatus('Ready');
     }
-  }).catch(e=>{console.log('Auto-load Word.run error:',e.message);setStatus('Ready');});
+  }).catch(e=>{console.log('Auto-load error:',e.message);setStatus('Ready');});
 }
 
 // ---- Load XML from document ----
