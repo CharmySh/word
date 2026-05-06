@@ -132,7 +132,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span class="topbar-title">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.0.6</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.0.7</span>
 </div>
 
 <div class="nav">
@@ -248,11 +248,11 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
       <div class="card-row"><span class="card-name">Check document</span></div>
       <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Scan for errors in template markup</div>
     </div>
-    <div class="card" style="cursor:pointer;margin-bottom:6px" onclick="saveXMLToDocument()">
+    <div class="card" style="cursor:pointer;margin-bottom:6px" id="save-to-doc-btn">
       <div class="card-row"><span class="card-name">Save to document</span></div>
       <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Embed Neota XML into the Word document (required for Studio import)</div>
     </div>
-    <div class="card" style="cursor:pointer;margin-bottom:6px" onclick="loadXMLFromDocument()">
+    <div class="card" style="cursor:pointer;margin-bottom:6px" id="load-from-doc-btn">
       <div class="card-row"><span class="card-name">Load from document</span></div>
       <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Reload variables and conditions from embedded XML</div>
     </div>
@@ -1628,6 +1628,10 @@ document.addEventListener('click', e=>{
 
 // Init child type select
 buildTypeOptions('child-type','Text');
+
+// Wire up tool buttons after DOM is ready
+document.getElementById('save-to-doc-btn').addEventListener('click', saveXMLToDocument);
+document.getElementById('load-from-doc-btn').addEventListener('click', loadXMLFromDocument);
 
 // Initialise Office.js if available
 if(typeof Office !== 'undefined'){
