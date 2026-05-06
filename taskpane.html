@@ -101,7 +101,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span class="topbar-title">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.1.6</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.1.7</span>
 </div>
 <div class="nav">
   <button class="nav-btn active" onclick="showPanel('variables')"><span class="nav-icon">(x)</span>Variables</button>
@@ -1195,17 +1195,37 @@ function saveXMLToDocument(){
   setStatus('Saving XML to document...');
   const xml=buildXML();
   const NS='http://www.neotalogic.com';
-  console.log('Saving XML, first 300 chars:',xml.substring(0,300));
+  console.log('XML to save (first 500 chars):',xml.substring(0,500));
   Word.run(async ctx=>{
     try{
+      // Delete existing parts
       try{
         const existing=ctx.document.customXmlParts.getByNamespace(NS);
-        existing.load('items');await ctx.sync();
-        existing.items.forEach(p=>p.delete());await ctx.sync();
-      }catch(e){console.log('No existing parts to delete:',e.message);}
-      ctx.document.customXmlParts.add(xml);
+        existing.load('items');
+        await ctx.sync();
+        console.log('Existing XML parts found:',existing.items.length);
+        existing.items.forEach(p=>p.delete());
+        await ctx.sync();
+      }catch(e){console.log('Delete existing error:',e.message);}
+      // Add new XML part
+      const newPart=ctx.document.customXmlParts.add(xml);
+      newPart.load('id');
       await ctx.sync();
-      setStatus('Neota XML saved — now press Ctrl+S to save the document');
+      console.log('New XML part added with id:',newPart.id);
+      // Verify it was added
+      const verify=ctx.document.customXmlParts.getByNamespace(NS);
+      verify.load('items');
+      await ctx.sync();
+      console.log('Verification - XML parts count:',verify.items.length);
+      if(verify.items.length===0){
+        setStatus('Warning: XML part may not have persisted','warn');
+        return;
+      }
+      // Force document save
+      ctx.document.save();
+      await ctx.sync();
+      console.log('Document saved');
+      setStatus('Neota XML saved and document saved — now download via File → Save As → Download a copy');
     }catch(inner){
       console.error('Save failed:',inner);
       setStatus('Save failed: '+inner.message,'error');
