@@ -102,7 +102,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span class="topbar-title">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.1.8</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.2.0</span>
 </div>
 <div class="nav">
   <button class="nav-btn active" onclick="showPanel('variables')"><span class="nav-icon">(x)</span>Variables</button>
@@ -1164,22 +1164,40 @@ function downloadAsTemplate(){
   const neotaXml=buildXML();
   Word.run(async ctx=>{
     try{
-      // Get the full document OOXML
-      const body=ctx.document.body;
-      body.load('ooxml');
+      // Get full document OOXML
+      const doc=ctx.document;
+      doc.load('body');
+      await ctx.sync();
+      // Get the complete document as OOXML package
+      const ooxml=doc.body.getOoxml();
       const docProps=ctx.document.properties;
       docProps.load('title');
       await ctx.sync();
-      const docOoxml=body.ooxml;
-      const docTitle=docProps.title||'Document';
-      // Extract document.xml content from the body OOXML
-      // The body OOXML is just the body, we need to wrap it in a full document
-      buildAndDownloadDocx(docOoxml, neotaXml, docTitle);
+      console.log('Body OOXML length:',ooxml.value?.length);
+      console.log('Body OOXML preview:',ooxml.value?.substring(0,300));
+      buildAndDownloadDocx(ooxml.value, neotaXml, docProps.title||'Document');
     }catch(inner){
       console.error('Download failed:',inner);
-      setStatus('Download failed: '+inner.message,'error');
+      // Try alternative method
+      try{
+        await tryAlternativeDownload(neotaXml);
+      }catch(e2){
+        setStatus('Download failed: '+inner.message,'error');
+      }
     }
   }).catch(e=>setStatus('Word API error: '+e.message,'error'));
+}
+
+async function tryAlternativeDownload(neotaXml){
+  return Word.run(async ctx=>{
+    const range=ctx.document.body.getRange('Whole');
+    range.load('ooxml');
+    const props=ctx.document.properties;
+    props.load('title');
+    await ctx.sync();
+    console.log('Alternative OOXML:',range.ooxml?.substring(0,300));
+    buildAndDownloadDocx(range.ooxml, neotaXml, props.title||'Document');
+  });
 }
 
 function buildAndDownloadDocx(bodyOoxml, neotaXml, docTitle){
@@ -1247,12 +1265,23 @@ function buildAndDownloadDocx(bodyOoxml, neotaXml, docTitle){
 }
 
 function buildDocumentXml(bodyOoxml){
-  // bodyOoxml from Office.js is the body content — wrap in full document XML
-  // Extract just the inner content between <w:body> tags if present
-  let bodyContent=bodyOoxml||'<w:p><w:r><w:t>Document content</w:t></w:r></w:p>';
-  // If it contains w:body tags already, extract the inner content
-  const bodyMatch=bodyContent.match(/<w:body[^>]*>([\s\S]*?)<\/w:body>/i);
-  if(bodyMatch) bodyContent=bodyMatch[1];
+  if(!bodyOoxml){
+    console.error('No body OOXML received');
+    bodyOoxml='<w:p><w:r><w:t>Error: Could not read document content</w:t></w:r></w:p>';
+  }
+  console.log('buildDocumentXml input length:',bodyOoxml.length);
+  // If it's a full document already, return it with customXml relationship added
+  if(bodyOoxml.includes('<w:document')){
+    console.log('Full document XML detected');
+    return bodyOoxml;
+  }
+  // If it contains w:body tags, extract inner content
+  let bodyContent=bodyOoxml;
+  const bodyMatch=bodyOoxml.match(/<w:body[^>]*>([\s\S]*)<\/w:body>/i);
+  if(bodyMatch){
+    bodyContent=bodyMatch[1];
+    console.log('Extracted body content, length:',bodyContent.length);
+  }
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -1262,9 +1291,7 @@ function buildDocumentXml(bodyOoxml){
   xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"
   xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml"
   mc:Ignorable="w14 w15">
-  <w:body>
-    ${bodyContent}
-  </w:body>
+  <w:body>${bodyContent}</w:body>
 </w:document>`;
 }
 
@@ -1349,7 +1376,33 @@ function parseXMLIntoState(xmlStr){
 // ---- Init ----
 buildTypeOptions('child-type','Text');
 if(typeof Office!=='undefined'){
-  Office.onReady(info=>{if(info.host===Office.HostType.Word)setStatus('Connected to Word');});
+  Office.onReady(info=>{
+    if(info.host===Office.HostType.Word){
+      setStatus('Connected to Word — loading document data...');
+      // Auto-load state from document Custom XML Part on startup
+      Word.run(async ctx=>{
+        try{
+          const NS='http://www.neotalogic.com';
+          const parts=ctx.document.customXmlParts.getByNamespace(NS);
+          parts.load('items');
+          await ctx.sync();
+          if(parts.items.length>0){
+            const part=parts.items[0];
+            part.load('xml');
+            await ctx.sync();
+            parseXMLIntoState(part.xml);
+            renderVariables();renderConditions();renderForms();renderIssues();renderRepeats();
+            setStatus('Document data loaded — '+state.variables.length+' variable(s) found');
+          } else {
+            setStatus('Ready — no saved data found in document');
+          }
+        }catch(e){
+          console.log('Auto-load error:',e.message);
+          setStatus('Ready');
+        }
+      }).catch(()=>setStatus('Ready'));
+    }
+  });
 }
 </script>
 </body>
