@@ -132,7 +132,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span class="topbar-title">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.0.4</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.0.6</span>
 </div>
 
 <div class="nav">
@@ -248,9 +248,13 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
       <div class="card-row"><span class="card-name">Check document</span></div>
       <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Scan for errors in template markup</div>
     </div>
-    <div class="card" style="cursor:pointer;margin-bottom:6px" onclick="exportXML()">
-      <div class="card-row"><span class="card-name">Export XML</span></div>
-      <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Download item1.xml for Neota Studio import</div>
+    <div class="card" style="cursor:pointer;margin-bottom:6px" onclick="saveXMLToDocument()">
+      <div class="card-row"><span class="card-name">Save to document</span></div>
+      <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Embed Neota XML into the Word document (required for Studio import)</div>
+    </div>
+    <div class="card" style="cursor:pointer;margin-bottom:6px" onclick="loadXMLFromDocument()">
+      <div class="card-row"><span class="card-name">Load from document</span></div>
+      <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Reload variables and conditions from embedded XML</div>
     </div>
     <hr class="divider">
     <div class="section-title">Display</div>
@@ -1005,18 +1009,53 @@ function removeNVDS(){
 // ---- Insert merge field into Word ----
 function doInsertByVar(v, replaceAll){
   if(typeof Word === 'undefined'){ setStatus('Office.js not loaded','error'); return; }
-  const mergeText = '\u00AB' + (v.mergeField || (v.name+'/'+(v.issueName||'First Issue')+'/')) + '\u00BB';
+  const mergeField = v.mergeField || (v.name+'/'+(v.issueName||'First Issue')+'/');
+  const fieldCode = ` MERGEFIELD ${mergeField} \\* MERGEFORMAT `;
+  const displayText = `\u00AB${mergeField}\u00BB`;
   Word.run(async ctx=>{
     try{
       const sel = ctx.document.getSelection();
       await ctx.sync();
-      sel.insertText(mergeText, Word.InsertLocation.replace);
+      // Insert the field using OOXML so it matches exactly what the desktop add-in produces
+      const ooxml = `
+        <pkg:package xmlns:pkg="http://schemas.microsoft.com/office/2006/xmlPackage">
+          <pkg:part pkg:name="/_rels/.rels" pkg:contentType="application/vnd.openxmlformats-package.relationships+xml">
+            <pkg:xmlData><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+              <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+            </Relationships></pkg:xmlData>
+          </pkg:part>
+          <pkg:part pkg:name="/word/document.xml" pkg:contentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml">
+            <pkg:xmlData>
+              <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+                <w:body>
+                  <w:p>
+                    <w:r><w:fldChar w:fldCharType="begin"/></w:r>
+                    <w:r><w:rPr><w:color w:val="0000FF"/></w:rPr><w:instrText xml:space="preserve">${fieldCode}</w:instrText></w:r>
+                    <w:r><w:fldChar w:fldCharType="separate"/></w:r>
+                    <w:r><w:rPr><w:noProof/><w:color w:val="0000FF"/></w:rPr><w:t>${displayText}</w:t></w:r>
+                    <w:r><w:fldChar w:fldCharType="end"/></w:r>
+                  </w:p>
+                </w:body>
+              </w:document>
+            </pkg:xmlData>
+          </pkg:part>
+        </pkg:package>`;
+      sel.insertOoxml(ooxml.trim(), Word.InsertLocation.replace);
       await ctx.sync();
       setStatus('Merge field inserted: ' + v.name);
     } catch(inner){
-      setStatus('Insert failed: ' + inner.message, 'error');
+      console.error('OOXML insert failed, falling back to plain text:', inner);
+      // Fallback to plain text if OOXML fails
+      try{
+        const sel2 = ctx.document.getSelection();
+        sel2.insertText(displayText, Word.InsertLocation.replace);
+        await ctx.sync();
+        setStatus('Merge field inserted (plain text): ' + v.name);
+      } catch(e2){
+        setStatus('Insert failed: '+e2.message,'error');
+      }
     }
-  }).catch(e=>{ setStatus('Word API error: ' + e.message, 'error'); });
+  }).catch(e=>{ setStatus('Word API error: '+e.message,'error'); });
 }
 
 // ---- Render variable list ----
@@ -1536,6 +1575,10 @@ function exportXML(){
   xml+=`  </conditions>\n  <forms>\n`;
   state.forms.forEach(f=>{ xml+=`    <form><form_id>${f.id}</form_id><form_name>${xmlEsc(f.name)}</form_name><issue_id>${f.issueId||''}</issue_id></form>\n`; });
   xml+=`  </forms>\n  <issues>\n`;
+  // Always add Top Issue first if not present
+  if(!hasTopIssue){
+    xml+=`    <issue issue_top_sequence="0">\n      <issue_id>${topIssueId}</issue_id>\n      <issue_name>Top Issue</issue_name>\n    </issue>\n`;
+  }
   state.issues.forEach((i,seq)=>{ xml+=`    <issue issue_top_sequence="${seq}"><issue_id>${i.id}</issue_id><issue_name>${xmlEsc(i.name)}</issue_name><parent_id>${i.parentId||''}</parent_id></issue>\n`; });
   xml+=`  </issues>\n  <named_value_display_sets>\n`;
   state.nvds.forEach(n=>{ xml+=`    <nvds><id>${n.id}</id><name>${xmlEsc(n.name)}</name><type>${xmlEsc(n.type)}</type></nvds>\n`; });
