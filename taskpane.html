@@ -102,7 +102,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span class="topbar-title">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.2.9</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.3.0</span>
 </div>
 <div class="nav">
   <button class="nav-btn active" onclick="showPanel('variables')"><span class="nav-icon">(x)</span>Variables</button>
@@ -1195,96 +1195,80 @@ function buildDocxFromPackage(pkgOoxml, neotaXml, docTitle){
 
     // Check for parse errors
     const parseError=pkgDoc.querySelector('parsererror');
-    if(parseError){
-      console.error('XML parse error:',parseError.textContent.substring(0,200));
-      setStatus('XML parse error — check console','error');
-      return;
+    if(parseError){console.error('XML parse error:',parseError.textContent.substring(0,300));setStatus('XML parse error','error');return;}
+
+    const root=pkgDoc.documentElement;
+    console.log('Root tag:',root?.tagName);
+    console.log('Root children count:',root?.children?.length);
+    if(root?.children?.length>0){
+      Array.from(root.children).slice(0,5).forEach((c,i)=>console.log('Child',i,':',c.tagName,'name=',c.getAttribute('pkg:name')||c.getAttribute('name')||'(no name)'));
     }
 
-    // Try different selectors for parts — namespace may vary
-    let parts=pkgDoc.querySelectorAll('part');
-    if(!parts||parts.length===0){
-      // Try with namespace prefix
-      parts=pkgDoc.getElementsByTagNameNS('http://schemas.microsoft.com/office/2006/xmlPackage','part');
-    }
-    if(!parts||parts.length===0){
-      // Try getting all elements and filter
-      const allEls=pkgDoc.getElementsByTagName('pkg:part');
-      parts=allEls;
-    }
-    console.log('Package parts found:',parts?parts.length:0);
-    console.log('Root element:',pkgDoc.documentElement?.tagName);
-    console.log('Root children:',pkgDoc.documentElement?.children?.length);
+    // Get all child elements of root — these are the pkg:part elements
+    const partEls=root?Array.from(root.children):[];
+    console.log('Part elements found:',partEls.length);
 
-    if(!parts||parts.length===0){
-      console.log('No parts found, logging full XML structure...');
-      console.log('OOXML root tag:',pkgDoc.documentElement?.tagName);
-      Array.from(pkgDoc.documentElement?.children||[]).forEach((c,i)=>{
-        console.log('Child',i,':',c.tagName,c.getAttribute('pkg:name')||c.getAttribute('name'));
-      });
-      setStatus('Could not parse OOXML package structure','error');
-      return;
-    }
-
-    // Extract all parts
-    Array.from(parts).forEach(part=>{
-      const name=part.getAttribute('pkg:name')||part.getAttribute('name')||'';
-      if(!name) return;
+    partEls.forEach(part=>{
+      // Try all possible attribute name formats
+      const name=part.getAttribute('pkg:name')||part.getAttribute('name')||
+                 part.getAttributeNS('http://schemas.microsoft.com/office/2006/xmlPackage','name')||'';
+      if(!name){console.log('Skipping part with no name, tag:',part.tagName);return;}
       const zipPath=name.startsWith('/')?name.substring(1):name;
-      // Find xmlData child
+
+      // Find xmlData — try all formats
       const xmlData=part.querySelector('xmlData')||
-                    part.getElementsByTagNameNS('http://schemas.microsoft.com/office/2006/xmlPackage','xmlData')[0]||
-                    part.getElementsByTagName('pkg:xmlData')[0];
+                    part.querySelector('pkg\\:xmlData')||
+                    Array.from(part.children).find(c=>c.tagName==='pkg:xmlData'||c.localName==='xmlData');
+
       if(xmlData){
         const serializer=new XMLSerializer();
         let content='';
-        Array.from(xmlData.childNodes).forEach(child=>{
-          content+=serializer.serializeToString(child);
-        });
-        if(content){
+        Array.from(xmlData.childNodes).forEach(child=>{content+=serializer.serializeToString(child);});
+        if(content.trim()){
           zip.file(zipPath,'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'+content);
-          console.log('Added:',zipPath,'('+content.length+' chars)');
+          console.log('Added:',zipPath,'('+content.length+')');
+        }
+      } else {
+        // Try binary content
+        const binData=Array.from(part.children).find(c=>c.localName==='binaryData');
+        if(binData){
+          const b64=binData.textContent.trim();
+          const binary=atob(b64);
+          const bytes=new Uint8Array(binary.length);
+          for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+          zip.file(zipPath,bytes);
+          console.log('Added binary:',zipPath);
+        } else {
+          console.log('No xmlData or binaryData for:',name,'children:',part.children.length);
         }
       }
     });
 
-    // Check word/document.xml was added
-    if(!zip.file('word/document.xml')){
-      console.error('word/document.xml not found in extracted parts!');
-      setStatus('Failed to extract document content','error');
+    // Verify word/document.xml was extracted
+    const docXmlFile=zip.file('word/document.xml');
+    console.log('word/document.xml found:',!!docXmlFile);
+    if(!docXmlFile){
+      // Log all files we did add
+      console.log('Files added to zip:',Object.keys(zip.files).join(', '));
+      setStatus('Failed to extract document.xml — check console','error');
       return;
     }
 
     // Inject Neota customXml
-    zip.file('customXml/item1.xml', neotaXml);
-    zip.file('customXml/itemProps1.xml',`<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<ds:datastoreItem ds:itemID="{${generateGuid()}}" xmlns:ds="http://schemas.openxmlformats.org/officeDocument/2006/customXml">
-  <ds:schemaRefs><ds:schemaRef ds:uri="http://www.neotalogic.com"/></ds:schemaRefs>
-</ds:datastoreItem>`);
-    zip.file('customXml/_rels/item1.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps" Target="itemProps1.xml"/>
-</Relationships>`);
+    zip.file('customXml/item1.xml',neotaXml);
+    zip.file('customXml/itemProps1.xml',`<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n<ds:datastoreItem ds:itemID="{${generateGuid()}}" xmlns:ds="http://schemas.openxmlformats.org/officeDocument/2006/customXml"><ds:schemaRefs><ds:schemaRef ds:uri="http://www.neotalogic.com"/></ds:schemaRefs></ds:datastoreItem>`);
+    zip.file('customXml/_rels/item1.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps" Target="itemProps1.xml"/></Relationships>`);
 
     // Update Content_Types
     const ctFile=zip.file('[Content_Types].xml');
     if(ctFile){
-      ctFile.async('string').then(ctContent=>{
-        if(!ctContent.includes('customXmlProperties')){
-          ctContent=ctContent.replace('</Types>',
-            '  <Override PartName="/customXml/itemProps1.xml" ContentType="application/vnd.openxmlformats-officedocument.customXmlProperties+xml"/>\n</Types>');
-        }
-        zip.file('[Content_Types].xml',ctContent);
+      ctFile.async('string').then(ct=>{
+        if(!ct.includes('customXmlProperties'))
+          ct=ct.replace('</Types>','  <Override PartName="/customXml/itemProps1.xml" ContentType="application/vnd.openxmlformats-officedocument.customXmlProperties+xml"/>\n</Types>');
+        zip.file('[Content_Types].xml',ct);
         finalizeDownload(zip,docTitle);
       });
     } else {
-      zip.file('[Content_Types].xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
-  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
-  <Default Extension="xml" ContentType="application/xml"/>
-  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
-  <Override PartName="/customXml/itemProps1.xml" ContentType="application/vnd.openxmlformats-officedocument.customXmlProperties+xml"/>
-</Types>`);
       finalizeDownload(zip,docTitle);
     }
   }catch(e){
