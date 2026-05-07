@@ -187,9 +187,11 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
   </div>
   <div id="panel-tools" class="panel">
     <div class="section-title">Document tools</div>
-    <div class="card" style="cursor:pointer;margin-bottom:6px" onclick="downloadAsTemplate()">
+    <div class="card" style="margin-bottom:6px">
       <div class="card-row"><span class="card-name">Download as Template</span></div>
-      <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Sign in to Microsoft and download with Neota XML embedded</div>
+      <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px;margin-bottom:8px">Copy the URL from your browser address bar and paste it below, then click Download.</div>
+      <input type="text" id="doc-url-input" placeholder="Paste Word Online URL here..." style="margin-bottom:6px">
+      <button class="btn btn-primary btn-sm" onclick="downloadAsTemplate()">Download</button>
     </div>
     <div class="card" style="cursor:pointer;margin-bottom:6px" onclick="saveXMLToDocument()">
       <div class="card-row"><span class="card-name">Save to document</span></div>
