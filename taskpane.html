@@ -102,7 +102,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span class="topbar-title">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.3.2</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.3.5</span>
 </div>
 <div class="nav">
   <button class="nav-btn active" onclick="showPanel('variables')"><span class="nav-icon">(x)</span>Variables</button>
@@ -1162,49 +1162,220 @@ function buildXML(){
   return xml;
 }
 
-// ---- Download as Template ----
+// ---- Download as Template via Graph API ----
 function downloadAsTemplate(){
   if(typeof Word==='undefined'){setStatus('Not running inside Word','error');return;}
   if(!state.variables.length){setStatus('No variables to save','warn');return;}
   if(typeof JSZip==='undefined'){setStatus('JSZip not loaded — please refresh','error');return;}
-  setStatus('Building template document...');
+  setStatus('Authenticating...');
   const neotaXml=buildXML();
-  Word.run(async ctx=>{
-    try{
-      // Try multiple ways to get OOXML from Word Online
+
+  // Step 1: Get access token via SSO
+  OfficeRuntime.auth.getAccessToken({allowSignInPrompt:true, allowConsentPrompt:true})
+    .then(token=>{
+      console.log('Got access token');
+      setStatus('Downloading document...');
+      // Step 2: Get the document's OneDrive item ID
+      return getDocumentFileId(token).then(({fileId, token:t, title})=>{
+        return downloadFileFromGraph(t, fileId, title, neotaXml);
+      });
+    })
+    .catch(e=>{
+      console.error('Auth/download error:',e);
+      setStatus('Auth failed: '+e.message,'error');
+    });
+}
+
+function getDocumentFileId(token){
+  return new Promise((resolve, reject)=>{
+    Word.run(async ctx=>{
       const docProps=ctx.document.properties;
       docProps.load('title');
-
-      // Method 1: get full document OOXML via getRange
-      const fullRange=ctx.document.body.getRange('Whole');
-      fullRange.load('ooxml');
       await ctx.sync();
+      const title=docProps.title||'Document';
+      console.log('Document title:',title);
+      // Get current file info from Graph
+      fetch('https://graph.microsoft.com/v1.0/me/drive/root/children?$filter=name eq \''+encodeURIComponent(title+'.docx')+'\'&$select=id,name',{
+        headers:{Authorization:'Bearer '+token}
+      })
+      .then(r=>r.json())
+      .then(data=>{
+        console.log('Graph search result:',JSON.stringify(data).substring(0,300));
+        if(data.value&&data.value.length>0){
+          resolve({fileId:data.value[0].id, token, title});
+        } else {
+          // Try searching more broadly
+          fetch('https://graph.microsoft.com/v1.0/me/drive/recent?$select=id,name',{
+            headers:{Authorization:'Bearer '+token}
+          })
+          .then(r=>r.json())
+          .then(recent=>{
+            console.log('Recent files:',recent.value?.map(f=>f.name).join(', '));
+            const match=recent.value?.find(f=>f.name===title+'.docx'||f.name===title);
+            if(match) resolve({fileId:match.id,token,title});
+            else reject(new Error('Could not find document in OneDrive. Please save the document to OneDrive first.'));
+          }).catch(reject);
+        }
+      }).catch(reject);
+    }).catch(reject);
+  });
+}
 
-      const docTitle=docProps.title||'Document';
-      let pkgOoxml=fullRange.ooxml;
-      console.log('Method 1 (range) type:',typeof pkgOoxml,'length:',pkgOoxml?.length||0);
-      console.log('Method 1 start:',pkgOoxml?.substring(0,150)||'(empty)');
+function downloadFileFromGraph(token, fileId, title, neotaXml){
+  return fetch('https://graph.microsoft.com/v1.0/me/drive/items/'+fileId+'/content',{
+    headers:{Authorization:'Bearer '+token}
+  })
+  .then(r=>{
+    if(!r.ok) throw new Error('Graph download failed: '+r.status);
+    return r.arrayBuffer();
+  })
+  .then(buffer=>{
+    console.log('Downloaded file, size:',buffer.byteLength);
+    setStatus('Injecting Neota XML...');
+    return injectNeotaXmlIntoDocx(buffer, neotaXml, title);
+  });
+}
 
-      if(!pkgOoxml||pkgOoxml.length===0){
-        // Method 2: try getting via search
-        setStatus('Trying alternative method...','warn');
-        const allContent=ctx.document.body;
-        allContent.load('text,ooxml');
-        await ctx.sync();
-        pkgOoxml=allContent.ooxml;
-        console.log('Method 2 (body) type:',typeof pkgOoxml,'length:',pkgOoxml?.length||0);
+function injectNeotaXmlIntoDocx(buffer, neotaXml, title){
+  return JSZip.loadAsync(buffer).then(zip=>{
+    console.log('Zip files:',Object.keys(zip.files).join(', '));
+
+    // Inject customXml files
+    zip.file('customXml/item1.xml', neotaXml);
+    zip.file('customXml/itemProps1.xml',`<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ds:datastoreItem ds:itemID="{${generateGuid()}}" xmlns:ds="http://schemas.openxmlformats.org/officeDocument/2006/customXml">
+  <ds:schemaRefs><ds:schemaRef ds:uri="http://www.neotalogic.com"/></ds:schemaRefs>
+</ds:datastoreItem>`);
+    zip.file('customXml/_rels/item1.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps" Target="itemProps1.xml"/>
+</Relationships>`);
+
+    // Update [Content_Types].xml
+    return zip.file('[Content_Types].xml').async('string').then(ct=>{
+      if(!ct.includes('customXmlProperties')){
+        ct=ct.replace('</Types>',
+          '  <Override PartName="/customXml/itemProps1.xml" ContentType="application/vnd.openxmlformats-officedocument.customXmlProperties+xml"/>\n</Types>');
       }
+      zip.file('[Content_Types].xml',ct);
 
-      if(!pkgOoxml||pkgOoxml.length===0){
-        setStatus('Could not read document OOXML — Word Online limitation','error');
-        return;
+      // Update word/_rels/document.xml.rels
+      const relsFile=zip.file('word/_rels/document.xml.rels');
+      const updateRels=(relsContent)=>{
+        if(!relsContent.includes('customXml/item1.xml')){
+          relsContent=relsContent.replace('</Relationships>',
+            '  <Relationship Id="rId99" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>\n</Relationships>');
+        }
+        zip.file('word/_rels/document.xml.rels',relsContent);
+        return generateAndDownload(zip,title);
+      };
+
+      if(relsFile){
+        return relsFile.async('string').then(updateRels);
+      } else {
+        return updateRels(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId99" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>
+</Relationships>`);
       }
-      buildDocxFromPackage(pkgOoxml, neotaXml, docTitle);
-    }catch(inner){
-      console.error('Download failed:',inner);
-      setStatus('Download failed: '+inner.message,'error');
+    });
+  });
+}
+
+function buildDocxFromParagraphs(paraTexts, neotaXml, docTitle){
+  try{
+    // Build merge field lookup: «Name/Issue/» -> MERGEFIELD code
+    const mergeFieldMap={};
+    state.variables.forEach(v=>{
+      const mf=v.mergeField||(v.name+'/'+(v.issueName||'First Issue')+'/');
+      mergeFieldMap['\u00AB'+mf+'\u00BB']=mf;
+    });
+
+    // Build word/document.xml paragraphs
+    const docParas=paraTexts.map(text=>{
+      if(!text&&text!==0) return '<w:p><w:r><w:t></w:t></w:r></w:p>';
+      // Split paragraph text by merge field markers
+      const parts=splitByMergeFields(text, mergeFieldMap);
+      const runs=parts.map(part=>{
+        if(part.type==='text'){
+          return `<w:r><w:t xml:space="preserve">${xmlEsc(part.value)}</w:t></w:r>`;
+        } else {
+          // MERGEFIELD
+          const mf=part.value;
+          const display='\u00AB'+mf+'\u00BB';
+          return `<w:r><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:rPr><w:color w:val="0000FF"/></w:rPr><w:instrText xml:space="preserve"> MERGEFIELD ${xmlEsc(mf)} \\* MERGEFORMAT </w:instrText></w:r><w:r><w:fldChar w:fldCharType="separate"/></w:r><w:r><w:rPr><w:noProof/><w:color w:val="0000FF"/></w:rPr><w:t>${xmlEsc(display)}</w:t></w:r><w:r><w:fldChar w:fldCharType="end"/></w:r>`;
+        }
+      }).join('');
+      return `<w:p>${runs}</w:p>`;
+    }).join('\n');
+
+    const docXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
+  <w:body>
+    ${docParas}
+    <w:sectPr/>
+  </w:body>
+</w:document>`;
+
+    const zip=new JSZip();
+    zip.file('word/document.xml', docXml);
+    zip.file('word/_rels/document.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>
+</Relationships>`);
+    zip.file('_rels/.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>`);
+    zip.file('customXml/item1.xml', neotaXml);
+    zip.file('customXml/itemProps1.xml',`<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ds:datastoreItem ds:itemID="{${generateGuid()}}" xmlns:ds="http://schemas.openxmlformats.org/officeDocument/2006/customXml">
+  <ds:schemaRefs><ds:schemaRef ds:uri="http://www.neotalogic.com"/></ds:schemaRefs>
+</ds:datastoreItem>`);
+    zip.file('customXml/_rels/item1.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps" Target="itemProps1.xml"/>
+</Relationships>`);
+    zip.file('[Content_Types].xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+  <Override PartName="/customXml/itemProps1.xml" ContentType="application/vnd.openxmlformats-officedocument.customXmlProperties+xml"/>
+</Types>`);
+
+    generateAndDownload(zip, docTitle);
+  }catch(e){
+    console.error('buildDocxFromParagraphs error:',e);
+    setStatus('Build failed: '+e.message,'error');
+  }
+}
+
+function splitByMergeFields(text, mergeFieldMap){
+  const parts=[];
+  let remaining=text;
+  while(remaining.length>0){
+    let foundIdx=-1;
+    let foundKey=null;
+    // Find earliest merge field marker
+    Object.keys(mergeFieldMap).forEach(marker=>{
+      const idx=remaining.indexOf(marker);
+      if(idx>=0&&(foundIdx===-1||idx<foundIdx)){
+        foundIdx=idx;
+        foundKey=marker;
+      }
+    });
+    if(foundIdx===-1){
+      parts.push({type:'text',value:remaining});
+      break;
     }
-  }).catch(e=>setStatus('Word API error: '+e.message,'error'));
+    if(foundIdx>0) parts.push({type:'text',value:remaining.substring(0,foundIdx)});
+    parts.push({type:'merge',value:mergeFieldMap[foundKey]});
+    remaining=remaining.substring(foundIdx+foundKey.length);
+  }
+  return parts;
 }
 
 function buildDocxFromPackage(pkgOoxml, neotaXml, docTitle){
