@@ -102,7 +102,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span class="topbar-title">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.2.7</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.2.8</span>
 </div>
 <div class="nav">
   <button class="nav-btn active" onclick="showPanel('variables')"><span class="nav-icon">(x)</span>Variables</button>
@@ -1171,40 +1171,121 @@ function downloadAsTemplate(){
   const neotaXml=buildXML();
   Word.run(async ctx=>{
     try{
-      // Get full document OOXML
-      const doc=ctx.document;
-      doc.load('body');
-      await ctx.sync();
-      // Get the complete document as OOXML package
-      const ooxml=doc.body.getOoxml();
+      const body=ctx.document.body;
+      body.load('ooxml');
       const docProps=ctx.document.properties;
       docProps.load('title');
       await ctx.sync();
-      console.log('Body OOXML length:',ooxml.value?.length);
-      console.log('Body OOXML preview:',ooxml.value?.substring(0,300));
-      buildAndDownloadDocx(ooxml.value, neotaXml, docProps.title||'Document');
+      const pkgOoxml=body.ooxml;
+      const docTitle=docProps.title||'Document';
+      console.log('Package OOXML length:',pkgOoxml.length);
+      buildDocxFromPackage(pkgOoxml, neotaXml, docTitle);
     }catch(inner){
       console.error('Download failed:',inner);
-      // Try alternative method
-      try{
-        await tryAlternativeDownload(neotaXml);
-      }catch(e2){
-        setStatus('Download failed: '+inner.message,'error');
-      }
+      setStatus('Download failed: '+inner.message,'error');
     }
   }).catch(e=>setStatus('Word API error: '+e.message,'error'));
 }
 
-async function tryAlternativeDownload(neotaXml){
-  return Word.run(async ctx=>{
-    const range=ctx.document.body.getRange('Whole');
-    range.load('ooxml');
-    const props=ctx.document.properties;
-    props.load('title');
-    await ctx.sync();
-    console.log('Alternative OOXML:',range.ooxml?.substring(0,300));
-    buildAndDownloadDocx(range.ooxml, neotaXml, props.title||'Document');
-  });
+function buildDocxFromPackage(pkgOoxml, neotaXml, docTitle){
+  try{
+    const zip=new JSZip();
+    const parser=new DOMParser();
+    const pkgDoc=parser.parseFromString(pkgOoxml,'application/xml');
+    const parts=pkgDoc.querySelectorAll('part');
+    console.log('Package parts found:',parts.length);
+
+    // Extract all parts from the OOXML package into the zip
+    parts.forEach(part=>{
+      const name=part.getAttribute('pkg:name')||part.getAttribute('name');
+      const contentType=part.getAttribute('pkg:contentType')||part.getAttribute('contentType');
+      if(!name) return;
+      const zipPath=name.startsWith('/')?name.substring(1):name;
+      const xmlData=part.querySelector('xmlData');
+      if(xmlData){
+        // Serialize the XML content
+        const serializer=new XMLSerializer();
+        let content='';
+        Array.from(xmlData.childNodes).forEach(child=>{
+          content+=serializer.serializeToString(child);
+        });
+        zip.file(zipPath, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'+content);
+        console.log('Added part:',zipPath,'length:',content.length);
+      }
+    });
+
+    // Inject Neota customXml files
+    zip.file('customXml/item1.xml', neotaXml);
+    zip.file('customXml/itemProps1.xml',`<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ds:datastoreItem ds:itemID="{${generateGuid()}}" xmlns:ds="http://schemas.openxmlformats.org/officeDocument/2006/customXml">
+  <ds:schemaRefs><ds:schemaRef ds:uri="http://www.neotalogic.com"/></ds:schemaRefs>
+</ds:datastoreItem>`);
+    zip.file('customXml/_rels/item1.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps" Target="itemProps1.xml"/>
+</Relationships>`);
+
+    // Update [Content_Types].xml to include customXml parts
+    const ctFile=zip.file('[Content_Types].xml');
+    if(ctFile){
+      ctFile.async('string').then(ctContent=>{
+        if(!ctContent.includes('customXmlProperties')){
+          ctContent=ctContent.replace('</Types>',
+            '  <Override PartName="/customXml/itemProps1.xml" ContentType="application/vnd.openxmlformats-officedocument.customXmlProperties+xml"/>\n</Types>');
+        }
+        zip.file('[Content_Types].xml', ctContent);
+        finalizeDownload(zip, docTitle);
+      });
+    } else {
+      // Build Content_Types from scratch
+      zip.file('[Content_Types].xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+  <Override PartName="/customXml/itemProps1.xml" ContentType="application/vnd.openxmlformats-officedocument.customXmlProperties+xml"/>
+</Types>`);
+      finalizeDownload(zip, docTitle);
+    }
+  }catch(e){
+    console.error('buildDocxFromPackage error:',e);
+    setStatus('Build failed: '+e.message,'error');
+  }
+}
+
+function finalizeDownload(zip, docTitle){
+  // Update word/_rels/document.xml.rels to include customXml relationship
+  const relsFile=zip.file('word/_rels/document.xml.rels');
+  const addRel=content=>{
+    if(!content.includes('customXml/item1.xml')){
+      content=content.replace('</Relationships>',
+        '  <Relationship Id="rId99" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>\n</Relationships>');
+    }
+    zip.file('word/_rels/document.xml.rels', content);
+    generateAndDownload(zip, docTitle);
+  };
+  if(relsFile){
+    relsFile.async('string').then(addRel);
+  } else {
+    zip.file('word/_rels/document.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId99" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>
+</Relationships>`);
+    generateAndDownload(zip, docTitle);
+  }
+}
+
+function generateAndDownload(zip, docTitle){
+  zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}).then(blob=>{
+    const safeName=(docTitle||'Document').replace(/[-\s]*Template\s*$/i,'').replace(/[^a-zA-Z0-9\s\-_]/g,'').trim()||'Document';
+    const filename=safeName+'-Template.docx';
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=filename;
+    document.body.appendChild(a);a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setStatus('Downloaded: '+filename);
+  }).catch(e=>setStatus('Zip error: '+e.message,'error'));
 }
 
 function buildAndDownloadDocx(bodyOoxml, neotaXml, docTitle){
