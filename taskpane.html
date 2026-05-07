@@ -102,7 +102,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span class="topbar-title">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.3.1</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.3.2</span>
 </div>
 <div class="nav">
   <button class="nav-btn active" onclick="showPanel('variables')"><span class="nav-icon">(x)</span>Variables</button>
@@ -1171,19 +1171,32 @@ function downloadAsTemplate(){
   const neotaXml=buildXML();
   Word.run(async ctx=>{
     try{
-      const body=ctx.document.body;
-      body.load('ooxml');
+      // Try multiple ways to get OOXML from Word Online
       const docProps=ctx.document.properties;
       docProps.load('title');
+
+      // Method 1: get full document OOXML via getRange
+      const fullRange=ctx.document.body.getRange('Whole');
+      fullRange.load('ooxml');
       await ctx.sync();
-      // body.ooxml is a string directly after sync
-      const pkgOoxml=body.ooxml;
+
       const docTitle=docProps.title||'Document';
-      console.log('OOXML type:',typeof pkgOoxml);
-      console.log('OOXML length:',pkgOoxml?pkgOoxml.length:0);
-      console.log('OOXML start:',pkgOoxml?pkgOoxml.substring(0,200):'(empty)');
+      let pkgOoxml=fullRange.ooxml;
+      console.log('Method 1 (range) type:',typeof pkgOoxml,'length:',pkgOoxml?.length||0);
+      console.log('Method 1 start:',pkgOoxml?.substring(0,150)||'(empty)');
+
       if(!pkgOoxml||pkgOoxml.length===0){
-        setStatus('Could not read document content','error');
+        // Method 2: try getting via search
+        setStatus('Trying alternative method...','warn');
+        const allContent=ctx.document.body;
+        allContent.load('text,ooxml');
+        await ctx.sync();
+        pkgOoxml=allContent.ooxml;
+        console.log('Method 2 (body) type:',typeof pkgOoxml,'length:',pkgOoxml?.length||0);
+      }
+
+      if(!pkgOoxml||pkgOoxml.length===0){
+        setStatus('Could not read document OOXML — Word Online limitation','error');
         return;
       }
       buildDocxFromPackage(pkgOoxml, neotaXml, docTitle);
