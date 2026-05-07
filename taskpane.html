@@ -6,6 +6,7 @@
 <title>Neota Word Add-in</title>
 <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font-sans,system-ui,sans-serif);font-size:13px;color:var(--color-text-primary,#1a1a1a);background:var(--color-background-primary,#fff);height:100vh;display:flex;flex-direction:column;overflow:hidden}
@@ -102,7 +103,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span class="topbar-title">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.3.5</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.3.6</span>
 </div>
 <div class="nav">
   <button class="nav-btn active" onclick="showPanel('variables')"><span class="nav-icon">(x)</span>Variables</button>
@@ -1162,75 +1163,109 @@ function buildXML(){
   return xml;
 }
 
+// ---- MSAL configuration ----
+const MSAL_CONFIG={
+  auth:{
+    clientId:'5866d669-cc23-4aa4-960a-a8792620a4ce',
+    authority:'https://login.microsoftonline.com/common',
+    redirectUri:'https://charmysh.github.io/word/taskpane.html'
+  },
+  cache:{cacheLocation:'sessionStorage'}
+};
+let msalInstance=null;
+
+function getMsalInstance(){
+  if(!msalInstance) msalInstance=new msal.PublicClientApplication(MSAL_CONFIG);
+  return msalInstance;
+}
+
+function getGraphToken(){
+  const msal=getMsalInstance();
+  const scopes=['Files.Read','User.Read'];
+  // Try silent first
+  const accounts=msal.getAllAccounts();
+  if(accounts.length>0){
+    return msal.acquireTokenSilent({scopes, account:accounts[0]})
+      .catch(()=>msal.acquireTokenPopup({scopes}));
+  }
+  return msal.acquireTokenPopup({scopes});
+}
+
 // ---- Download as Template via Graph API ----
 function downloadAsTemplate(){
   if(typeof Word==='undefined'){setStatus('Not running inside Word','error');return;}
   if(!state.variables.length){setStatus('No variables to save','warn');return;}
-  if(typeof JSZip==='undefined'){setStatus('JSZip not loaded — please refresh','error');return;}
-  setStatus('Authenticating...');
+  if(typeof JSZip==='undefined'){setStatus('JSZip not loaded','error');return;}
+  if(typeof msal==='undefined'){setStatus('MSAL not loaded — please refresh','error');return;}
+  setStatus('Signing in to Microsoft...');
   const neotaXml=buildXML();
 
-  // Step 1: Get access token via SSO
-  OfficeRuntime.auth.getAccessToken({allowSignInPrompt:true, allowConsentPrompt:true})
-    .then(token=>{
-      console.log('Got access token');
-      setStatus('Downloading document...');
-      // Step 2: Get the document's OneDrive item ID
-      return getDocumentFileId(token).then(({fileId, token:t, title})=>{
-        return downloadFileFromGraph(t, fileId, title, neotaXml);
-      });
+  getGraphToken()
+    .then(result=>{
+      const token=result.accessToken;
+      console.log('Got Graph token');
+      setStatus('Finding document in OneDrive...');
+      return Word.run(async ctx=>{
+        const docProps=ctx.document.properties;
+        docProps.load('title');
+        await ctx.sync();
+        return {token, title:docProps.title||'Document'};
+      }).then(({token,title})=>findAndDownloadFile(token,title,neotaXml));
     })
     .catch(e=>{
-      console.error('Auth/download error:',e);
-      setStatus('Auth failed: '+e.message,'error');
+      console.error('Auth error:',e);
+      setStatus('Sign-in failed: '+e.message,'error');
     });
 }
 
-function getDocumentFileId(token){
-  return new Promise((resolve, reject)=>{
-    Word.run(async ctx=>{
-      const docProps=ctx.document.properties;
-      docProps.load('title');
-      await ctx.sync();
-      const title=docProps.title||'Document';
-      console.log('Document title:',title);
-      // Get current file info from Graph
-      fetch('https://graph.microsoft.com/v1.0/me/drive/root/children?$filter=name eq \''+encodeURIComponent(title+'.docx')+'\'&$select=id,name',{
-        headers:{Authorization:'Bearer '+token}
-      })
-      .then(r=>r.json())
-      .then(data=>{
-        console.log('Graph search result:',JSON.stringify(data).substring(0,300));
-        if(data.value&&data.value.length>0){
-          resolve({fileId:data.value[0].id, token, title});
-        } else {
-          // Try searching more broadly
-          fetch('https://graph.microsoft.com/v1.0/me/drive/recent?$select=id,name',{
-            headers:{Authorization:'Bearer '+token}
-          })
-          .then(r=>r.json())
-          .then(recent=>{
-            console.log('Recent files:',recent.value?.map(f=>f.name).join(', '));
-            const match=recent.value?.find(f=>f.name===title+'.docx'||f.name===title);
-            if(match) resolve({fileId:match.id,token,title});
-            else reject(new Error('Could not find document in OneDrive. Please save the document to OneDrive first.'));
-          }).catch(reject);
-        }
-      }).catch(reject);
-    }).catch(reject);
+function findAndDownloadFile(token, title, neotaXml){
+  setStatus('Searching OneDrive for document...');
+  // Search recent files first
+  return fetch('https://graph.microsoft.com/v1.0/me/drive/recent?$select=id,name,lastModifiedDateTime&$top=20',{
+    headers:{Authorization:'Bearer '+token}
+  })
+  .then(r=>r.json())
+  .then(data=>{
+    console.log('Recent files:',data.value?.map(f=>f.name).join(', '));
+    // Match by title
+    const candidates=[title+'.docx', title];
+    let match=data.value?.find(f=>candidates.some(c=>f.name===c));
+    if(!match){
+      // Try partial match
+      match=data.value?.find(f=>f.name.replace(/\.docx$/i,'')===title.replace(/\.docx$/i,''));
+    }
+    if(match){
+      console.log('Found file:',match.name,'id:',match.id);
+      return downloadAndInject(token, match.id, title, neotaXml);
+    }
+    // Try searching by name
+    return fetch(`https://graph.microsoft.com/v1.0/me/drive/root/search(q='${encodeURIComponent(title)}')?$select=id,name&$top=5`,{
+      headers:{Authorization:'Bearer '+token}
+    })
+    .then(r=>r.json())
+    .then(searchData=>{
+      console.log('Search results:',searchData.value?.map(f=>f.name).join(', '));
+      const searchMatch=searchData.value?.find(f=>
+        f.name===title+'.docx'||f.name===title||
+        f.name.replace(/\.docx$/i,'')===title.replace(/\.docx$/i,'')
+      );
+      if(searchMatch) return downloadAndInject(token, searchMatch.id, title, neotaXml);
+      throw new Error('Document not found in OneDrive. Please save the document to OneDrive first (File → Save).');
+    });
   });
 }
 
-function downloadFileFromGraph(token, fileId, title, neotaXml){
+function downloadAndInject(token, fileId, title, neotaXml){
+  setStatus('Downloading document from OneDrive...');
   return fetch('https://graph.microsoft.com/v1.0/me/drive/items/'+fileId+'/content',{
     headers:{Authorization:'Bearer '+token}
   })
   .then(r=>{
-    if(!r.ok) throw new Error('Graph download failed: '+r.status);
+    if(!r.ok) throw new Error('Download failed: HTTP '+r.status);
     return r.arrayBuffer();
   })
   .then(buffer=>{
-    console.log('Downloaded file, size:',buffer.byteLength);
+    console.log('Downloaded file size:',buffer.byteLength);
     setStatus('Injecting Neota XML...');
     return injectNeotaXmlIntoDocx(buffer, neotaXml, title);
   });
@@ -1238,46 +1273,25 @@ function downloadFileFromGraph(token, fileId, title, neotaXml){
 
 function injectNeotaXmlIntoDocx(buffer, neotaXml, title){
   return JSZip.loadAsync(buffer).then(zip=>{
-    console.log('Zip files:',Object.keys(zip.files).join(', '));
-
-    // Inject customXml files
+    console.log('Docx files:',Object.keys(zip.files).join(', '));
+    // Inject Neota customXml
     zip.file('customXml/item1.xml', neotaXml);
-    zip.file('customXml/itemProps1.xml',`<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<ds:datastoreItem ds:itemID="{${generateGuid()}}" xmlns:ds="http://schemas.openxmlformats.org/officeDocument/2006/customXml">
-  <ds:schemaRefs><ds:schemaRef ds:uri="http://www.neotalogic.com"/></ds:schemaRefs>
-</ds:datastoreItem>`);
-    zip.file('customXml/_rels/item1.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps" Target="itemProps1.xml"/>
-</Relationships>`);
-
-    // Update [Content_Types].xml
+    zip.file('customXml/itemProps1.xml',`<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n<ds:datastoreItem ds:itemID="{${generateGuid()}}" xmlns:ds="http://schemas.openxmlformats.org/officeDocument/2006/customXml"><ds:schemaRefs><ds:schemaRef ds:uri="http://www.neotalogic.com"/></ds:schemaRefs></ds:datastoreItem>`);
+    zip.file('customXml/_rels/item1.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps" Target="itemProps1.xml"/></Relationships>`);
+    // Update Content_Types
     return zip.file('[Content_Types].xml').async('string').then(ct=>{
-      if(!ct.includes('customXmlProperties')){
-        ct=ct.replace('</Types>',
-          '  <Override PartName="/customXml/itemProps1.xml" ContentType="application/vnd.openxmlformats-officedocument.customXmlProperties+xml"/>\n</Types>');
-      }
+      if(!ct.includes('customXmlProperties'))
+        ct=ct.replace('</Types>','  <Override PartName="/customXml/itemProps1.xml" ContentType="application/vnd.openxmlformats-officedocument.customXmlProperties+xml"/>\n</Types>');
       zip.file('[Content_Types].xml',ct);
-
       // Update word/_rels/document.xml.rels
       const relsFile=zip.file('word/_rels/document.xml.rels');
-      const updateRels=(relsContent)=>{
-        if(!relsContent.includes('customXml/item1.xml')){
-          relsContent=relsContent.replace('</Relationships>',
-            '  <Relationship Id="rId99" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>\n</Relationships>');
-        }
-        zip.file('word/_rels/document.xml.rels',relsContent);
+      const updateRels=content=>{
+        if(!content.includes('customXml/item1.xml'))
+          content=content.replace('</Relationships>','  <Relationship Id="rId99" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>\n</Relationships>');
+        zip.file('word/_rels/document.xml.rels',content);
         return generateAndDownload(zip,title);
       };
-
-      if(relsFile){
-        return relsFile.async('string').then(updateRels);
-      } else {
-        return updateRels(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId99" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>
-</Relationships>`);
-      }
+      return relsFile?relsFile.async('string').then(updateRels):updateRels(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId99" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>\n</Relationships>`);
     });
   });
 }
