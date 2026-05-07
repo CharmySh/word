@@ -103,7 +103,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span class="topbar-title">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.3.6</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.3.8</span>
 </div>
 <div class="nav">
   <button class="nav-btn active" onclick="showPanel('variables')"><span class="nav-icon">(x)</span>Variables</button>
@@ -1175,20 +1175,28 @@ const MSAL_CONFIG={
 let msalInstance=null;
 
 function getMsalInstance(){
-  if(!msalInstance) msalInstance=new msal.PublicClientApplication(MSAL_CONFIG);
+  if(!msalInstance){
+    // MSAL browser exports under different names depending on version
+    const MsalLib=window.msal||window.msalBrowser||window['@azure/msal-browser'];
+    if(!MsalLib||!MsalLib.PublicClientApplication){
+      throw new Error('MSAL library not loaded correctly');
+    }
+    console.log('MSAL loaded, creating instance');
+    msalInstance=new MsalLib.PublicClientApplication(MSAL_CONFIG);
+  }
   return msalInstance;
 }
 
 function getGraphToken(){
-  const msal=getMsalInstance();
+  const msalInst=getMsalInstance();
   const scopes=['Files.Read','User.Read'];
-  // Try silent first
-  const accounts=msal.getAllAccounts();
+  const accounts=msalInst.getAllAccounts();
+  console.log('MSAL accounts found:',accounts.length);
   if(accounts.length>0){
-    return msal.acquireTokenSilent({scopes, account:accounts[0]})
-      .catch(()=>msal.acquireTokenPopup({scopes}));
+    return msalInst.acquireTokenSilent({scopes,account:accounts[0]})
+      .catch(e=>{console.log('Silent token failed, trying popup:',e.message);return msalInst.acquireTokenPopup({scopes});});
   }
-  return msal.acquireTokenPopup({scopes});
+  return msalInst.acquireTokenPopup({scopes});
 }
 
 // ---- Download as Template via Graph API ----
