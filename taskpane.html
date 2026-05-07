@@ -103,7 +103,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span class="topbar-title">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.3.9</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.4.0</span>
 </div>
 <div class="nav">
   <button class="nav-btn active" onclick="showPanel('variables')"><span class="nav-icon">(x)</span>Variables</button>
@@ -115,7 +115,6 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
   <button class="nav-btn" onclick="showPanel('tools')"><span class="nav-icon">⚙</span>Tools</button>
 </div>
 <div class="content">
-  <!-- VARIABLES -->
   <div id="panel-variables" class="panel active">
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
       <div class="menu-group">
@@ -132,7 +131,6 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
     <div class="section-title">Defined variables</div>
     <div id="var-list"><div class="empty">No variables defined yet</div></div>
   </div>
-  <!-- CONDITIONS -->
   <div id="panel-conditions" class="panel">
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
       <div class="menu-group">
@@ -148,7 +146,6 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
     <div class="section-title">Defined conditions</div>
     <div id="cond-list"><div class="empty">No conditions defined yet</div></div>
   </div>
-  <!-- FORMS -->
   <div id="panel-forms" class="panel">
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
       <div class="menu-group">
@@ -163,7 +160,6 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
     <div class="section-title">Defined forms</div>
     <div id="form-list"><div class="empty">No forms defined yet</div></div>
   </div>
-  <!-- ISSUES -->
   <div id="panel-issues" class="panel">
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
       <div class="menu-group">
@@ -178,33 +174,30 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
     <div class="section-title">Defined issues</div>
     <div id="issue-list"><div class="empty">No issues defined yet</div></div>
   </div>
-  <!-- REPEAT -->
   <div id="panel-repeat" class="panel">
     <div class="info-box">Repeat tags display values of multi-value or instance variables when the document is generated.</div>
     <div class="btn-row"><button class="btn btn-primary" onclick="openRepeatModal()">Insert repeat tag</button></div>
     <div class="section-title">Inserted repeats</div>
     <div id="repeat-list"><div class="empty">No repeat tags inserted</div></div>
   </div>
-  <!-- ORGANIZER -->
   <div id="panel-organizer" class="panel">
     <div class="btn-row"><button class="btn" onclick="renderOrganizer()">↺ Refresh</button></div>
     <div class="section-title">Application structure</div>
     <div id="organizer-tree"></div>
   </div>
-  <!-- TOOLS -->
   <div id="panel-tools" class="panel">
     <div class="section-title">Document tools</div>
     <div class="card" style="cursor:pointer;margin-bottom:6px" onclick="downloadAsTemplate()">
       <div class="card-row"><span class="card-name">Download as Template</span></div>
-      <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Save XML to document then download with -Template suffix</div>
+      <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Sign in to Microsoft and download with Neota XML embedded</div>
     </div>
     <div class="card" style="cursor:pointer;margin-bottom:6px" onclick="saveXMLToDocument()">
       <div class="card-row"><span class="card-name">Save to document</span></div>
-      <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Embed Neota XML into the Word document (required for Studio import)</div>
+      <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Embed Neota XML into the Word document</div>
     </div>
     <div class="card" style="cursor:pointer;margin-bottom:6px" onclick="loadXMLFromDocument()">
       <div class="card-row"><span class="card-name">Load from document</span></div>
-      <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Reload variables and conditions from embedded XML</div>
+      <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">Reload variables and conditions from document</div>
     </div>
     <div class="card" style="cursor:pointer;margin-bottom:6px" onclick="prepareDocument()">
       <div class="card-row"><span class="card-name">Prepare document</span></div>
@@ -232,9 +225,9 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 </div>
 <div class="status-bar" id="status-bar">Ready</div>
 
-<!-- NEW VARIABLE MODAL -->
+<!-- VARIABLE MODALS -->
 <div class="modal-overlay" id="varNewModal">
-<div class="modal" id="varNewModalInner" style="max-width:520px">
+<div class="modal" style="max-width:520px">
   <div class="modal-title">New Variable <button class="modal-close" onclick="closeModal('varNewModal')">×</button></div>
   <div id="var-new-layout"><div id="vnew"></div></div>
   <div class="modal-footer">
@@ -243,8 +236,6 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
   </div>
 </div>
 </div>
-
-<!-- VIEW/EDIT VARIABLE MODAL -->
 <div class="modal-overlay" id="varEditModal">
 <div class="modal" style="max-width:520px">
   <div class="modal-title">View/Edit Variable <button class="modal-close" onclick="closeModal('varEditModal')">×</button></div>
@@ -263,8 +254,6 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
   </div>
 </div>
 </div>
-
-<!-- DELETE VARIABLE MODAL -->
 <div class="modal-overlay" id="varDeleteModal">
 <div class="modal" style="max-width:480px">
   <div class="modal-title">Delete Variable <button class="modal-close" onclick="closeModal('varDeleteModal')">×</button></div>
@@ -282,8 +271,6 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
   </div>
 </div>
 </div>
-
-<!-- USE EXISTING MODAL -->
 <div class="modal-overlay" id="varUseModal">
 <div class="modal" style="max-width:480px">
   <div class="modal-title">Use Variable in Document <button class="modal-close" onclick="closeModal('varUseModal')">×</button></div>
@@ -304,8 +291,6 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
   </div>
 </div>
 </div>
-
-<!-- NVDS MODAL -->
 <div class="modal-overlay" id="nvdsModal">
 <div class="modal" style="max-width:400px">
   <div class="modal-title">Named Value Display Sets <button class="modal-close" onclick="closeModal('nvdsModal')">×</button></div>
@@ -324,8 +309,6 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
   </div>
 </div>
 </div>
-
-<!-- CHILD VARIABLE MODAL -->
 <div class="modal-overlay" id="childVarModal" style="z-index:200">
 <div class="modal" style="max-width:400px">
   <div class="modal-title">New Child Variable <button class="modal-close" onclick="closeModal('childVarModal')">×</button></div>
@@ -350,7 +333,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 <div class="modal" style="max-width:520px">
   <div class="modal-title">New Condition <button class="modal-close" onclick="closeModal('condNewModal')">×</button></div>
   <input type="hidden" id="cond-edit-id">
-  <div class="field-row"><label class="field-label">Name*</label><div class="field-input"><input type="text" id="cond-name" placeholder="e.g. ShowCopyrightClause"></div></div>
+  <div class="field-row"><label class="field-label">Name*</label><div class="field-input"><input type="text" id="cond-name"></div></div>
   <div class="field-row"><label class="field-label">Description</label><div class="field-input"><input type="text" id="cond-desc"></div></div>
   <div class="field-row"><label class="field-label">Issue</label><div class="field-input"><div class="combo-wrap"><input type="text" id="cond-issue" value="First Issue" autocomplete="off"><button type="button" class="combo-arrow" onclick="openCombo('cond-issue','cond-issue-drop','issues')">▾</button><div class="combo-drop" id="cond-issue-drop"></div></div></div></div>
   <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:12px">
@@ -367,7 +350,6 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
   </div>
 </div>
 </div>
-
 <div class="modal-overlay" id="condEditModal">
 <div class="modal" style="max-width:520px">
   <div class="modal-title">View/Edit Condition <button class="modal-close" onclick="closeModal('condEditModal')">×</button></div>
@@ -385,7 +367,6 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
   </div>
 </div>
 </div>
-
 <div class="modal-overlay" id="condDeleteModal">
 <div class="modal" style="max-width:380px">
   <div class="modal-title">Delete Condition <button class="modal-close" onclick="closeModal('condDeleteModal')">×</button></div>
@@ -402,15 +383,11 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
   </div>
 </div>
 </div>
-
 <div class="modal-overlay" id="condInsertModal">
 <div class="modal" style="max-width:380px">
   <div class="modal-title">Use Condition in Document <button class="modal-close" onclick="closeModal('condInsertModal')">×</button></div>
   <div class="info-box">Select text in your document first, then choose a condition to wrap it.</div>
-  <div class="field-row">
-    <label class="field-label">Condition</label>
-    <div class="field-input"><select id="insert-cond-select"><option value="">— Select Condition —</option></select></div>
-  </div>
+  <div class="field-row"><label class="field-label">Condition</label><div class="field-input"><select id="insert-cond-select"><option value="">— Select Condition —</option></select></div></div>
   <div class="modal-footer">
     <button class="btn" onclick="closeModal('condInsertModal')">Cancel</button>
     <button class="btn btn-primary" onclick="doInsertCondition()">OK</button>
@@ -423,7 +400,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 <div class="modal" style="max-width:400px">
   <div class="modal-title">New Form <button class="modal-close" onclick="closeModal('formNewModal')">×</button></div>
   <input type="hidden" id="form-edit-id">
-  <div class="field-row"><label class="field-label">Form name*</label><div class="field-input"><input type="text" id="form-name" placeholder="e.g. Party Details"></div></div>
+  <div class="field-row"><label class="field-label">Form name*</label><div class="field-input"><input type="text" id="form-name"></div></div>
   <div class="field-row"><label class="field-label">Issue</label><div class="field-input"><select id="form-issue"><option value="">— Select issue —</option></select></div></div>
   <div class="modal-footer">
     <button class="btn" onclick="closeModal('formNewModal')">Cancel</button>
@@ -431,7 +408,6 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
   </div>
 </div>
 </div>
-
 <div class="modal-overlay" id="formEditModal">
 <div class="modal" style="max-width:400px">
   <div class="modal-title">View/Edit Form <button class="modal-close" onclick="closeModal('formEditModal')">×</button></div>
@@ -449,17 +425,10 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
   </div>
 </div>
 </div>
-
 <div class="modal-overlay" id="formDeleteModal">
 <div class="modal" style="max-width:380px">
   <div class="modal-title">Delete Form <button class="modal-close" onclick="closeModal('formDeleteModal')">×</button></div>
-  <div class="field-row">
-    <label class="field-label">Form</label>
-    <div class="field-input select-with-btn">
-      <select id="delete-form-select"><option value="">— Select Form —</option></select>
-      <button class="btn btn-sm" onclick="refreshFormSelect('delete-form-select')">Refresh</button>
-    </div>
-  </div>
+  <div class="field-row"><label class="field-label">Form</label><div class="field-input select-with-btn"><select id="delete-form-select"><option value="">— Select Form —</option></select><button class="btn btn-sm" onclick="refreshFormSelect('delete-form-select')">Refresh</button></div></div>
   <div class="modal-footer">
     <button class="btn" onclick="closeModal('formDeleteModal')">Cancel</button>
     <button class="btn btn-primary btn-danger" onclick="confirmDeleteForm()">OK</button>
@@ -472,7 +441,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 <div class="modal" style="max-width:400px">
   <div class="modal-title">New Issue <button class="modal-close" onclick="closeModal('issueNewModal')">×</button></div>
   <input type="hidden" id="issue-edit-id">
-  <div class="field-row"><label class="field-label">Issue name*</label><div class="field-input"><input type="text" id="issue-name" placeholder="e.g. Party Details"></div></div>
+  <div class="field-row"><label class="field-label">Issue name*</label><div class="field-input"><input type="text" id="issue-name"></div></div>
   <div class="field-row"><label class="field-label">Parent issue</label><div class="field-input"><select id="issue-parent"><option value="">— Top level —</option></select></div></div>
   <div class="modal-footer">
     <button class="btn" onclick="closeModal('issueNewModal')">Cancel</button>
@@ -480,7 +449,6 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
   </div>
 </div>
 </div>
-
 <div class="modal-overlay" id="issueEditModal">
 <div class="modal" style="max-width:400px">
   <div class="modal-title">View/Edit Issue <button class="modal-close" onclick="closeModal('issueEditModal')">×</button></div>
@@ -498,17 +466,10 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
   </div>
 </div>
 </div>
-
 <div class="modal-overlay" id="issueDeleteModal">
 <div class="modal" style="max-width:380px">
   <div class="modal-title">Delete Issue <button class="modal-close" onclick="closeModal('issueDeleteModal')">×</button></div>
-  <div class="field-row">
-    <label class="field-label">Issue</label>
-    <div class="field-input select-with-btn">
-      <select id="delete-issue-select"><option value="">— Select Issue —</option></select>
-      <button class="btn btn-sm" onclick="refreshIssueSelect('delete-issue-select')">Refresh</button>
-    </div>
-  </div>
+  <div class="field-row"><label class="field-label">Issue</label><div class="field-input select-with-btn"><select id="delete-issue-select"><option value="">— Select Issue —</option></select><button class="btn btn-sm" onclick="refreshIssueSelect('delete-issue-select')">Refresh</button></div></div>
   <div class="modal-footer">
     <button class="btn" onclick="closeModal('issueDeleteModal')">Cancel</button>
     <button class="btn btn-primary btn-danger" onclick="confirmDeleteIssue()">OK</button>
@@ -530,89 +491,47 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border
 </div>
 
 <script>
-// ---- Constants ----
-const DATA_TYPES = ['Text','Number','Integer','Currency','Percent','List','Ordered List','Dynamic List','Yes/No','URL','Date','Time','Timestamp','Instance'];
-const OPERATORS = [
-  {val:'eq',label:'== (equals)'},{val:'neq',label:'!= (not equals)'},
-  {val:'gt',label:'> (greater than)'},{val:'gte',label:'>= (greater or equal)'},
-  {val:'lt',label:'< (less than)'},{val:'lte',label:'<= (less or equal)'},
-  {val:'contains',label:'contains'}
-];
+// ========== CONSTANTS ==========
+const DATA_TYPES=['Text','Number','Integer','Currency','Percent','List','Ordered List','Dynamic List','Yes/No','URL','Date','Time','Timestamp','Instance'];
+const OPERATORS=[{val:'eq',label:'== (equals)'},{val:'neq',label:'!= (not equals)'},{val:'gt',label:'> (greater than)'},{val:'gte',label:'>= (greater or equal)'},{val:'lt',label:'< (less than)'},{val:'lte',label:'<= (less or equal)'},{val:'contains',label:'contains'}];
+const MSAL_CONFIG={auth:{clientId:'5866d669-cc23-4aa4-960a-a8792620a4ce',authority:'https://login.microsoftonline.com/common',redirectUri:'https://charmysh.github.io/word/taskpane.html'},cache:{cacheLocation:'sessionStorage'}};
 
-// ---- State ----
-const state = {
-  variables:[],conditions:[],forms:[],issues:[],repeats:[],nvds:[],
-  tempChildVars:[],_selectedNVDS:null,
-  nextId:()=>Date.now()+Math.floor(Math.random()*9999)
-};
+// ========== STATE ==========
+const state={variables:[],conditions:[],forms:[],issues:[],repeats:[],nvds:[],tempChildVars:[],_selectedNVDS:null,nextId:()=>Date.now()+Math.floor(Math.random()*9999)};
+let msalInstance=null;
 
-// ---- Utilities ----
+// ========== UTILITIES ==========
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function xmlEsc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function setStatus(msg,type=''){
-  const b=document.getElementById('status-bar');
-  b.textContent=msg;b.className='status-bar'+(type?' '+type:'');
-  if(type!=='error')setTimeout(()=>{b.textContent='Ready';b.className='status-bar';},4000);
-}
-function showPanel(id){
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('panel-'+id).classList.add('active');
-  const idx=['variables','conditions','forms','issues','repeat','organizer','tools'];
-  document.querySelectorAll('.nav-btn')[idx.indexOf(id)]?.classList.add('active');
-  if(id==='organizer')renderOrganizer();
-}
+function setStatus(msg,type=''){const b=document.getElementById('status-bar');b.textContent=msg;b.className='status-bar'+(type?' '+type:'');if(type!=='error')setTimeout(()=>{b.textContent='Ready';b.className='status-bar';},4000);}
+function showPanel(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('panel-'+id).classList.add('active');const idx=['variables','conditions','forms','issues','repeat','organizer','tools'];document.querySelectorAll('.nav-btn')[idx.indexOf(id)]?.classList.add('active');if(id==='organizer')renderOrganizer();}
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 function toggleMenu(id){closeMenus();document.getElementById(id).classList.toggle('open');}
 function closeMenus(){document.querySelectorAll('.dropdown').forEach(d=>d.classList.remove('open'));}
 document.addEventListener('click',e=>{if(!e.target.closest('.menu-group'))closeMenus();});
+function generateGuid(){return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16).toUpperCase();});}
 
-// ---- Combo box ----
+// ========== COMBO BOX ==========
 function openCombo(inputId,dropId,sourceKey){
   document.querySelectorAll('.combo-drop').forEach(d=>{if(d.id!==dropId)d.classList.remove('open');});
   const drop=document.getElementById(dropId);if(!drop)return;
   let items=[];
-  if(sourceKey==='issues'){
-    const fromIssues=state.issues.map(i=>i.name);
-    const fromVars=state.variables.map(v=>v.issueName).filter(Boolean);
-    items=[...new Set([...fromIssues,...fromVars])];
-  }
-  if(sourceKey==='forms'){
-    const fromForms=state.forms.map(f=>f.name);
-    const fromVars=state.variables.map(v=>v.formName).filter(Boolean);
-    items=[...new Set([...fromForms,...fromVars])];
-  }
-  drop.innerHTML=items.length?items.map(name=>`<div class="combo-opt" onclick="pickCombo('${inputId}','${name.replace(/'/g,"\\'")}','${dropId}')">${esc(name)}</div>`).join(''):`<div class="combo-opt" style="color:var(--color-text-tertiary,#aaa);font-style:italic">Nothing defined yet</div>`;
+  if(sourceKey==='issues'){const a=state.issues.map(i=>i.name);const b=state.variables.map(v=>v.issueName).filter(Boolean);items=[...new Set([...a,...b])];}
+  if(sourceKey==='forms'){const a=state.forms.map(f=>f.name);const b=state.variables.map(v=>v.formName).filter(Boolean);items=[...new Set([...a,...b])];}
+  drop.innerHTML=items.length?items.map(n=>`<div class="combo-opt" onclick="pickCombo('${inputId}','${n.replace(/'/g,"\\'")}','${dropId}')">${esc(n)}</div>`).join(''):`<div class="combo-opt" style="color:var(--color-text-tertiary,#aaa);font-style:italic">Nothing defined yet</div>`;
   drop.classList.toggle('open');
 }
 function pickCombo(inputId,val,dropId){const inp=document.getElementById(inputId);if(inp)inp.value=val;document.getElementById(dropId)?.classList.remove('open');}
 document.addEventListener('click',e=>{if(!e.target.closest('.combo-wrap'))document.querySelectorAll('.combo-drop').forEach(d=>d.classList.remove('open'));});
 
-// ---- Data type helpers ----
-function buildTypeOptions(selId,selectedVal='Text'){
-  const s=document.getElementById(selId);if(!s)return;
-  s.innerHTML=DATA_TYPES.map(t=>`<option value="${t}" ${t===selectedVal?'selected':''}>${t}</option>`).join('');
-}
+// ========== DATA TYPE HELPERS ==========
+function buildTypeOptions(selId,selectedVal='Text'){const s=document.getElementById(selId);if(!s)return;s.innerHTML=DATA_TYPES.map(t=>`<option value="${t}" ${t===selectedVal?'selected':''}>${t}</option>`).join('');}
 function getNVDSOptions(){return '<option value="">—</option>'+state.nvds.map(n=>`<option value="${n.id}">${esc(n.name)}</option>`).join('');}
-function getListVarOptions(selectedId){
-  return '<option value="">— Select source variable —</option>'+state.variables.filter(v=>v.type==='List'||v.type==='Ordered List').map(v=>`<option value="${v.id}" ${v.id==selectedId?'selected':''}>${esc(v.mergeField||v.name)}</option>`).join('');
-}
-function getDefaultPlaceholder(type){
-  switch(type){
-    case 'Number':return 'Sample: 12,345.68, -12, 345.68';
-    case 'Integer':return 'Sample: 12345, -12, 0';
-    case 'Currency':return 'Sample: $12,345.68, -$12.00';
-    case 'Percent':return 'Sample: 1,234,567.89%, -1, 234, 567.89 %';
-    case 'Date':return 'Sample: 2024-01-31';
-    case 'Time':return 'Sample: 14:30, 2:30 PM';
-    case 'Timestamp':return 'Sample: 2024-01-31 14:30:00';
-    case 'URL':return 'Sample: https://example.com';
-    default:return '';
-  }
-}
+function getListVarOptions(selectedId){return '<option value="">— Select source variable —</option>'+state.variables.filter(v=>v.type==='List'||v.type==='Ordered List').map(v=>`<option value="${v.id}" ${v.id==selectedId?'selected':''}>${esc(v.mergeField||v.name)}</option>`).join('');}
+function getDefaultPlaceholder(type){switch(type){case 'Number':return 'Sample: 12,345.68, -12, 345.68';case 'Integer':return 'Sample: 12345, -12, 0';case 'Currency':return 'Sample: $12,345.68, -$12.00';case 'Percent':return 'Sample: 1,234,567.89%, -1, 234, 567.89 %';case 'Date':return 'Sample: 2024-01-31';case 'Time':return 'Sample: 14:30, 2:30 PM';case 'Timestamp':return 'Sample: 2024-01-31 14:30:00';case 'URL':return 'Sample: https://example.com';default:return '';}}
 
-// ---- Variable form builder ----
+// ========== VARIABLE FORM BUILDER ==========
 function buildVarFields(containerId,v,disabled){
   const isInstance=v?v.type==='Instance':false;
   const isList=v?(v.type==='List'||v.type==='Ordered List'||v.type==='Yes/No'):false;
@@ -620,7 +539,6 @@ function buildVarFields(containerId,v,disabled){
   const isNVDS=v?(v.type==='List'||v.type==='Ordered List'||v.type==='Yes/No'):false;
   const isListRequired=v?(v.type==='List'||v.type==='Ordered List'):false;
   const d=disabled?'disabled':'';
-  const nvdsOpts=getNVDSOptions();
   const issueVal=v&&v.issueName?esc(v.issueName):'First Issue';
   const formVal=v&&v.formName?esc(v.formName):'';
   const leftFields=`
@@ -628,7 +546,7 @@ function buildVarFields(containerId,v,disabled){
     <div class="field-row"><label class="field-label">Data Type*</label><div class="field-input"><select id="${containerId}-type" onchange="onTypeChange('${containerId}')" ${d}>${DATA_TYPES.map(t=>`<option value="${t}" ${v&&v.type===t?'selected':''}>${t}</option>`).join('')}</select></div></div>
     <div class="field-row" id="${containerId}-listval-row" style="display:${isList?'flex':'none'}"><label class="field-label" id="${containerId}-listval-label">List Values${isListRequired?'*':''}</label><div class="field-input"><input type="text" id="${containerId}-listvals" value="${v&&v.listValues?esc(v.listValues.join(', ')):''}" ${isList?'':'disabled'} placeholder="Comma separated"></div></div>
     <div class="field-row" id="${containerId}-valset-row" style="display:${isDynamic?'flex':'none'}"><label class="field-label">Source*</label><div class="field-input"><select id="${containerId}-valset">${getListVarOptions(v&&v.valsetId)}</select></div></div>
-    <div class="field-row" id="${containerId}-nvds-row" style="display:${isNVDS?'flex':'none'}"><label class="field-label">Values Set</label><div class="field-input"><select id="${containerId}-nvds" ${d}>${nvdsOpts}</select></div></div>
+    <div class="field-row" id="${containerId}-nvds-row" style="display:${isNVDS?'flex':'none'}"><label class="field-label">Values Set</label><div class="field-input"><select id="${containerId}-nvds" ${d}>${getNVDSOptions()}</select></div></div>
     <div class="field-row"><label class="field-label">Question Text*</label><div class="field-input"><input type="text" id="${containerId}-question" value="${v?esc(v.question||''):''}" ${d}></div></div>
     <div class="field-row"><label class="field-label">Hint Text</label><div class="field-input"><input type="text" id="${containerId}-hint" value="${v?esc(v.hint||''):''}" ${d}></div></div>
     <div class="field-row"><label class="field-label">Default Answer</label><div class="field-input"><textarea id="${containerId}-default" rows="2" ${d} placeholder="${getDefaultPlaceholder(v?v.type:'Text')}">${v?esc(v.defaultAnswer||''):''}</textarea></div></div>
@@ -641,7 +559,7 @@ function buildVarFields(containerId,v,disabled){
   const container=document.getElementById(containerId);if(!container)return;
   if(isInstance){
     state.tempChildVars=v?JSON.parse(JSON.stringify(v.children||[])):[];
-    container.innerHTML=`<div class="instance-layout"><div class="instance-left">${leftFields}<div class="checkbox-row"><input type="checkbox" id="${containerId}-use-children" ${v&&v.useChildrenNow?'checked':''}><label for="${containerId}-use-children">Use child variables in the document now</label></div><div class="checkbox-row" style="margin-left:21px"><input type="checkbox" id="${containerId}-replace-all" disabled><label for="${containerId}-replace-all">Replace all occurrences of the selected text</label></div></div><div class="instance-right"><div style="font-size:12px;font-weight:500;margin-bottom:6px">Child Variables</div><button class="btn btn-sm" onclick="openModal('childVarModal')" style="margin-bottom:8px">New Child Variable</button><div id="${containerId}-children-list"></div></div></div>`;
+    container.innerHTML=`<div class="instance-layout"><div class="instance-left">${leftFields}<div class="checkbox-row"><input type="checkbox" id="${containerId}-use-children"><label for="${containerId}-use-children">Use child variables in the document now</label></div><div class="checkbox-row" style="margin-left:21px"><input type="checkbox" id="${containerId}-replace-all" disabled><label for="${containerId}-replace-all">Replace all occurrences of the selected text</label></div></div><div class="instance-right"><div style="font-size:12px;font-weight:500;margin-bottom:6px">Child Variables</div><button class="btn btn-sm" onclick="openModal('childVarModal')" style="margin-bottom:8px">New Child Variable</button><div id="${containerId}-children-list"></div></div></div>`;
     renderChildVarsList(containerId);
   } else {
     container.innerHTML=`${leftFields}<div class="checkbox-row"><input type="checkbox" id="${containerId}-use-now" checked ${d}><label for="${containerId}-use-now">Use this variable in the document now</label></div><div class="checkbox-row" style="margin-left:21px"><input type="checkbox" id="${containerId}-replace-all" disabled><label for="${containerId}-replace-all" style="color:var(--color-text-tertiary,#aaa)">Replace all occurrences of the selected text</label></div>`;
@@ -668,69 +586,27 @@ function onTypeChange(containerId){
   if(mvCb){mvCb.disabled=(type==='Yes/No');if(type==='Yes/No')mvCb.checked=false;}
   const defEl=document.getElementById(containerId+'-default');
   if(defEl)defEl.placeholder=getDefaultPlaceholder(type);
-  if(type==='Instance'){const name=document.getElementById(containerId+'-name')?.value||'';const partial={type:'Instance',name,question:'',hint:'',defaultAnswer:'',listValues:[],folder:'',note:'',isQuestion:true,isMultiValue:false,children:state.tempChildVars||[]};buildVarFields(containerId,partial,false);}
+  if(type==='Instance'){const name=document.getElementById(containerId+'-name')?.value||'';buildVarFields(containerId,{type:'Instance',name,question:'',hint:'',defaultAnswer:'',listValues:[],folder:'',note:'',isQuestion:true,isMultiValue:false,children:state.tempChildVars||[]},false);}
 }
 
-function renderChildVarsList(containerId){
-  const el=document.getElementById(containerId+'-children-list');if(!el)return;
-  if(!state.tempChildVars.length){el.innerHTML='<div style="font-size:11px;color:var(--color-text-tertiary,#aaa);font-style:italic">No child variables</div>';return;}
-  el.innerHTML=state.tempChildVars.map((c,i)=>`<div class="child-var-item"><span>${esc(c.name)} <span style="color:var(--color-text-tertiary,#aaa);font-size:10px">(${c.type})</span></span><button class="btn btn-sm btn-danger" onclick="removeChildVar(${i},'${containerId}')">×</button></div>`).join('');
-}
+function renderChildVarsList(containerId){const el=document.getElementById(containerId+'-children-list');if(!el)return;if(!state.tempChildVars.length){el.innerHTML='<div style="font-size:11px;color:var(--color-text-tertiary,#aaa);font-style:italic">No child variables</div>';return;}el.innerHTML=state.tempChildVars.map((c,i)=>`<div class="child-var-item"><span>${esc(c.name)} <span style="color:var(--color-text-tertiary,#aaa);font-size:10px">(${c.type})</span></span><button class="btn btn-sm btn-danger" onclick="removeChildVar(${i},'${containerId}')">×</button></div>`).join('');}
 function removeChildVar(idx,containerId){state.tempChildVars.splice(idx,1);renderChildVarsList(containerId);}
 function onChildTypeChange(){const t=document.getElementById('child-type').value;document.getElementById('child-listval-row').style.display=(t==='List'||t==='Ordered List')?'flex':'none';}
-function saveChildVar(){
-  const name=document.getElementById('child-name').value.trim();
-  if(!name){setStatus('Child variable name required','error');return;}
-  state.tempChildVars.push({name,type:document.getElementById('child-type').value,listValues:document.getElementById('child-listvals').value.split(',').map(s=>s.trim()).filter(Boolean),question:document.getElementById('child-question').value.trim(),hint:document.getElementById('child-hint').value.trim(),defaultAnswer:document.getElementById('child-default').value.trim(),note:document.getElementById('child-note').value.trim(),isQuestion:document.getElementById('child-is-question').checked,isMultiValue:document.getElementById('child-is-mv').checked});
-  closeModal('childVarModal');
-  const activeList=document.querySelector('[id$="-children-list"]');
-  if(activeList)renderChildVarsList(activeList.id.replace('-children-list',''));
-}
+function saveChildVar(){const name=document.getElementById('child-name').value.trim();if(!name){setStatus('Child variable name required','error');return;}state.tempChildVars.push({name,type:document.getElementById('child-type').value,listValues:document.getElementById('child-listvals').value.split(',').map(s=>s.trim()).filter(Boolean),question:document.getElementById('child-question').value.trim(),hint:document.getElementById('child-hint').value.trim(),defaultAnswer:document.getElementById('child-default').value.trim(),note:document.getElementById('child-note').value.trim(),isQuestion:document.getElementById('child-is-question').checked,isMultiValue:document.getElementById('child-is-mv').checked});closeModal('childVarModal');const activeList=document.querySelector('[id$="-children-list"]');if(activeList)renderChildVarsList(activeList.id.replace('-children-list',''));}
 
-function readVarFields(prefix){
-  return {
-    name:document.getElementById(prefix+'-name')?.value.trim()||'',
-    type:document.getElementById(prefix+'-type')?.value||'Text',
-    listValues:(document.getElementById(prefix+'-listvals')?.value||'').split(',').map(s=>s.trim()).filter(Boolean),
-    valsetId:document.getElementById(prefix+'-valset')?.value||'',
-    question:document.getElementById(prefix+'-question')?.value.trim()||'',
-    hint:document.getElementById(prefix+'-hint')?.value.trim()||'',
-    defaultAnswer:document.getElementById(prefix+'-default')?.value.trim()||'',
-    issueName:document.getElementById(prefix+'-issue')?.value.trim()||'First Issue',
-    issueId:'',
-    folder:document.getElementById(prefix+'-folder')?.value.trim()||'',
-    formName:document.getElementById(prefix+'-form')?.value.trim()||'',
-    formId:'',
-    note:document.getElementById(prefix+'-note')?.value.trim()||'',
-    isQuestion:document.getElementById(prefix+'-is-question')?.checked!==false,
-    isMultiValue:document.getElementById(prefix+'-is-mv')?.checked||false,
-    children:state.tempChildVars||[]
-  };
-}
+function readVarFields(prefix){return{name:document.getElementById(prefix+'-name')?.value.trim()||'',type:document.getElementById(prefix+'-type')?.value||'Text',listValues:(document.getElementById(prefix+'-listvals')?.value||'').split(',').map(s=>s.trim()).filter(Boolean),valsetId:document.getElementById(prefix+'-valset')?.value||'',question:document.getElementById(prefix+'-question')?.value.trim()||'',hint:document.getElementById(prefix+'-hint')?.value.trim()||'',defaultAnswer:document.getElementById(prefix+'-default')?.value.trim()||'',issueName:document.getElementById(prefix+'-issue')?.value.trim()||'First Issue',issueId:'',folder:document.getElementById(prefix+'-folder')?.value.trim()||'',formName:document.getElementById(prefix+'-form')?.value.trim()||'',formId:'',note:document.getElementById(prefix+'-note')?.value.trim()||'',isQuestion:document.getElementById(prefix+'-is-question')?.checked!==false,isMultiValue:document.getElementById(prefix+'-is-mv')?.checked||false,children:state.tempChildVars||[]};}
 
-// ---- Validation ----
 function clearFieldErrors(prefix){document.querySelectorAll(`#${prefix} .field-error`).forEach(el=>el.classList.remove('field-error'));document.querySelectorAll(`#${prefix} .field-error-msg`).forEach(el=>el.remove());}
 function showFieldError(fieldId,msg){const el=document.getElementById(fieldId);if(!el)return;el.classList.add('field-error');el.parentElement.querySelectorAll('.field-error-msg').forEach(e=>e.remove());const span=document.createElement('span');span.className='field-error-msg';span.textContent=msg;el.insertAdjacentElement('afterend',span);el.focus();}
 
-// ---- New Variable ----
+// ========== NEW VARIABLE ==========
 function openNewVar(){
   state.tempChildVars=[];
   document.getElementById('var-new-layout').innerHTML='<div id="vnew"></div>';
-  const openWithText=(selectedText)=>{
-    buildVarFields('vnew', selectedText?{name:selectedText}:null, false);
-    buildTypeOptions('vnew-type','Text');
-    openModal('varNewModal');
-  };
+  const openWithText=(selectedText)=>{buildVarFields('vnew',selectedText?{name:selectedText}:null,false);buildTypeOptions('vnew-type','Text');openModal('varNewModal');};
   if(typeof Word!=='undefined'&&typeof Office!=='undefined'&&Office.context){
-    Word.run(async ctx=>{
-      const sel=ctx.document.getSelection();
-      sel.load('text');
-      await ctx.sync();
-      openWithText(sel.text?sel.text.trim():'');
-    }).catch(()=>openWithText(''));
-  } else {
-    openWithText('');
-  }
+    Word.run(async ctx=>{const sel=ctx.document.getSelection();sel.load('text');await ctx.sync();openWithText(sel.text?sel.text.trim():'');}).catch(()=>openWithText(''));
+  } else openWithText('');
 }
 
 function saveNewVariable(){
@@ -740,421 +616,127 @@ function saveNewVariable(){
   if(!v.name){showFieldError('vnew-name','Name is required');hasError=true;}
   if(!v.question){showFieldError('vnew-question','Question Text is required');hasError=true;}
   if(hasError)return;
-  v.id=state.nextId();
-  v.mergeField=v.name+'/'+(v.issueName||'First Issue')+'/';
-  const useNow=document.getElementById('vnew-use-now')?.checked;
-  const replaceAll=document.getElementById('vnew-replace-all')?.checked;
-  state.variables.push(v);
-  closeModal('varNewModal');
-  renderVariables();
-  saveStateToSettings();
-  setStatus('Variable "'+v.name+'" created');
-  if(useNow)doInsertByVar(v,replaceAll);
-}
-
-// ---- View/Edit Variable ----
-function openViewEditVar(){refreshVarSelect('edit-var-select',loadVarForEdit);document.getElementById('var-edit-fields').innerHTML='';openModal('varEditModal');}
-function refreshVarSelect(selId,cb){
-  const s=document.getElementById(selId);if(!s)return;
-  const cur=s.value;
-  s.innerHTML='<option value="">— Select Variable —</option>'+state.variables.map(v=>`<option value="${v.id}">${esc(v.name)}/${esc(v.issueName||'')}/</option>`).join('');
-  if(cur)s.value=cur;if(cb)cb();
-}
-function loadVarForEdit(){
-  const id=document.getElementById('edit-var-select').value;
-  const v=state.variables.find(x=>x.id==id);
-  const el=document.getElementById('var-edit-fields');
-  if(!v){el.innerHTML='';return;}
-  el.innerHTML='<div id="vedit"></div>';
-  state.tempChildVars=JSON.parse(JSON.stringify(v.children||[]));
-  buildVarFields('vedit',v,false);
-}
-function saveEditVariable(){
-  const id=document.getElementById('edit-var-select').value;
-  if(!id){setStatus('Select a variable','warn');return;}
-  const v=readVarFields('vedit');
-  if(!v.name){setStatus('Name is required','error');return;}
-  const idx=state.variables.findIndex(x=>x.id==id);
-  if(idx<0)return;
-  v.id=id;v.mergeField=v.name+'/'+(v.issueName||'First Issue')+'/';
-  state.variables[idx]=v;
-  closeModal('varEditModal');renderVariables();saveStateToSettings();setStatus('Variable "'+v.name+'" updated');
-}
-function saveAsNewVar(){
-  const v=readVarFields('vedit');
-  if(!v.name){setStatus('Name is required','error');return;}
   v.id=state.nextId();v.mergeField=v.name+'/'+(v.issueName||'First Issue')+'/';
-  state.variables.push(v);closeModal('varEditModal');renderVariables();setStatus('Variable "'+v.name+'" saved as new');
+  const useNow=document.getElementById('vnew-use-now')?.checked;
+  state.variables.push(v);closeModal('varNewModal');renderVariables();saveStateToSettings();setStatus('Variable "'+v.name+'" created');
+  if(useNow)doInsertByVar(v);
 }
 
-// ---- Delete Variable ----
+// ========== VIEW/EDIT/DELETE VARIABLE ==========
+function openViewEditVar(){refreshVarSelect('edit-var-select',loadVarForEdit);document.getElementById('var-edit-fields').innerHTML='';openModal('varEditModal');}
+function refreshVarSelect(selId,cb){const s=document.getElementById(selId);if(!s)return;const cur=s.value;s.innerHTML='<option value="">— Select Variable —</option>'+state.variables.map(v=>`<option value="${v.id}">${esc(v.name)}/${esc(v.issueName||'')}/</option>`).join('');if(cur)s.value=cur;if(cb)cb();}
+function loadVarForEdit(){const id=document.getElementById('edit-var-select').value;const v=state.variables.find(x=>x.id==id);const el=document.getElementById('var-edit-fields');if(!v){el.innerHTML='';return;}el.innerHTML='<div id="vedit"></div>';state.tempChildVars=JSON.parse(JSON.stringify(v.children||[]));buildVarFields('vedit',v,false);}
+function saveEditVariable(){const id=document.getElementById('edit-var-select').value;if(!id){setStatus('Select a variable','warn');return;}const v=readVarFields('vedit');if(!v.name){setStatus('Name is required','error');return;}const idx=state.variables.findIndex(x=>x.id==id);if(idx<0)return;v.id=id;v.mergeField=v.name+'/'+(v.issueName||'First Issue')+'/';state.variables[idx]=v;closeModal('varEditModal');renderVariables();saveStateToSettings();setStatus('Variable "'+v.name+'" updated');}
+function saveAsNewVar(){const v=readVarFields('vedit');if(!v.name){setStatus('Name is required','error');return;}v.id=state.nextId();v.mergeField=v.name+'/'+(v.issueName||'First Issue')+'/';state.variables.push(v);closeModal('varEditModal');renderVariables();saveStateToSettings();setStatus('Variable "'+v.name+'" saved as new');}
 function openDeleteVar(){refreshVarSelect('delete-var-select',loadVarForDelete);document.getElementById('var-delete-fields').innerHTML='';openModal('varDeleteModal');}
-function loadVarForDelete(){
-  const id=document.getElementById('delete-var-select').value;
-  const v=state.variables.find(x=>x.id==id);
-  const el=document.getElementById('var-delete-fields');
-  if(!v){el.innerHTML='';return;}
-  el.innerHTML='<div id="vdel"></div>';buildVarFields('vdel',v,true);
-}
-function confirmDeleteVar(){
-  const id=document.getElementById('delete-var-select').value;
-  if(!id){setStatus('Select a variable','warn');return;}
-  const v=state.variables.find(x=>x.id==id);
-  state.variables=state.variables.filter(x=>x.id!=id);
-  closeModal('varDeleteModal');renderVariables();saveStateToSettings();setStatus('Variable "'+(v?.name||'')+'" deleted');
-}
-
-// ---- Use Existing ----
+function loadVarForDelete(){const id=document.getElementById('delete-var-select').value;const v=state.variables.find(x=>x.id==id);const el=document.getElementById('var-delete-fields');if(!v){el.innerHTML='';return;}el.innerHTML='<div id="vdel"></div>';buildVarFields('vdel',v,true);}
+function confirmDeleteVar(){const id=document.getElementById('delete-var-select').value;if(!id){setStatus('Select a variable','warn');return;}const v=state.variables.find(x=>x.id==id);state.variables=state.variables.filter(x=>x.id!=id);closeModal('varDeleteModal');renderVariables();saveStateToSettings();setStatus('Variable "'+(v?.name||'')+'" deleted');}
 function openUseExisting(){refreshVarSelect('use-var-select',loadVarForUse);document.getElementById('var-use-fields').innerHTML='';document.getElementById('use-var-replace-row').style.display='none';openModal('varUseModal');}
-function loadVarForUse(){
-  const id=document.getElementById('use-var-select').value;
-  const v=state.variables.find(x=>x.id==id);
-  const el=document.getElementById('var-use-fields');
-  if(!v){el.innerHTML='';document.getElementById('use-var-replace-row').style.display='none';return;}
-  el.innerHTML='<div id="vuse"></div>';buildVarFields('vuse',v,true);
-  document.getElementById('use-var-replace-row').style.display='block';
-}
-function doUseExisting(){
-  const id=document.getElementById('use-var-select').value;
-  const v=state.variables.find(x=>x.id==id);
-  if(!v){setStatus('Select a variable','warn');return;}
-  const replaceAll=document.getElementById('use-replace-all')?.checked;
-  closeModal('varUseModal');doInsertByVar(v,replaceAll);
-}
+function loadVarForUse(){const id=document.getElementById('use-var-select').value;const v=state.variables.find(x=>x.id==id);const el=document.getElementById('var-use-fields');if(!v){el.innerHTML='';document.getElementById('use-var-replace-row').style.display='none';return;}el.innerHTML='<div id="vuse"></div>';buildVarFields('vuse',v,true);document.getElementById('use-var-replace-row').style.display='block';}
+function doUseExisting(){const id=document.getElementById('use-var-select').value;const v=state.variables.find(x=>x.id==id);if(!v){setStatus('Select a variable','warn');return;}closeModal('varUseModal');doInsertByVar(v);}
 
-// ---- NVDS ----
+// ========== NVDS ==========
 function openNVDS(){renderNVDSTable();openModal('nvdsModal');}
-function renderNVDSTable(){
-  const tbody=document.getElementById('nvds-tbody');
-  tbody.innerHTML=state.nvds.length?state.nvds.map((n,i)=>`<tr onclick="selectNVDS(${i})"><td>${esc(n.name)}</td><td>${esc(n.type)}</td></tr>`).join(''):'<tr><td colspan="2" style="color:var(--color-text-tertiary,#aaa);font-style:italic;text-align:center">No sets defined</td></tr>';
-}
+function renderNVDSTable(){const tbody=document.getElementById('nvds-tbody');tbody.innerHTML=state.nvds.length?state.nvds.map((n,i)=>`<tr onclick="selectNVDS(${i})"><td>${esc(n.name)}</td><td>${esc(n.type)}</td></tr>`).join(''):'<tr><td colspan="2" style="color:var(--color-text-tertiary,#aaa);font-style:italic;text-align:center">No sets defined</td></tr>';}
 function selectNVDS(i){document.querySelectorAll('#nvds-tbody tr').forEach((r,idx)=>r.classList.toggle('selected',idx===i));state._selectedNVDS=i;}
-function addNVDS(){
-  const name=document.getElementById('nvds-name').value.trim();
-  if(!name){setStatus('Enter a name','warn');return;}
-  state.nvds.push({id:state.nextId(),name,type:document.getElementById('nvds-type').value});
-  document.getElementById('nvds-name').value='';renderNVDSTable();
-}
-function removeNVDS(){
-  if(state._selectedNVDS===null||state._selectedNVDS===undefined){setStatus('Select a set to remove','warn');return;}
-  state.nvds.splice(state._selectedNVDS,1);state._selectedNVDS=null;renderNVDSTable();
-}
+function addNVDS(){const name=document.getElementById('nvds-name').value.trim();if(!name){setStatus('Enter a name','warn');return;}state.nvds.push({id:state.nextId(),name,type:document.getElementById('nvds-type').value});document.getElementById('nvds-name').value='';renderNVDSTable();}
+function removeNVDS(){if(state._selectedNVDS===null||state._selectedNVDS===undefined){setStatus('Select a set to remove','warn');return;}state.nvds.splice(state._selectedNVDS,1);state._selectedNVDS=null;renderNVDSTable();}
 
-// ---- Insert merge field ----
-function doInsertByVar(v,replaceAll){
+// ========== INSERT MERGE FIELD ==========
+function doInsertByVar(v){
   if(typeof Word==='undefined'){setStatus('Office.js not loaded','error');return;}
   const mergeField=v.mergeField||(v.name+'/'+(v.issueName||'First Issue')+'/');
   const displayText='\u00AB'+mergeField+'\u00BB';
   Word.run(async ctx=>{
     try{
-      const sel=ctx.document.getSelection();
-      await ctx.sync();
-      // Try insertField API first (Word Online supported)
+      const sel=ctx.document.getSelection();await ctx.sync();
       try{
-        const field=sel.insertField(Word.FieldType.mergeField,'\"'+mergeField+'\"');
-        await ctx.sync();
-        setStatus('Merge field inserted: '+v.name);
-        console.log('insertField succeeded');
-        return;
-      }catch(fieldErr){
-        console.log('insertField failed, trying OOXML:',fieldErr.message);
-      }
-      // Try OOXML approach
-      try{
-        const ooxml=`<pkg:package xmlns:pkg="http://schemas.microsoft.com/office/2006/xmlPackage"><pkg:part pkg:name="/_rels/.rels" pkg:contentType="application/vnd.openxmlformats-package.relationships+xml"><pkg:xmlData><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships></pkg:xmlData></pkg:part><pkg:part pkg:name="/word/document.xml" pkg:contentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"><pkg:xmlData><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:r><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:rPr><w:color w:val="0000FF"/></w:rPr><w:instrText xml:space="preserve"> MERGEFIELD ${mergeField} \\* MERGEFORMAT </w:instrText></w:r><w:r><w:fldChar w:fldCharType="separate"/></w:r><w:r><w:rPr><w:noProof/><w:color w:val="0000FF"/></w:rPr><w:t>${displayText}</w:t></w:r><w:r><w:fldChar w:fldCharType="end"/></w:r></w:p></w:body></w:document></pkg:xmlData></pkg:part></pkg:package>`;
-        sel.insertOoxml(ooxml,Word.InsertLocation.replace);
-        await ctx.sync();
-        setStatus('Merge field inserted via OOXML: '+v.name);
-        console.log('OOXML succeeded');
-        return;
+        const ooxml=`<pkg:package xmlns:pkg="http://schemas.microsoft.com/office/2006/xmlPackage"><pkg:part pkg:name="/_rels/.rels" pkg:contentType="application/vnd.openxmlformats-package.relationships+xml"><pkg:xmlData><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships></pkg:xmlData></pkg:part><pkg:part pkg:name="/word/document.xml" pkg:contentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"><pkg:xmlData><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:r><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:rPr><w:color w:val="0000FF"/></w:rPr><w:instrText xml:space="preserve"> MERGEFIELD ${xmlEsc(mergeField)} \\* MERGEFORMAT </w:instrText></w:r><w:r><w:fldChar w:fldCharType="separate"/></w:r><w:r><w:rPr><w:noProof/><w:color w:val="0000FF"/></w:rPr><w:t>${xmlEsc(displayText)}</w:t></w:r><w:r><w:fldChar w:fldCharType="end"/></w:r></w:p></w:body></w:document></pkg:xmlData></pkg:part></pkg:package>`;
+        sel.insertOoxml(ooxml,Word.InsertLocation.replace);await ctx.sync();setStatus('Merge field inserted: '+v.name);
       }catch(ooxmlErr){
-        console.log('OOXML failed, falling back to plain text:',ooxmlErr.message);
+        const sel2=ctx.document.getSelection();sel2.insertText(displayText,Word.InsertLocation.replace);await ctx.sync();setStatus('Inserted (plain text): '+v.name,'warn');
       }
-      // Final fallback: plain text
-      const sel2=ctx.document.getSelection();
-      sel2.insertText(displayText,Word.InsertLocation.replace);
-      await ctx.sync();
-      setStatus('Inserted as plain text (field APIs unavailable): '+v.name,'warn');
-    }catch(inner){
-      setStatus('Insert failed: '+inner.message,'error');
-    }
+    }catch(inner){setStatus('Insert failed: '+inner.message,'error');}
   }).catch(e=>setStatus('Word API error: '+e.message,'error'));
 }
 
-// ---- Render variables ----
-function renderVariables(){
-  const el=document.getElementById('var-list');
-  if(!state.variables.length){el.innerHTML='<div class="empty">No variables defined yet</div>';return;}
-  el.innerHTML=state.variables.map(v=>`
-    <div class="card">
-      <div class="card-row">
-        <span class="card-name">${esc(v.name)}</span>
-        <span class="card-type">${esc(v.type)}</span>
-        <div class="card-actions">
-          <button class="btn btn-sm" onclick="quickEdit('${v.id}')">Edit</button>
-          <button class="btn btn-sm" onclick="quickUse('${v.id}')">Insert</button>
-          <button class="btn btn-sm btn-danger" onclick="quickDelete('${v.id}')">×</button>
-        </div>
-      </div>
-      ${v.question?`<div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:3px">${esc(v.question)}</div>`:''}
-      ${v.issueName?`<span class="tag">${esc(v.issueName)}</span>`:''}
-    </div>`).join('');
-}
+// ========== RENDER VARIABLES ==========
+function renderVariables(){const el=document.getElementById('var-list');if(!state.variables.length){el.innerHTML='<div class="empty">No variables defined yet</div>';return;}el.innerHTML=state.variables.map(v=>`<div class="card"><div class="card-row"><span class="card-name">${esc(v.name)}</span><span class="card-type">${esc(v.type)}</span><div class="card-actions"><button class="btn btn-sm" onclick="quickEdit('${v.id}')">Edit</button><button class="btn btn-sm" onclick="quickUse('${v.id}')">Insert</button><button class="btn btn-sm btn-danger" onclick="quickDelete('${v.id}')">×</button></div></div>${v.question?`<div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:3px">${esc(v.question)}</div>`:''} ${v.issueName?`<span class="tag">${esc(v.issueName)}</span>`:''}</div>`).join('');}
 function quickEdit(id){openViewEditVar();setTimeout(()=>{document.getElementById('edit-var-select').value=id;loadVarForEdit();},100);}
 function quickUse(id){openUseExisting();setTimeout(()=>{document.getElementById('use-var-select').value=id;loadVarForUse();},100);}
 function quickDelete(id){openDeleteVar();setTimeout(()=>{document.getElementById('delete-var-select').value=id;loadVarForDelete();},100);}
 
-// ---- Conditions ----
-function addExprRow(expr,targetListId){
-  const listId=targetListId||'expr-list';
-  const el=document.getElementById(listId);if(!el)return;
-  const vars=state.variables.map(v=>`<option value="${v.id}" ${expr&&expr.varId==v.id?'selected':''}>${esc(v.name)}</option>`).join('');
-  const ops=OPERATORS.map(o=>`<option value="${o.val}" ${expr&&expr.op===o.val?'selected':''}>${o.label}</option>`).join('');
-  const row=document.createElement('div');row.className='expr-row';
-  row.innerHTML=`<select style="flex:1.5;margin-bottom:0">${vars}</select><select style="margin-bottom:0">${ops}</select><input type="text" placeholder="value" value="${expr?esc(expr.value):''}" style="flex:1;margin-bottom:0"><button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">×</button>`;
-  el.appendChild(row);
-}
-function readExprRows(listId){
-  const rows=document.getElementById(listId)?.querySelectorAll('.expr-row')||[];
-  return Array.from(rows).map(r=>{const sels=r.querySelectorAll('select');const inp=r.querySelector('input');const varId=sels[0].value;const v=state.variables.find(x=>x.id==varId);return{varId,varName:v?v.name:'',varType:v?v.type:'Text',op:sels[1].value,value:inp.value.trim()};}).filter(e=>e.varId);
-}
-function saveCondition(){
-  const name=document.getElementById('cond-name').value.trim();
-  if(!name){setStatus('Name is required','error');return;}
-  const id=document.getElementById('cond-edit-id').value||state.nextId();
-  const conjunct=document.querySelector('input[name="cond-conjunct"]:checked')?.value||'and';
-  const exprs=readExprRows('expr-list');
-  const issueVal=document.getElementById('cond-issue')?.value.trim()||'First Issue';
-  const issueObj=state.issues.find(i=>i.name===issueVal);
-  const c={id,name,desc:document.getElementById('cond-desc').value.trim(),issueId:issueObj?issueObj.id:'',issueName:issueVal,conjunct,expressions:exprs};
-  const idx=state.conditions.findIndex(x=>x.id==id);
-  if(idx>=0)state.conditions[idx]=c;else state.conditions.push(c);
-  closeModal('condNewModal');document.getElementById('cond-edit-id').value='';
-  document.getElementById('expr-list').innerHTML='';
-  document.getElementById('cond-name').value='';
-  renderConditions();saveStateToSettings();setStatus('Condition "'+name+'" saved');
-}
+// ========== CONDITIONS ==========
+function addExprRow(expr,targetListId){const listId=targetListId||'expr-list';const el=document.getElementById(listId);if(!el)return;const vars=state.variables.map(v=>`<option value="${v.id}" ${expr&&expr.varId==v.id?'selected':''}>${esc(v.name)}</option>`).join('');const ops=OPERATORS.map(o=>`<option value="${o.val}" ${expr&&expr.op===o.val?'selected':''}>${o.label}</option>`).join('');const row=document.createElement('div');row.className='expr-row';row.innerHTML=`<select style="flex:1.5;margin-bottom:0">${vars}</select><select style="margin-bottom:0">${ops}</select><input type="text" placeholder="value" value="${expr?esc(expr.value):''}" style="flex:1;margin-bottom:0"><button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">×</button>`;el.appendChild(row);}
+function readExprRows(listId){const rows=document.getElementById(listId)?.querySelectorAll('.expr-row')||[];return Array.from(rows).map(r=>{const sels=r.querySelectorAll('select');const inp=r.querySelector('input');const varId=sels[0].value;const v=state.variables.find(x=>x.id==varId);return{varId,varName:v?v.name:'',varType:v?v.type:'Text',op:sels[1].value,value:inp.value.trim()};}).filter(e=>e.varId);}
+function saveCondition(){const name=document.getElementById('cond-name').value.trim();if(!name){setStatus('Name is required','error');return;}const id=document.getElementById('cond-edit-id').value||state.nextId();const conjunct=document.querySelector('input[name="cond-conjunct"]:checked')?.value||'and';const exprs=readExprRows('expr-list');const issueVal=document.getElementById('cond-issue')?.value.trim()||'First Issue';const issueObj=state.issues.find(i=>i.name===issueVal);const c={id,name,desc:document.getElementById('cond-desc').value.trim(),issueId:issueObj?issueObj.id:'',issueName:issueVal,conjunct,expressions:exprs};const idx=state.conditions.findIndex(x=>x.id==id);if(idx>=0)state.conditions[idx]=c;else state.conditions.push(c);closeModal('condNewModal');document.getElementById('cond-edit-id').value='';document.getElementById('expr-list').innerHTML='';document.getElementById('cond-name').value='';renderConditions();saveStateToSettings();setStatus('Condition "'+name+'" saved');}
 function openViewEditCond(){refreshCondSelect('edit-cond-select');document.getElementById('cond-edit-fields').innerHTML='';openModal('condEditModal');}
-function refreshCondSelect(selId){
-  const s=document.getElementById(selId);if(!s)return;
-  s.innerHTML='<option value="">— Select Condition —</option>'+state.conditions.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
-}
-function loadCondForEdit(){
-  const id=document.getElementById('edit-cond-select').value;
-  const c=state.conditions.find(x=>x.id==id);
-  const el=document.getElementById('cond-edit-fields');if(!c){el.innerHTML='';return;}
-  el.innerHTML=`<div class="field-row"><label class="field-label">Name*</label><div class="field-input"><input type="text" id="cedit-name" value="${esc(c.name)}"></div></div><div class="field-row"><label class="field-label">Description</label><div class="field-input"><input type="text" id="cedit-desc" value="${esc(c.desc||'')}"></div></div><div class="field-row"><label class="field-label">Issue</label><div class="field-input"><div class="combo-wrap"><input type="text" id="cedit-issue" value="${esc(c.issueName||'First Issue')}" autocomplete="off"><button type="button" class="combo-arrow" onclick="openCombo('cedit-issue','cedit-issue-drop','issues')">▾</button><div class="combo-drop" id="cedit-issue-drop"></div></div></div></div><div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:12px"><span>Conjunct:</span><label><input type="radio" name="cedit-conjunct" value="and" ${c.conjunct!=='or'?'checked':''}> AND</label><label><input type="radio" name="cedit-conjunct" value="or" ${c.conjunct==='or'?'checked':''}> OR</label></div><div class="section-title">Expressions</div><div id="cedit-expr-list"></div><button class="btn btn-sm" onclick="addExprRow(null,'cedit-expr-list')">+ Add expression</button>`;
-  c.expressions.forEach(e=>addExprRow(e,'cedit-expr-list'));
-}
-function saveEditCondition(){
-  const id=document.getElementById('edit-cond-select').value;if(!id){setStatus('Select a condition','warn');return;}
-  const name=document.getElementById('cedit-name')?.value.trim();if(!name){setStatus('Name required','error');return;}
-  const conjunct=document.querySelector('input[name="cedit-conjunct"]:checked')?.value||'and';
-  const exprs=readExprRows('cedit-expr-list');
-  const issueVal=document.getElementById('cedit-issue')?.value.trim()||'First Issue';
-  const issueObj=state.issues.find(i=>i.name===issueVal);
-  const idx=state.conditions.findIndex(x=>x.id==id);if(idx<0)return;
-  state.conditions[idx]={id,name,desc:document.getElementById('cedit-desc')?.value.trim()||'',issueId:issueObj?issueObj.id:'',issueName:issueVal,conjunct,expressions:exprs};
-  closeModal('condEditModal');renderConditions();saveStateToSettings();setStatus('Condition "'+name+'" updated');
-}
+function refreshCondSelect(selId){const s=document.getElementById(selId);if(!s)return;s.innerHTML='<option value="">— Select Condition —</option>'+state.conditions.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');}
+function loadCondForEdit(){const id=document.getElementById('edit-cond-select').value;const c=state.conditions.find(x=>x.id==id);const el=document.getElementById('cond-edit-fields');if(!c){el.innerHTML='';return;}el.innerHTML=`<div class="field-row"><label class="field-label">Name*</label><div class="field-input"><input type="text" id="cedit-name" value="${esc(c.name)}"></div></div><div class="field-row"><label class="field-label">Description</label><div class="field-input"><input type="text" id="cedit-desc" value="${esc(c.desc||'')}"></div></div><div class="field-row"><label class="field-label">Issue</label><div class="field-input"><div class="combo-wrap"><input type="text" id="cedit-issue" value="${esc(c.issueName||'First Issue')}" autocomplete="off"><button type="button" class="combo-arrow" onclick="openCombo('cedit-issue','cedit-issue-drop','issues')">▾</button><div class="combo-drop" id="cedit-issue-drop"></div></div></div></div><div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:12px"><span>Conjunct:</span><label><input type="radio" name="cedit-conjunct" value="and" ${c.conjunct!=='or'?'checked':''}> AND</label><label><input type="radio" name="cedit-conjunct" value="or" ${c.conjunct==='or'?'checked':''}> OR</label></div><div class="section-title">Expressions</div><div id="cedit-expr-list"></div><button class="btn btn-sm" onclick="addExprRow(null,'cedit-expr-list')">+ Add expression</button>`;c.expressions.forEach(e=>addExprRow(e,'cedit-expr-list'));}
+function saveEditCondition(){const id=document.getElementById('edit-cond-select').value;if(!id){setStatus('Select a condition','warn');return;}const name=document.getElementById('cedit-name')?.value.trim();if(!name){setStatus('Name required','error');return;}const conjunct=document.querySelector('input[name="cedit-conjunct"]:checked')?.value||'and';const exprs=readExprRows('cedit-expr-list');const issueVal=document.getElementById('cedit-issue')?.value.trim()||'First Issue';const issueObj=state.issues.find(i=>i.name===issueVal);const idx=state.conditions.findIndex(x=>x.id==id);if(idx<0)return;state.conditions[idx]={id,name,desc:document.getElementById('cedit-desc')?.value.trim()||'',issueId:issueObj?issueObj.id:'',issueName:issueVal,conjunct,expressions:exprs};closeModal('condEditModal');renderConditions();saveStateToSettings();setStatus('Condition "'+name+'" updated');}
 function openDeleteCond(){refreshCondSelect('delete-cond-select');openModal('condDeleteModal');}
-function confirmDeleteCond(){
-  const id=document.getElementById('delete-cond-select').value;if(!id){setStatus('Select a condition','warn');return;}
-  const c=state.conditions.find(x=>x.id==id);
-  state.conditions=state.conditions.filter(x=>x.id!=id);
-  closeModal('condDeleteModal');renderConditions();saveStateToSettings();setStatus('Condition "'+(c?.name||'')+'" deleted');
-}
-function openInsertCond(){
-  const s=document.getElementById('insert-cond-select');
-  s.innerHTML='<option value="">— Select Condition —</option>'+state.conditions.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
-  openModal('condInsertModal');
-}
-function doInsertCondition(){
-  const id=document.getElementById('insert-cond-select').value;
-  const c=state.conditions.find(x=>x.id==id);if(!c){setStatus('Select a condition','warn');return;}
-  closeModal('condInsertModal');
-  if(typeof Word!=='undefined'){
-    Word.run(async ctx=>{
-      const sel=ctx.document.getSelection();sel.load('text');await ctx.sync();
-      const txt=sel.text||'';
-      sel.insertText('{IF '+c.name+'::'+txt+'::}','Replace');
-      await ctx.sync();setStatus('Condition tag inserted: '+c.name);
-    }).catch(e=>setStatus('Error: '+e.message,'error'));
-  }else setStatus('[Demo] Condition tag: {IF '+c.name+'::::}');
-}
-function renderConditions(){
-  const el=document.getElementById('cond-list');
-  if(!state.conditions.length){el.innerHTML='<div class="empty">No conditions defined yet</div>';return;}
-  el.innerHTML=state.conditions.map(c=>`<div class="card"><div class="card-row"><span class="card-name">${esc(c.name)}</span><span class="card-type cond">Condition</span><div class="card-actions"><button class="btn btn-sm" onclick="quickEditCond('${c.id}')">Edit</button><button class="btn btn-sm btn-danger" onclick="quickDeleteCond('${c.id}')">×</button></div></div>${c.issueName?`<span class="tag">${esc(c.issueName)}</span>`:''} ${c.expressions.length?`<div style="margin-top:4px;font-size:11px">${c.expressions.map(e=>`<span class="tag">${esc(e.varName)} ${e.op} "${esc(e.value)}"</span>`).join(' <b>'+c.conjunct.toUpperCase()+'</b> ')}</div>`:''}</div>`).join('');
-}
+function confirmDeleteCond(){const id=document.getElementById('delete-cond-select').value;if(!id){setStatus('Select a condition','warn');return;}const c=state.conditions.find(x=>x.id==id);state.conditions=state.conditions.filter(x=>x.id!=id);closeModal('condDeleteModal');renderConditions();saveStateToSettings();setStatus('Condition "'+(c?.name||'')+'" deleted');}
+function openInsertCond(){const s=document.getElementById('insert-cond-select');s.innerHTML='<option value="">— Select Condition —</option>'+state.conditions.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');openModal('condInsertModal');}
+function doInsertCondition(){const id=document.getElementById('insert-cond-select').value;const c=state.conditions.find(x=>x.id==id);if(!c){setStatus('Select a condition','warn');return;}closeModal('condInsertModal');if(typeof Word!=='undefined'){Word.run(async ctx=>{const sel=ctx.document.getSelection();sel.load('text');await ctx.sync();sel.insertText('{IF '+c.name+'::'+( sel.text||'')+'::}','Replace');await ctx.sync();setStatus('Condition tag inserted: '+c.name);}).catch(e=>setStatus('Error: '+e.message,'error'));}else setStatus('[Demo] Condition tag: {IF '+c.name+'::::}');}
+function renderConditions(){const el=document.getElementById('cond-list');if(!state.conditions.length){el.innerHTML='<div class="empty">No conditions defined yet</div>';return;}el.innerHTML=state.conditions.map(c=>`<div class="card"><div class="card-row"><span class="card-name">${esc(c.name)}</span><span class="card-type cond">Condition</span><div class="card-actions"><button class="btn btn-sm" onclick="quickEditCond('${c.id}')">Edit</button><button class="btn btn-sm btn-danger" onclick="quickDeleteCond('${c.id}')">×</button></div></div>${c.issueName?`<span class="tag">${esc(c.issueName)}</span>`:''} ${c.expressions.length?`<div style="margin-top:4px;font-size:11px">${c.expressions.map(e=>`<span class="tag">${esc(e.varName)} ${e.op} "${esc(e.value)}"</span>`).join(' <b>'+c.conjunct.toUpperCase()+'</b> ')}</div>`:''}</div>`).join('');}
 function quickEditCond(id){openViewEditCond();setTimeout(()=>{document.getElementById('edit-cond-select').value=id;loadCondForEdit();},100);}
 function quickDeleteCond(id){openDeleteCond();setTimeout(()=>{document.getElementById('delete-cond-select').value=id;},100);}
 
-// ---- Forms ----
-function saveForm(){
-  const name=document.getElementById('form-name').value.trim();if(!name){setStatus('Form name required','error');return;}
-  const id=document.getElementById('form-edit-id').value||state.nextId();
-  const issueEl=document.getElementById('form-issue');
-  const f={id,name,issueId:issueEl.value,issueName:issueEl.options[issueEl.selectedIndex]?.text||''};
-  const idx=state.forms.findIndex(x=>x.id==id);  if(idx>=0)state.forms[idx]=f;else state.forms.push(f);
-  document.getElementById('form-edit-id').value='';document.getElementById('form-name').value='';
-  closeModal('formNewModal');renderForms();saveStateToSettings();setStatus('Form "'+name+'" saved');
-}
+// ========== FORMS ==========
+function saveForm(){const name=document.getElementById('form-name').value.trim();if(!name){setStatus('Form name required','error');return;}const id=document.getElementById('form-edit-id').value||state.nextId();const issueEl=document.getElementById('form-issue');const f={id,name,issueId:issueEl.value,issueName:issueEl.options[issueEl.selectedIndex]?.text||''};const idx=state.forms.findIndex(x=>x.id==id);if(idx>=0)state.forms[idx]=f;else state.forms.push(f);document.getElementById('form-edit-id').value='';document.getElementById('form-name').value='';closeModal('formNewModal');renderForms();saveStateToSettings();setStatus('Form "'+name+'" saved');}
 function openViewEditForm(){refreshFormSelect('edit-form-select');document.getElementById('form-edit-fields').innerHTML='';openModal('formEditModal');}
 function refreshFormSelect(selId){const s=document.getElementById(selId);if(!s)return;s.innerHTML='<option value="">— Select Form —</option>'+state.forms.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('');}
-function loadFormForEdit(){
-  const id=document.getElementById('edit-form-select').value;const f=state.forms.find(x=>x.id==id);const el=document.getElementById('form-edit-fields');if(!f){el.innerHTML='';return;}
-  const issues=state.issues.map(i=>`<option value="${i.id}" ${f.issueId==i.id?'selected':''}>${esc(i.name)}</option>`).join('');
-  el.innerHTML=`<div class="field-row"><label class="field-label">Form name*</label><div class="field-input"><input type="text" id="fedit-name" value="${esc(f.name)}"></div></div><div class="field-row"><label class="field-label">Issue</label><div class="field-input"><select id="fedit-issue"><option value="">—</option>${issues}</select></div></div>`;
-}
-function saveEditForm(){
-  const id=document.getElementById('edit-form-select').value;if(!id){setStatus('Select a form','warn');return;}
-  const name=document.getElementById('fedit-name')?.value.trim();if(!name){setStatus('Name required','error');return;}
-  const issueEl=document.getElementById('fedit-issue');
-  const idx=state.forms.findIndex(x=>x.id==id);
-  state.forms[idx]={id,name,issueId:issueEl?.value||'',issueName:issueEl?.options[issueEl.selectedIndex]?.text||''};
-  closeModal('formEditModal');renderForms();saveStateToSettings();setStatus('Form updated');
-}
+function loadFormForEdit(){const id=document.getElementById('edit-form-select').value;const f=state.forms.find(x=>x.id==id);const el=document.getElementById('form-edit-fields');if(!f){el.innerHTML='';return;}const issues=state.issues.map(i=>`<option value="${i.id}" ${f.issueId==i.id?'selected':''}>${esc(i.name)}</option>`).join('');el.innerHTML=`<div class="field-row"><label class="field-label">Form name*</label><div class="field-input"><input type="text" id="fedit-name" value="${esc(f.name)}"></div></div><div class="field-row"><label class="field-label">Issue</label><div class="field-input"><select id="fedit-issue"><option value="">—</option>${issues}</select></div></div>`;}
+function saveEditForm(){const id=document.getElementById('edit-form-select').value;if(!id){setStatus('Select a form','warn');return;}const name=document.getElementById('fedit-name')?.value.trim();if(!name){setStatus('Name required','error');return;}const issueEl=document.getElementById('fedit-issue');const idx=state.forms.findIndex(x=>x.id==id);state.forms[idx]={id,name,issueId:issueEl?.value||'',issueName:issueEl?.options[issueEl.selectedIndex]?.text||''};closeModal('formEditModal');renderForms();saveStateToSettings();setStatus('Form updated');}
 function openDeleteForm(){refreshFormSelect('delete-form-select');openModal('formDeleteModal');}
-function confirmDeleteForm(){const id=document.getElementById('delete-form-select').value;if(!id){setStatus('Select a form','warn');return;}  state.forms=state.forms.filter(x=>x.id!=id);closeModal('formDeleteModal');renderForms();saveStateToSettings();setStatus('Form deleted');}
-function renderForms(){
-  const el=document.getElementById('form-list');
-  if(!state.forms.length){el.innerHTML='<div class="empty">No forms defined yet</div>';return;}
-  el.innerHTML=state.forms.map(f=>`<div class="card"><div class="card-row"><span class="card-name">${esc(f.name)}</span><span class="card-type form">Form</span><div class="card-actions"><button class="btn btn-sm" onclick="quickEditForm('${f.id}')">Edit</button><button class="btn btn-sm btn-danger" onclick="quickDeleteForm('${f.id}')">×</button></div></div>${f.issueName&&f.issueId?`<span class="tag">${esc(f.issueName)}</span>`:''}</div>`).join('');
-}
+function confirmDeleteForm(){const id=document.getElementById('delete-form-select').value;if(!id){setStatus('Select a form','warn');return;}state.forms=state.forms.filter(x=>x.id!=id);closeModal('formDeleteModal');renderForms();saveStateToSettings();setStatus('Form deleted');}
+function renderForms(){const el=document.getElementById('form-list');if(!state.forms.length){el.innerHTML='<div class="empty">No forms defined yet</div>';return;}el.innerHTML=state.forms.map(f=>`<div class="card"><div class="card-row"><span class="card-name">${esc(f.name)}</span><span class="card-type form">Form</span><div class="card-actions"><button class="btn btn-sm" onclick="quickEditForm('${f.id}')">Edit</button><button class="btn btn-sm btn-danger" onclick="quickDeleteForm('${f.id}')">×</button></div></div>${f.issueName&&f.issueId?`<span class="tag">${esc(f.issueName)}</span>`:''}</div>`).join('');}
 function quickEditForm(id){openViewEditForm();setTimeout(()=>{document.getElementById('edit-form-select').value=id;loadFormForEdit();},100);}
 function quickDeleteForm(id){openDeleteForm();setTimeout(()=>{document.getElementById('delete-form-select').value=id;},100);}
 document.getElementById('formNewModal').addEventListener('click',()=>{const s=document.getElementById('form-issue');s.innerHTML='<option value="">—</option>'+state.issues.map(i=>`<option value="${i.id}">${esc(i.name)}</option>`).join('');});
 
-// ---- Issues ----
-function saveIssue(){
-  const name=document.getElementById('issue-name').value.trim();if(!name){setStatus('Issue name required','error');return;}
-  const id=document.getElementById('issue-edit-id').value||state.nextId();
-  const parentEl=document.getElementById('issue-parent');
-  const i={id,name,parentId:parentEl.value,parentName:parentEl.options[parentEl.selectedIndex]?.text||''};
-  const idx=state.issues.findIndex(x=>x.id==id);if(idx>=0)state.issues[idx]=i;else state.issues.push(i);
-  document.getElementById('issue-edit-id').value='';document.getElementById('issue-name').value='';
-  closeModal('issueNewModal');renderIssues();saveStateToSettings();setStatus('Issue "'+name+'" saved');
-}
+// ========== ISSUES ==========
+function saveIssue(){const name=document.getElementById('issue-name').value.trim();if(!name){setStatus('Issue name required','error');return;}const id=document.getElementById('issue-edit-id').value||state.nextId();const parentEl=document.getElementById('issue-parent');const i={id,name,parentId:parentEl.value,parentName:parentEl.options[parentEl.selectedIndex]?.text||''};const idx=state.issues.findIndex(x=>x.id==id);if(idx>=0)state.issues[idx]=i;else state.issues.push(i);document.getElementById('issue-edit-id').value='';document.getElementById('issue-name').value='';closeModal('issueNewModal');renderIssues();saveStateToSettings();setStatus('Issue "'+name+'" saved');}
 function openViewEditIssue(){refreshIssueSelect('edit-issue-select');document.getElementById('issue-edit-fields').innerHTML='';openModal('issueEditModal');}
 function refreshIssueSelect(selId){const s=document.getElementById(selId);if(!s)return;s.innerHTML='<option value="">— Select Issue —</option>'+state.issues.map(i=>`<option value="${i.id}">${esc(i.name)}</option>`).join('');}
-function loadIssueForEdit(){
-  const id=document.getElementById('edit-issue-select').value;const iss=state.issues.find(x=>x.id==id);const el=document.getElementById('issue-edit-fields');if(!iss){el.innerHTML='';return;}
-  const parents=state.issues.filter(x=>x.id!=id).map(i=>`<option value="${i.id}" ${iss.parentId==i.id?'selected':''}>${esc(i.name)}</option>`).join('');
-  el.innerHTML=`<div class="field-row"><label class="field-label">Issue name*</label><div class="field-input"><input type="text" id="iedit-name" value="${esc(iss.name)}"></div></div><div class="field-row"><label class="field-label">Parent issue</label><div class="field-input"><select id="iedit-parent"><option value="">— Top level —</option>${parents}</select></div></div>`;
-}
-function saveEditIssue(){
-  const id=document.getElementById('edit-issue-select').value;if(!id){setStatus('Select an issue','warn');return;}
-  const name=document.getElementById('iedit-name')?.value.trim();if(!name){setStatus('Name required','error');return;}
-  const parentEl=document.getElementById('iedit-parent');
-  const idx=state.issues.findIndex(x=>x.id==id);
-  state.issues[idx]={id,name,parentId:parentEl?.value||'',parentName:parentEl?.options[parentEl.selectedIndex]?.text||''};
-  closeModal('issueEditModal');renderIssues();saveStateToSettings();setStatus('Issue updated');
-}
+function loadIssueForEdit(){const id=document.getElementById('edit-issue-select').value;const iss=state.issues.find(x=>x.id==id);const el=document.getElementById('issue-edit-fields');if(!iss){el.innerHTML='';return;}const parents=state.issues.filter(x=>x.id!=id).map(i=>`<option value="${i.id}" ${iss.parentId==i.id?'selected':''}>${esc(i.name)}</option>`).join('');el.innerHTML=`<div class="field-row"><label class="field-label">Issue name*</label><div class="field-input"><input type="text" id="iedit-name" value="${esc(iss.name)}"></div></div><div class="field-row"><label class="field-label">Parent issue</label><div class="field-input"><select id="iedit-parent"><option value="">— Top level —</option>${parents}</select></div></div>`;}
+function saveEditIssue(){const id=document.getElementById('edit-issue-select').value;if(!id){setStatus('Select an issue','warn');return;}const name=document.getElementById('iedit-name')?.value.trim();if(!name){setStatus('Name required','error');return;}const parentEl=document.getElementById('iedit-parent');const idx=state.issues.findIndex(x=>x.id==id);state.issues[idx]={id,name,parentId:parentEl?.value||'',parentName:parentEl?.options[parentEl.selectedIndex]?.text||''};closeModal('issueEditModal');renderIssues();saveStateToSettings();setStatus('Issue updated');}
 function openDeleteIssue(){refreshIssueSelect('delete-issue-select');openModal('issueDeleteModal');}
-function confirmDeleteIssue(){const id=document.getElementById('delete-issue-select').value;if(!id){setStatus('Select an issue','warn');return;}  state.issues=state.issues.filter(x=>x.id!=id);closeModal('issueDeleteModal');renderIssues();saveStateToSettings();setStatus('Issue deleted');}
-function renderIssues(){
-  const el=document.getElementById('issue-list');
-  if(!state.issues.length){el.innerHTML='<div class="empty">No issues defined yet</div>';return;}
-  el.innerHTML=state.issues.map(i=>`<div class="card"><div class="card-row"><span class="card-name">${esc(i.name)}</span><span class="card-type issue">Issue</span><div class="card-actions"><button class="btn btn-sm" onclick="quickEditIssue('${i.id}')">Edit</button><button class="btn btn-sm btn-danger" onclick="quickDeleteIssue('${i.id}')">×</button></div></div>${i.parentId?`<span class="tag">Under: ${esc(i.parentName)}</span>`:'<span class="tag">Top level</span>'}</div>`).join('');
-}
+function confirmDeleteIssue(){const id=document.getElementById('delete-issue-select').value;if(!id){setStatus('Select an issue','warn');return;}state.issues=state.issues.filter(x=>x.id!=id);closeModal('issueDeleteModal');renderIssues();saveStateToSettings();setStatus('Issue deleted');}
+function renderIssues(){const el=document.getElementById('issue-list');if(!state.issues.length){el.innerHTML='<div class="empty">No issues defined yet</div>';return;}el.innerHTML=state.issues.map(i=>`<div class="card"><div class="card-row"><span class="card-name">${esc(i.name)}</span><span class="card-type issue">Issue</span><div class="card-actions"><button class="btn btn-sm" onclick="quickEditIssue('${i.id}')">Edit</button><button class="btn btn-sm btn-danger" onclick="quickDeleteIssue('${i.id}')">×</button></div></div>${i.parentId?`<span class="tag">Under: ${esc(i.parentName)}</span>`:'<span class="tag">Top level</span>'}</div>`).join('');}
 function quickEditIssue(id){openViewEditIssue();setTimeout(()=>{document.getElementById('edit-issue-select').value=id;loadIssueForEdit();},100);}
 function quickDeleteIssue(id){openDeleteIssue();setTimeout(()=>{document.getElementById('delete-issue-select').value=id;},100);}
 document.getElementById('issueNewModal').addEventListener('click',()=>{const s=document.getElementById('issue-parent');s.innerHTML='<option value="">— Top level —</option>'+state.issues.map(i=>`<option value="${i.id}">${esc(i.name)}</option>`).join('');});
 
-// ---- Repeat ----
-function openRepeatModal(){
-  const s=document.getElementById('repeat-var');
-  s.innerHTML='<option value="">— Select variable —</option>'+state.variables.filter(v=>v.isMultiValue||v.type==='Instance').map(v=>`<option value="${v.id}">${esc(v.name)} (${v.type})</option>`).join('');
-  openModal('repeatModal');
-}
-function saveRepeat(){
-  const id=document.getElementById('repeat-var').value;const v=state.variables.find(x=>x.id==id);if(!v){setStatus('Select a variable','warn');return;}
-  const r={id:state.nextId(),varId:id,varName:v.name,varType:v.type};state.repeats.push(r);
-  closeModal('repeatModal');renderRepeats();
-  if(typeof Word!=='undefined'){Word.run(async ctx=>{const sel=ctx.document.getSelection();sel.insertText('[REPEAT:'+v.name+'] <Insert Text> [/REPEAT:'+v.name+']','Replace');await ctx.sync();setStatus('Repeat tag inserted for: '+v.name);}).catch(e=>setStatus('Error: '+e.message,'error'));}
-  else setStatus('[Demo] Repeat tag inserted for: '+v.name);
-}
-function renderRepeats(){
-  const el=document.getElementById('repeat-list');
-  if(!state.repeats.length){el.innerHTML='<div class="empty">No repeat tags inserted</div>';return;}
-  el.innerHTML=state.repeats.map(r=>`<div class="card"><div class="card-row"><span class="card-name">${esc(r.varName)}</span><span class="card-type repeat">${esc(r.varType)}</span><div class="card-actions"><button class="btn btn-sm btn-danger" onclick="deleteRepeat('${r.id}')">×</button></div></div></div>`).join('');
-}
+// ========== REPEAT ==========
+function openRepeatModal(){const s=document.getElementById('repeat-var');s.innerHTML='<option value="">— Select variable —</option>'+state.variables.filter(v=>v.isMultiValue||v.type==='Instance').map(v=>`<option value="${v.id}">${esc(v.name)} (${v.type})</option>`).join('');openModal('repeatModal');}
+function saveRepeat(){const id=document.getElementById('repeat-var').value;const v=state.variables.find(x=>x.id==id);if(!v){setStatus('Select a variable','warn');return;}const r={id:state.nextId(),varId:id,varName:v.name,varType:v.type};state.repeats.push(r);closeModal('repeatModal');renderRepeats();if(typeof Word!=='undefined'){Word.run(async ctx=>{const sel=ctx.document.getSelection();sel.insertText('[REPEAT:'+v.name+'] <Insert Text> [/REPEAT:'+v.name+']','Replace');await ctx.sync();setStatus('Repeat tag inserted: '+v.name);}).catch(e=>setStatus('Error: '+e.message,'error'));}else setStatus('[Demo] Repeat tag inserted: '+v.name);}
+function renderRepeats(){const el=document.getElementById('repeat-list');if(!state.repeats.length){el.innerHTML='<div class="empty">No repeat tags inserted</div>';return;}el.innerHTML=state.repeats.map(r=>`<div class="card"><div class="card-row"><span class="card-name">${esc(r.varName)}</span><span class="card-type repeat">${esc(r.varType)}</span><div class="card-actions"><button class="btn btn-sm btn-danger" onclick="deleteRepeat('${r.id}')">×</button></div></div></div>`).join('');}
 function deleteRepeat(id){state.repeats=state.repeats.filter(x=>x.id!=id);renderRepeats();}
 
-// ---- Organizer ----
-function renderOrganizer(){
-  const el=document.getElementById('organizer-tree');
-  if(!state.issues.length&&!state.variables.length){el.innerHTML='<div class="empty">No elements defined yet</div>';return;}
-  const topIssues=state.issues.filter(i=>!i.parentId);let html='<div class="tree">';
-  topIssues.forEach(issue=>{html+=renderIssueTree(issue);});
-  const unassigned=state.variables.filter(v=>!v.issueName);
-  if(unassigned.length){html+=`<div class="tree-issue"><div class="tree-issue-name"><span class="badge var"></span>Unassigned variables</div><div class="tree-children">${unassigned.map(v=>`<div class="tree-item"><span class="badge var"></span>${esc(v.name)} <span style="font-size:10px;color:var(--color-text-tertiary,#aaa)">(${v.type})</span></div>`).join('')}</div></div>`;}
-  if(state.conditions.length){html+=`<div class="tree-issue"><div class="tree-issue-name"><span class="badge cond"></span>Conditions</div><div class="tree-children">${state.conditions.map(c=>`<div class="tree-item"><span class="badge cond"></span>${esc(c.name)}</div>`).join('')}</div></div>`;}
-  html+='</div>';el.innerHTML=html;
-}
-function renderIssueTree(issue){
-  const children=state.issues.filter(i=>i.parentId==issue.id);
-  const vars=state.variables.filter(v=>v.issueName===issue.name);
-  const forms=state.forms.filter(f=>f.issueName===issue.name);
-  let html=`<div class="tree-issue"><div class="tree-issue-name"><span class="badge" style="background:#185FA5"></span>${esc(issue.name)}</div><div class="tree-children">`;
-  forms.forEach(f=>{html+=`<div class="tree-item"><span class="badge form"></span>${esc(f.name)} <span style="font-size:10px;color:var(--color-text-tertiary,#aaa)">(Form)</span></div>`;});
-  vars.forEach(v=>{html+=`<div class="tree-item"><span class="badge var"></span>${esc(v.name)} <span style="font-size:10px;color:var(--color-text-tertiary,#aaa)">(${v.type})</span></div>`;});
-  children.forEach(c=>{html+=renderIssueTree(c);});
-  html+='</div></div>';return html;
-}
+// ========== ORGANIZER ==========
+function renderOrganizer(){const el=document.getElementById('organizer-tree');if(!state.issues.length&&!state.variables.length){el.innerHTML='<div class="empty">No elements defined yet</div>';return;}const topIssues=state.issues.filter(i=>!i.parentId);let html='<div class="tree">';topIssues.forEach(issue=>{html+=renderIssueTree(issue);});const unassigned=state.variables.filter(v=>!v.issueName);if(unassigned.length){html+=`<div class="tree-issue"><div class="tree-issue-name"><span class="badge var"></span>Unassigned variables</div><div class="tree-children">${unassigned.map(v=>`<div class="tree-item"><span class="badge var"></span>${esc(v.name)} <span style="font-size:10px;color:var(--color-text-tertiary,#aaa)">(${v.type})</span></div>`).join('')}</div></div>`;}if(state.conditions.length){html+=`<div class="tree-issue"><div class="tree-issue-name"><span class="badge cond"></span>Conditions</div><div class="tree-children">${state.conditions.map(c=>`<div class="tree-item"><span class="badge cond"></span>${esc(c.name)}</div>`).join('')}</div></div>`;}html+='</div>';el.innerHTML=html;}
+function renderIssueTree(issue){const children=state.issues.filter(i=>i.parentId==issue.id);const vars=state.variables.filter(v=>v.issueName===issue.name);const forms=state.forms.filter(f=>f.issueName===issue.name);let html=`<div class="tree-issue"><div class="tree-issue-name"><span class="badge" style="background:#185FA5"></span>${esc(issue.name)}</div><div class="tree-children">`;forms.forEach(f=>{html+=`<div class="tree-item"><span class="badge form"></span>${esc(f.name)} <span style="font-size:10px;color:var(--color-text-tertiary,#aaa)">(Form)</span></div>`;});vars.forEach(v=>{html+=`<div class="tree-item"><span class="badge var"></span>${esc(v.name)} <span style="font-size:10px;color:var(--color-text-tertiary,#aaa)">(${v.type})</span></div>`;});children.forEach(c=>{html+=renderIssueTree(c);});html+='</div></div>';return html;}
 
-// ---- Tools ----
-function checkDocument(){
-  const results=[];
-  state.variables.forEach(v=>{if(!v.question)results.push({ok:false,msg:'Variable "'+v.name+'" has no question text'});else results.push({ok:true,msg:'Variable "'+v.name+'" ('+v.type+') — OK'});});
-  state.conditions.forEach(c=>{if(!c.expressions.length)results.push({ok:false,msg:'Condition "'+c.name+'" has no expressions'});else results.push({ok:true,msg:'Condition "'+c.name+'" — OK'});});
-  if(!results.length)results.push({ok:true,msg:'No variables or conditions defined'});
-  const el=document.getElementById('check-results');
-  el.innerHTML=results.map(r=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary,#e5e5e5)"><span style="color:${r.ok?'#1d9e75':'#e24b4a'};font-size:14px;flex-shrink:0">${r.ok?'✓':'✗'}</span><span style="font-size:12px">${esc(r.msg)}</span></div>`).join('');
-  const errors=results.filter(r=>!r.ok).length;
-  setStatus(errors?errors+' issue(s) found':'Document check passed',errors?'warn':'');
-}
-function showDataTable(){
-  const el=document.getElementById('data-table-container');
-  if(!state.variables.length&&!state.conditions.length){el.innerHTML='<div class="empty">No data to display</div>';return;}
-  let html='<hr class="divider"><div class="section-title">Data table</div><div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Name</th><th>Type</th><th>Issue</th><th>Question</th></tr></thead><tbody>';
-  state.variables.forEach(v=>{html+=`<tr><td>${esc(v.name)}</td><td>${esc(v.type)}</td><td>${esc(v.issueName||'—')}</td><td>${esc(v.question||'—')}</td></tr>`;});
-  state.conditions.forEach(c=>{html+=`<tr><td>${esc(c.name)}</td><td>Condition</td><td>—</td><td>${c.expressions.map(e=>e.varName+' '+e.op+' "'+e.value+'"').join(' AND ')||'—'}</td></tr>`;});
-  html+='</tbody></table></div>';el.innerHTML=html;
-}
-function prepareDocument(){
-  if(!confirm('This will remove all Neota markup from the document. Continue?'))return;
-  if(typeof Word!=='undefined'){
-    Word.run(async ctx=>{
-      try{const ccs=ctx.document.contentControls;ccs.load('items,title');await ctx.sync();ccs.items.filter(c=>c.title&&c.title.startsWith('NL_')).forEach(c=>c.delete(true));await ctx.sync();}catch(e){console.log('No content controls to remove');}
-      setStatus('Document prepared — all Neota markup removed');
-    }).catch(e=>setStatus('Error: '+e.message,'error'));
-  }else setStatus('[Demo] Document prepared');
-}
+// ========== TOOLS ==========
+function checkDocument(){const results=[];state.variables.forEach(v=>{if(!v.question)results.push({ok:false,msg:'Variable "'+v.name+'" has no question text'});else results.push({ok:true,msg:'Variable "'+v.name+'" ('+v.type+') — OK'});});state.conditions.forEach(c=>{if(!c.expressions.length)results.push({ok:false,msg:'Condition "'+c.name+'" has no expressions'});else results.push({ok:true,msg:'Condition "'+c.name+'" — OK'});});if(!results.length)results.push({ok:true,msg:'No variables or conditions defined'});const el=document.getElementById('check-results');el.innerHTML=results.map(r=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary,#e5e5e5)"><span style="color:${r.ok?'#1d9e75':'#e24b4a'};font-size:14px;flex-shrink:0">${r.ok?'✓':'✗'}</span><span style="font-size:12px">${esc(r.msg)}</span></div>`).join('');const errors=results.filter(r=>!r.ok).length;setStatus(errors?errors+' issue(s) found':'Document check passed',errors?'warn':'');}
+function showDataTable(){const el=document.getElementById('data-table-container');if(!state.variables.length&&!state.conditions.length){el.innerHTML='<div class="empty">No data to display</div>';return;}let html='<hr class="divider"><div class="section-title">Data table</div><div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Name</th><th>Type</th><th>Issue</th><th>Question</th></tr></thead><tbody>';state.variables.forEach(v=>{html+=`<tr><td>${esc(v.name)}</td><td>${esc(v.type)}</td><td>${esc(v.issueName||'—')}</td><td>${esc(v.question||'—')}</td></tr>`;});state.conditions.forEach(c=>{html+=`<tr><td>${esc(c.name)}</td><td>Condition</td><td>—</td><td>${c.expressions.map(e=>e.varName+' '+e.op+' "'+e.value+'"').join(' AND ')||'—'}</td></tr>`;});html+='</tbody></table></div>';el.innerHTML=html;}
+function prepareDocument(){if(typeof Word!=='undefined'){Word.run(async ctx=>{try{const ccs=ctx.document.contentControls;ccs.load('items,title');await ctx.sync();ccs.items.filter(c=>c.title&&c.title.startsWith('NL_')).forEach(c=>c.delete(true));await ctx.sync();}catch(e){console.log('No content controls to remove');}setStatus('Document prepared');}).catch(e=>setStatus('Error: '+e.message,'error'));}else setStatus('[Demo] Document prepared');}
 function toggleShading(){setStatus('Field shading toggled');}
 function toggleFieldCodes(){setStatus('Field codes toggled');}
 
-// ---- Build XML ----
+// ========== BUILD XML ==========
 function buildXML(){
   const issueMap={};
   state.issues.forEach(i=>{issueMap[i.name]=i.id;});
-  state.variables.forEach(v=>{if(v.issueName&&!issueMap[v.issueName])issueMap[v.issueName]=Date.now()+Math.floor(Math.random()*9999);});
-  state.conditions.forEach(c=>{if(c.issueName&&!issueMap[c.issueName])issueMap[c.issueName]=Date.now()+Math.floor(Math.random()*9999);});
-  if(!issueMap['Top Issue'])issueMap['Top Issue']=Date.now()-1;
+  state.variables.forEach(v=>{if(v.issueName&&!issueMap[v.issueName])issueMap[v.issueName]=state.nextId();});
+  state.conditions.forEach(c=>{if(c.issueName&&!issueMap[c.issueName])issueMap[c.issueName]=state.nextId();});
+  if(!issueMap['Top Issue'])issueMap['Top Issue']=state.nextId();
   const allIssues=[{id:issueMap['Top Issue'],name:'Top Issue'},...Object.entries(issueMap).filter(([name])=>name!=='Top Issue').map(([name,id])=>({id,name}))];
   let xml=`<?xml version="1.0" encoding="UTF-8"?>\n<nl xmlns="http://www.neotalogic.com">\n  <nl_version>3.18.0</nl_version>\n  <nl_source>blank</nl_source>\n  <nl_doc_type>self</nl_doc_type>\n  <nl_doc_paths></nl_doc_paths>\n  <nl_mode>studio</nl_mode>\n  <nl_imported></nl_imported>\n  <variables>\n`;
-  state.variables.forEach((v,i)=>{
-    const issueId=issueMap[v.issueName||'']||'';
-    xml+=`    <variable var_issue_sequence="${i+1}" var_form_sequence="${v.formName?i+1:0}">\n      <variable_id>${v.id}</variable_id>\n      <parent_id></parent_id>\n      <parent_name></parent_name>\n      <child_ids></child_ids>\n      <issue>${xmlEsc(v.issueName||'')}</issue>\n      <issue_id>${issueId}</issue_id>\n      <variable_name>${xmlEsc(v.name)}</variable_name>\n      <data_type>${xmlEsc(v.type)}</data_type>\n      <var_named_value_display_set_id></var_named_value_display_set_id>\n      <var_named_value_display_set_name></var_named_value_display_set_name>\n      <dynamic_list_source><source_var_id>${v.valsetId||''}</source_var_id><source_var_name></source_var_name></dynamic_list_source>\n      <question_text>${xmlEsc(v.question)}</question_text>\n      <values>${(v.listValues||[]).map(l=>`<value>${xmlEsc(l)}</value>`).join('')}</values>\n      <hint_text>${xmlEsc(v.hint||'')}</hint_text>\n      <default_answers>${xmlEsc(v.defaultAnswer||'')}</default_answers>\n      <mv>${v.isMultiValue?'MV':''}</mv>\n      <form_id>${v.formId||''}</form_id>\n      <folder>${xmlEsc(v.folder||'')}</folder>\n      <notes>${xmlEsc(v.note||'')}</notes>\n      <merge_field>${xmlEsc(v.mergeField||'')}</merge_field>\n    </variable>\n`;
-  });
+  state.variables.forEach((v,i)=>{const issueId=issueMap[v.issueName||'']||'';xml+=`    <variable var_issue_sequence="${i+1}" var_form_sequence="${v.formName?i+1:0}">\n      <variable_id>${v.id}</variable_id>\n      <parent_id></parent_id>\n      <parent_name></parent_name>\n      <child_ids></child_ids>\n      <issue>${xmlEsc(v.issueName||'')}</issue>\n      <issue_id>${issueId}</issue_id>\n      <variable_name>${xmlEsc(v.name)}</variable_name>\n      <data_type>${xmlEsc(v.type)}</data_type>\n      <var_named_value_display_set_id></var_named_value_display_set_id>\n      <var_named_value_display_set_name></var_named_value_display_set_name>\n      <dynamic_list_source><source_var_id>${v.valsetId||''}</source_var_id><source_var_name></source_var_name></dynamic_list_source>\n      <question_text>${xmlEsc(v.question)}</question_text>\n      <values>${(v.listValues||[]).map(l=>`<value>${xmlEsc(l)}</value>`).join('')}</values>\n      <hint_text>${xmlEsc(v.hint||'')}</hint_text>\n      <default_answers>${xmlEsc(v.defaultAnswer||'')}</default_answers>\n      <mv>${v.isMultiValue?'MV':''}</mv>\n      <form_id>${v.formId||''}</form_id>\n      <folder>${xmlEsc(v.folder||'')}</folder>\n      <notes>${xmlEsc(v.note||'')}</notes>\n      <merge_field>${xmlEsc(v.mergeField||'')}</merge_field>\n    </variable>\n`;});
   xml+=`  </variables>\n  <conditions>\n`;
-  state.conditions.forEach((c,seq)=>{
-    const cIssueId=issueMap[c.issueName||'']||'';
-    xml+=`    <condition condition_issue_sequence="${seq+1}">\n      <condition_id>${c.id}</condition_id>\n      <condition_name>${xmlEsc(c.name)}</condition_name>\n      <condition_issue_id>${cIssueId}</condition_issue_id>\n      <condition_issue_name>${xmlEsc(c.issueName||'')}</condition_issue_name>\n      <condition_description>${xmlEsc(c.desc||'')}</condition_description>\n      <conjunct_expression conjunct="${c.conjunct||'and'}">\n`;
-    c.expressions.forEach(e=>{xml+=`        <expression operator="${e.op}">\n          <variable>${e.varId}</variable>\n          <constant type="${xmlEsc(e.varType)}">${xmlEsc(e.value)}</constant>\n        </expression>\n`;});
-    xml+=`      </conjunct_expression>\n    </condition>\n`;
-  });
+  state.conditions.forEach((c,seq)=>{const cIssueId=issueMap[c.issueName||'']||'';xml+=`    <condition condition_issue_sequence="${seq+1}">\n      <condition_id>${c.id}</condition_id>\n      <condition_name>${xmlEsc(c.name)}</condition_name>\n      <condition_issue_id>${cIssueId}</condition_issue_id>\n      <condition_issue_name>${xmlEsc(c.issueName||'')}</condition_issue_name>\n      <condition_description>${xmlEsc(c.desc||'')}</condition_description>\n      <conjunct_expression conjunct="${c.conjunct||'and'}">\n`;c.expressions.forEach(e=>{xml+=`        <expression operator="${e.op}">\n          <variable>${e.varId}</variable>\n          <constant type="${xmlEsc(e.varType)}">${xmlEsc(e.value)}</constant>\n        </expression>\n`;});xml+=`      </conjunct_expression>\n    </condition>\n`;});
   xml+=`  </conditions>\n  <forms>\n`;
   state.forms.forEach((f,seq)=>{xml+=`    <form form_issue_sequence="${seq+1}">\n      <form_id>${f.id}</form_id>\n      <form_issue>${xmlEsc(f.issueName||'')}</form_issue>\n      <form_issue_id>${issueMap[f.issueName||'']||''}</form_issue_id>\n      <form_name>${xmlEsc(f.name)}</form_name>\n    </form>\n`;});
   xml+=`  </forms>\n  <issues>\n`;
@@ -1163,534 +745,13 @@ function buildXML(){
   return xml;
 }
 
-// ---- MSAL configuration ----
-const MSAL_CONFIG={
-  auth:{
-    clientId:'5866d669-cc23-4aa4-960a-a8792620a4ce',
-    authority:'https://login.microsoftonline.com/common',
-    redirectUri:'https://charmysh.github.io/word/taskpane.html'
-  },
-  cache:{cacheLocation:'sessionStorage'}
-};
-let msalInstance=null;
-
-function getMsalInstance(){
-  if(!msalInstance){
-    // MSAL browser exports under different names depending on version
-    const MsalLib=window.msal||window.msalBrowser||window['@azure/msal-browser'];
-    if(!MsalLib||!MsalLib.PublicClientApplication){
-      throw new Error('MSAL library not loaded correctly');
-    }
-    console.log('MSAL loaded, creating instance');
-    msalInstance=new MsalLib.PublicClientApplication(MSAL_CONFIG);
-  }
-  return msalInstance;
-}
-
-function getGraphToken(){
-  const msalInst=getMsalInstance();
-  const scopes=['Files.Read','User.Read'];
-  const accounts=msalInst.getAllAccounts();
-  console.log('MSAL accounts found:',accounts.length);
-  if(accounts.length>0){
-    return msalInst.acquireTokenSilent({scopes,account:accounts[0]})
-      .catch(e=>{console.log('Silent token failed, trying popup:',e.message);return msalInst.acquireTokenPopup({scopes});});
-  }
-  return msalInst.acquireTokenPopup({scopes});
-}
-
-// ---- Download as Template via Graph API ----
-function downloadAsTemplate(){
-  if(typeof Word==='undefined'){setStatus('Not running inside Word','error');return;}
-  if(!state.variables.length){setStatus('No variables to save','warn');return;}
-  if(typeof JSZip==='undefined'){setStatus('JSZip not loaded','error');return;}
-  if(typeof msal==='undefined'){setStatus('MSAL not loaded — please refresh','error');return;}
-  setStatus('Signing in to Microsoft...');
-  const neotaXml=buildXML();
-
-  getGraphToken()
-    .then(result=>{
-      const token=result.accessToken;
-      console.log('Got Graph token');
-      setStatus('Finding document in OneDrive...');
-      return Word.run(async ctx=>{
-        const docProps=ctx.document.properties;
-        docProps.load('title');
-        await ctx.sync();
-        return {token, title:docProps.title||'Document'};
-      }).then(({token,title})=>findAndDownloadFile(token,title,neotaXml));
-    })
-    .catch(e=>{
-      console.error('Auth error:',e);
-      setStatus('Sign-in failed: '+e.message,'error');
-    });
-}
-
-function findAndDownloadFile(token, title, neotaXml){
-  setStatus('Searching OneDrive for document...');
-  // Search recent files first
-  return fetch('https://graph.microsoft.com/v1.0/me/drive/recent?$select=id,name,lastModifiedDateTime&$top=20',{
-    headers:{Authorization:'Bearer '+token}
-  })
-  .then(r=>r.json())
-  .then(data=>{
-    console.log('Recent files:',data.value?.map(f=>f.name).join(', '));
-    // Match by title
-    const candidates=[title+'.docx', title];
-    let match=data.value?.find(f=>candidates.some(c=>f.name===c));
-    if(!match){
-      // Try partial match
-      match=data.value?.find(f=>f.name.replace(/\.docx$/i,'')===title.replace(/\.docx$/i,''));
-    }
-    if(match){
-      console.log('Found file:',match.name,'id:',match.id);
-      return downloadAndInject(token, match.id, title, neotaXml);
-    }
-    // Try searching by name
-    return fetch(`https://graph.microsoft.com/v1.0/me/drive/root/search(q='${encodeURIComponent(title)}')?$select=id,name&$top=5`,{
-      headers:{Authorization:'Bearer '+token}
-    })
-    .then(r=>r.json())
-    .then(searchData=>{
-      console.log('Search results:',searchData.value?.map(f=>f.name).join(', '));
-      const searchMatch=searchData.value?.find(f=>
-        f.name===title+'.docx'||f.name===title||
-        f.name.replace(/\.docx$/i,'')===title.replace(/\.docx$/i,'')
-      );
-      if(searchMatch) return downloadAndInject(token, searchMatch.id, title, neotaXml);
-      throw new Error('Document not found in OneDrive. Please save the document to OneDrive first (File → Save).');
-    });
-  });
-}
-
-function downloadAndInject(token, fileId, title, neotaXml){
-  setStatus('Downloading document from OneDrive...');
-  return fetch('https://graph.microsoft.com/v1.0/me/drive/items/'+fileId+'/content',{
-    headers:{Authorization:'Bearer '+token}
-  })
-  .then(r=>{
-    if(!r.ok) throw new Error('Download failed: HTTP '+r.status);
-    return r.arrayBuffer();
-  })
-  .then(buffer=>{
-    console.log('Downloaded file size:',buffer.byteLength);
-    setStatus('Injecting Neota XML...');
-    return injectNeotaXmlIntoDocx(buffer, neotaXml, title);
-  });
-}
-
-function injectNeotaXmlIntoDocx(buffer, neotaXml, title){
-  return JSZip.loadAsync(buffer).then(zip=>{
-    console.log('Docx files:',Object.keys(zip.files).join(', '));
-    // Inject Neota customXml
-    zip.file('customXml/item1.xml', neotaXml);
-    zip.file('customXml/itemProps1.xml',`<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n<ds:datastoreItem ds:itemID="{${generateGuid()}}" xmlns:ds="http://schemas.openxmlformats.org/officeDocument/2006/customXml"><ds:schemaRefs><ds:schemaRef ds:uri="http://www.neotalogic.com"/></ds:schemaRefs></ds:datastoreItem>`);
-    zip.file('customXml/_rels/item1.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps" Target="itemProps1.xml"/></Relationships>`);
-    // Update Content_Types
-    return zip.file('[Content_Types].xml').async('string').then(ct=>{
-      if(!ct.includes('customXmlProperties'))
-        ct=ct.replace('</Types>','  <Override PartName="/customXml/itemProps1.xml" ContentType="application/vnd.openxmlformats-officedocument.customXmlProperties+xml"/>\n</Types>');
-      zip.file('[Content_Types].xml',ct);
-      // Update word/_rels/document.xml.rels
-      const relsFile=zip.file('word/_rels/document.xml.rels');
-      const updateRels=content=>{
-        if(!content.includes('customXml/item1.xml'))
-          content=content.replace('</Relationships>','  <Relationship Id="rId99" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>\n</Relationships>');
-        zip.file('word/_rels/document.xml.rels',content);
-        return generateAndDownload(zip,title);
-      };
-      return relsFile?relsFile.async('string').then(updateRels):updateRels(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId99" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>\n</Relationships>`);
-    });
-  });
-}
-
-function buildDocxFromParagraphs(paraTexts, neotaXml, docTitle){
-  try{
-    // Build merge field lookup: «Name/Issue/» -> MERGEFIELD code
-    const mergeFieldMap={};
-    state.variables.forEach(v=>{
-      const mf=v.mergeField||(v.name+'/'+(v.issueName||'First Issue')+'/');
-      mergeFieldMap['\u00AB'+mf+'\u00BB']=mf;
-    });
-
-    // Build word/document.xml paragraphs
-    const docParas=paraTexts.map(text=>{
-      if(!text&&text!==0) return '<w:p><w:r><w:t></w:t></w:r></w:p>';
-      // Split paragraph text by merge field markers
-      const parts=splitByMergeFields(text, mergeFieldMap);
-      const runs=parts.map(part=>{
-        if(part.type==='text'){
-          return `<w:r><w:t xml:space="preserve">${xmlEsc(part.value)}</w:t></w:r>`;
-        } else {
-          // MERGEFIELD
-          const mf=part.value;
-          const display='\u00AB'+mf+'\u00BB';
-          return `<w:r><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:rPr><w:color w:val="0000FF"/></w:rPr><w:instrText xml:space="preserve"> MERGEFIELD ${xmlEsc(mf)} \\* MERGEFORMAT </w:instrText></w:r><w:r><w:fldChar w:fldCharType="separate"/></w:r><w:r><w:rPr><w:noProof/><w:color w:val="0000FF"/></w:rPr><w:t>${xmlEsc(display)}</w:t></w:r><w:r><w:fldChar w:fldCharType="end"/></w:r>`;
-        }
-      }).join('');
-      return `<w:p>${runs}</w:p>`;
-    }).join('\n');
-
-    const docXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
-  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
-  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
-  <w:body>
-    ${docParas}
-    <w:sectPr/>
-  </w:body>
-</w:document>`;
-
-    const zip=new JSZip();
-    zip.file('word/document.xml', docXml);
-    zip.file('word/_rels/document.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>
-</Relationships>`);
-    zip.file('_rels/.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
-</Relationships>`);
-    zip.file('customXml/item1.xml', neotaXml);
-    zip.file('customXml/itemProps1.xml',`<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<ds:datastoreItem ds:itemID="{${generateGuid()}}" xmlns:ds="http://schemas.openxmlformats.org/officeDocument/2006/customXml">
-  <ds:schemaRefs><ds:schemaRef ds:uri="http://www.neotalogic.com"/></ds:schemaRefs>
-</ds:datastoreItem>`);
-    zip.file('customXml/_rels/item1.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps" Target="itemProps1.xml"/>
-</Relationships>`);
-    zip.file('[Content_Types].xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
-  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
-  <Default Extension="xml" ContentType="application/xml"/>
-  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
-  <Override PartName="/customXml/itemProps1.xml" ContentType="application/vnd.openxmlformats-officedocument.customXmlProperties+xml"/>
-</Types>`);
-
-    generateAndDownload(zip, docTitle);
-  }catch(e){
-    console.error('buildDocxFromParagraphs error:',e);
-    setStatus('Build failed: '+e.message,'error');
-  }
-}
-
-function splitByMergeFields(text, mergeFieldMap){
-  const parts=[];
-  let remaining=text;
-  while(remaining.length>0){
-    let foundIdx=-1;
-    let foundKey=null;
-    // Find earliest merge field marker
-    Object.keys(mergeFieldMap).forEach(marker=>{
-      const idx=remaining.indexOf(marker);
-      if(idx>=0&&(foundIdx===-1||idx<foundIdx)){
-        foundIdx=idx;
-        foundKey=marker;
-      }
-    });
-    if(foundIdx===-1){
-      parts.push({type:'text',value:remaining});
-      break;
-    }
-    if(foundIdx>0) parts.push({type:'text',value:remaining.substring(0,foundIdx)});
-    parts.push({type:'merge',value:mergeFieldMap[foundKey]});
-    remaining=remaining.substring(foundIdx+foundKey.length);
-  }
-  return parts;
-}
-
-function buildDocxFromPackage(pkgOoxml, neotaXml, docTitle){
-  try{
-    const zip=new JSZip();
-    const parser=new DOMParser();
-    const pkgDoc=parser.parseFromString(pkgOoxml,'application/xml');
-
-    // Check for parse errors
-    const parseError=pkgDoc.querySelector('parsererror');
-    if(parseError){console.error('XML parse error:',parseError.textContent.substring(0,300));setStatus('XML parse error','error');return;}
-
-    const root=pkgDoc.documentElement;
-    console.log('Root tag:',root?.tagName);
-    console.log('Root children count:',root?.children?.length);
-    if(root?.children?.length>0){
-      Array.from(root.children).slice(0,5).forEach((c,i)=>console.log('Child',i,':',c.tagName,'name=',c.getAttribute('pkg:name')||c.getAttribute('name')||'(no name)'));
-    }
-
-    // Get all child elements of root — these are the pkg:part elements
-    const partEls=root?Array.from(root.children):[];
-    console.log('Part elements found:',partEls.length);
-
-    partEls.forEach(part=>{
-      // Try all possible attribute name formats
-      const name=part.getAttribute('pkg:name')||part.getAttribute('name')||
-                 part.getAttributeNS('http://schemas.microsoft.com/office/2006/xmlPackage','name')||'';
-      if(!name){console.log('Skipping part with no name, tag:',part.tagName);return;}
-      const zipPath=name.startsWith('/')?name.substring(1):name;
-
-      // Find xmlData — try all formats
-      const xmlData=part.querySelector('xmlData')||
-                    part.querySelector('pkg\\:xmlData')||
-                    Array.from(part.children).find(c=>c.tagName==='pkg:xmlData'||c.localName==='xmlData');
-
-      if(xmlData){
-        const serializer=new XMLSerializer();
-        let content='';
-        Array.from(xmlData.childNodes).forEach(child=>{content+=serializer.serializeToString(child);});
-        if(content.trim()){
-          zip.file(zipPath,'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'+content);
-          console.log('Added:',zipPath,'('+content.length+')');
-        }
-      } else {
-        // Try binary content
-        const binData=Array.from(part.children).find(c=>c.localName==='binaryData');
-        if(binData){
-          const b64=binData.textContent.trim();
-          const binary=atob(b64);
-          const bytes=new Uint8Array(binary.length);
-          for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
-          zip.file(zipPath,bytes);
-          console.log('Added binary:',zipPath);
-        } else {
-          console.log('No xmlData or binaryData for:',name,'children:',part.children.length);
-        }
-      }
-    });
-
-    // Verify word/document.xml was extracted
-    const docXmlFile=zip.file('word/document.xml');
-    console.log('word/document.xml found:',!!docXmlFile);
-    if(!docXmlFile){
-      // Log all files we did add
-      console.log('Files added to zip:',Object.keys(zip.files).join(', '));
-      setStatus('Failed to extract document.xml — check console','error');
-      return;
-    }
-
-    // Inject Neota customXml
-    zip.file('customXml/item1.xml',neotaXml);
-    zip.file('customXml/itemProps1.xml',`<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n<ds:datastoreItem ds:itemID="{${generateGuid()}}" xmlns:ds="http://schemas.openxmlformats.org/officeDocument/2006/customXml"><ds:schemaRefs><ds:schemaRef ds:uri="http://www.neotalogic.com"/></ds:schemaRefs></ds:datastoreItem>`);
-    zip.file('customXml/_rels/item1.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps" Target="itemProps1.xml"/></Relationships>`);
-
-    // Update Content_Types
-    const ctFile=zip.file('[Content_Types].xml');
-    if(ctFile){
-      ctFile.async('string').then(ct=>{
-        if(!ct.includes('customXmlProperties'))
-          ct=ct.replace('</Types>','  <Override PartName="/customXml/itemProps1.xml" ContentType="application/vnd.openxmlformats-officedocument.customXmlProperties+xml"/>\n</Types>');
-        zip.file('[Content_Types].xml',ct);
-        finalizeDownload(zip,docTitle);
-      });
-    } else {
-      finalizeDownload(zip,docTitle);
-    }
-  }catch(e){
-    console.error('buildDocxFromPackage error:',e);
-    setStatus('Build failed: '+e.message,'error');
-  }
-}
-
-function finalizeDownload(zip, docTitle){
-  // Update word/_rels/document.xml.rels to include customXml relationship
-  const relsFile=zip.file('word/_rels/document.xml.rels');
-  const addRel=content=>{
-    if(!content.includes('customXml/item1.xml')){
-      content=content.replace('</Relationships>',
-        '  <Relationship Id="rId99" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>\n</Relationships>');
-    }
-    zip.file('word/_rels/document.xml.rels', content);
-    generateAndDownload(zip, docTitle);
-  };
-  if(relsFile){
-    relsFile.async('string').then(addRel);
-  } else {
-    zip.file('word/_rels/document.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId99" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>
-</Relationships>`);
-    generateAndDownload(zip, docTitle);
-  }
-}
-
-function generateAndDownload(zip, docTitle){
-  zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}).then(blob=>{
-    const safeName=(docTitle||'Document').replace(/[-\s]*Template\s*$/i,'').replace(/[^a-zA-Z0-9\s\-_]/g,'').trim()||'Document';
-    const filename=safeName+'-Template.docx';
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');a.href=url;a.download=filename;
-    document.body.appendChild(a);a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    setStatus('Downloaded: '+filename);
-  }).catch(e=>setStatus('Zip error: '+e.message,'error'));
-}
-
-function buildAndDownloadDocx(bodyOoxml, neotaXml, docTitle){
-  try{
-    const zip=new JSZip();
-
-    // _rels/.rels
-    zip.file('_rels/.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
-  <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/custom-xml" Target="customXml/item1.xml"/>
-</Relationships>`);
-
-    // [Content_Types].xml
-    zip.file('[Content_Types].xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
-  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
-  <Default Extension="xml" ContentType="application/xml"/>
-  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
-  <Override PartName="/customXml/itemProps1.xml" ContentType="application/vnd.openxmlformats-officedocument.customXmlProperties+xml"/>
-</Types>`);
-
-    // customXml/item1.xml — the Neota XML
-    zip.file('customXml/item1.xml', neotaXml);
-
-    // customXml/itemProps1.xml
-    zip.file('customXml/itemProps1.xml',`<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<ds:datastoreItem ds:itemID="{${generateGuid()}}" xmlns:ds="http://schemas.openxmlformats.org/officeDocument/2006/customXml">
-  <ds:schemaRefs>
-    <ds:schemaRef ds:uri="http://www.neotalogic.com"/>
-  </ds:schemaRefs>
-</ds:datastoreItem>`);
-
-    // customXml/_rels/item1.xml.rels
-    zip.file('customXml/_rels/item1.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps" Target="itemProps1.xml"/>
-</Relationships>`);
-
-    // word/document.xml — build from body OOXML
-    const docXml=buildDocumentXml(bodyOoxml);
-    zip.file('word/document.xml', docXml);
-
-    // word/_rels/document.xml.rels
-    zip.file('word/_rels/document.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>
-</Relationships>`);
-
-    // Generate and download
-    zip.generateAsync({type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}).then(blob=>{
-      const safeName=(docTitle||'Document').replace(/[-\s]*Template\s*$/i,'').replace(/[^a-zA-Z0-9\s-_]/g,'').trim()||'Document';
-      const filename=safeName+'-Template.docx';
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement('a');a.href=url;a.download=filename;
-      document.body.appendChild(a);a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      setStatus('Downloaded: '+filename);
-    }).catch(e=>setStatus('Zip generation failed: '+e.message,'error'));
-  }catch(e){
-    console.error('buildAndDownloadDocx error:',e);
-    setStatus('Build failed: '+e.message,'error');
-  }
-}
-
-function buildDocumentXml(bodyOoxml){
-  if(!bodyOoxml){
-    console.error('No body OOXML received');
-    bodyOoxml='<w:p><w:r><w:t>Error: Could not read document content</w:t></w:r></w:p>';
-  }
-  console.log('buildDocumentXml input length:',bodyOoxml.length);
-  // If it's a full document already, return it with customXml relationship added
-  if(bodyOoxml.includes('<w:document')){
-    console.log('Full document XML detected');
-    return bodyOoxml;
-  }
-  // If it contains w:body tags, extract inner content
-  let bodyContent=bodyOoxml;
-  const bodyMatch=bodyOoxml.match(/<w:body[^>]*>([\s\S]*)<\/w:body>/i);
-  if(bodyMatch){
-    bodyContent=bodyMatch[1];
-    console.log('Extracted body content, length:',bodyContent.length);
-  }
-  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas"
-  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
-  xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"
-  xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
-  xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"
-  xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml"
-  mc:Ignorable="w14 w15">
-  <w:body>${bodyContent}</w:body>
-</w:document>`;
-}
-
-function generateGuid(){
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{
-    const r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16).toUpperCase();
-  });
-}
-
-// ---- Save XML to document ----
-function saveXMLToDocument(){
-  if(typeof Word==='undefined'){setStatus('Not running inside Word','error');return;}
-  if(!state.variables.length){setStatus('No variables to save','warn');return;}
-  setStatus('Saving XML to document...');
-  const xml=buildXML();
-  const NS='http://www.neotalogic.com';
-  console.log('XML to save (first 500 chars):',xml.substring(0,500));
-  Word.run(async ctx=>{
-    try{
-      // Delete existing parts
-      try{
-        const existing=ctx.document.customXmlParts.getByNamespace(NS);
-        existing.load('items');
-        await ctx.sync();
-        console.log('Existing XML parts found:',existing.items.length);
-        existing.items.forEach(p=>p.delete());
-        await ctx.sync();
-      }catch(e){console.log('Delete existing error:',e.message);}
-      // Add new XML part
-      const newPart=ctx.document.customXmlParts.add(xml);
-      newPart.load('id');
-      await ctx.sync();
-      console.log('New XML part added with id:',newPart.id);
-      // Verify it was added
-      const verify=ctx.document.customXmlParts.getByNamespace(NS);
-      verify.load('items');
-      await ctx.sync();
-      console.log('Verification - XML parts count:',verify.items.length);
-      if(verify.items.length===0){
-        setStatus('Warning: XML part may not have persisted','warn');
-        return;
-      }
-      // Force document save
-      ctx.document.save();
-      await ctx.sync();
-      console.log('Document saved');
-      setStatus('Neota XML saved and document saved — now download via File → Save As → Download a copy');
-    }catch(inner){
-      console.error('Save failed:',inner);
-      setStatus('Save failed: '+inner.message,'error');
-    }
-  }).catch(e=>{console.error('Word.run error:',e);setStatus('Word API error: '+e.message,'error');});
-}
-
-// ---- Save/Load state via document settings ----
+// ========== SAVE/LOAD STATE ==========
 function saveStateToSettings(){
-  if(typeof Office==='undefined'||!Office.context){return;}
+  if(typeof Office==='undefined'||!Office.context)return;
   try{
-    const data=JSON.stringify({
-      variables:state.variables,
-      conditions:state.conditions,
-      forms:state.forms,
-      issues:state.issues,
-      repeats:state.repeats,
-      nvds:state.nvds
-    });
-    Office.context.document.settings.set('NeotaState', data);
-    Office.context.document.settings.saveAsync(result=>{
-      if(result.status===Office.AsyncResultStatus.Succeeded){
-        console.log('State saved to document settings');
-      } else {
-        console.warn('Settings save failed:',result.error?.message);
-      }
-    });
+    const data=JSON.stringify({variables:state.variables,conditions:state.conditions,forms:state.forms,issues:state.issues,repeats:state.repeats,nvds:state.nvds});
+    Office.context.document.settings.set('NeotaState',data);
+    Office.context.document.settings.saveAsync(r=>{if(r.status!==Office.AsyncResultStatus.Succeeded)console.warn('Settings save failed:',r.error?.message);});
   }catch(e){console.error('saveStateToSettings error:',e);}
 }
 
@@ -1703,56 +764,156 @@ function loadStateFromSettings(callback){
         if(data){
           try{
             const parsed=JSON.parse(data);
-            if(parsed.variables) state.variables=parsed.variables;
-            if(parsed.conditions) state.conditions=parsed.conditions;
-            if(parsed.forms) state.forms=parsed.forms;
-            if(parsed.issues) state.issues=parsed.issues;
-            if(parsed.repeats) state.repeats=parsed.repeats;
-            if(parsed.nvds) state.nvds=parsed.nvds;
-            console.log('State loaded from settings:',state.variables.length,'variables');
+            if(parsed.variables)state.variables=parsed.variables;
+            if(parsed.conditions)state.conditions=parsed.conditions;
+            if(parsed.forms)state.forms=parsed.forms;
+            if(parsed.issues)state.issues=parsed.issues;
+            if(parsed.repeats)state.repeats=parsed.repeats;
+            if(parsed.nvds)state.nvds=parsed.nvds;
             if(callback)callback(true);
           }catch(e){console.error('Parse error:',e);if(callback)callback(false);}
-        } else {
-          console.log('No saved state found in settings');
-          if(callback)callback(false);
-        }
-      } else {
-        console.warn('Settings refresh failed:',result.error?.message);
-        if(callback)callback(false);
-      }
+        }else{if(callback)callback(false);}
+      }else{if(callback)callback(false);}
     });
   }catch(e){console.error('loadStateFromSettings error:',e);if(callback)callback(false);}
 }
 
-// ---- Auto-load helper ----
 function autoLoadFromDocument(){
   loadStateFromSettings(found=>{
-    if(found){
-      renderVariables();renderConditions();renderForms();renderIssues();renderRepeats();
-      setStatus('Document data loaded — '+state.variables.length+' variable(s) found');
-    } else {
-      setStatus('Ready');
-    }
+    if(found){renderVariables();renderConditions();renderForms();renderIssues();renderRepeats();setStatus('Document data loaded — '+state.variables.length+' variable(s) found');}
+    else setStatus('Ready');
   });
 }
 
-function loadPartByIds(ids, index, NS){ return; } // deprecated
-
-// ---- Load XML from document ----
 function loadXMLFromDocument(){
   if(typeof Office==='undefined'){setStatus('Not running inside Word','error');return;}
   setStatus('Loading from document...');
   loadStateFromSettings(found=>{
-    if(found){
-      renderVariables();renderConditions();renderForms();renderIssues();renderRepeats();
-      setStatus('Loaded — '+state.variables.length+' variable(s), '+state.conditions.length+' condition(s)');
-    } else {
-      setStatus('No saved data found in this document','warn');
-    }
+    if(found){renderVariables();renderConditions();renderForms();renderIssues();renderRepeats();setStatus('Loaded — '+state.variables.length+' variable(s), '+state.conditions.length+' condition(s)');}
+    else setStatus('No saved data found in this document','warn');
   });
 }
 
-// ---- Parse XML into state ----
+function saveXMLToDocument(){
+  if(typeof Word==='undefined'){setStatus('Not running inside Word','error');return;}
+  if(!state.variables.length){setStatus('No variables to save','warn');return;}
+  setStatus('Saving XML to document...');
+  const xml=buildXML();
+  const NS='http://www.neotalogic.com';
+  Word.run(async ctx=>{
+    try{
+      try{const existing=ctx.document.customXmlParts.getByNamespace(NS);existing.load('items');await ctx.sync();existing.items.forEach(p=>p.delete());await ctx.sync();}catch(e){console.log('No existing parts:',e.message);}
+      const newPart=ctx.document.customXmlParts.add(xml);newPart.load('id');await ctx.sync();
+      ctx.document.save();await ctx.sync();
+      saveStateToSettings();
+      setStatus('Neota XML saved — press Ctrl+S to save the document');
+    }catch(inner){setStatus('Save failed: '+inner.message,'error');}
+  }).catch(e=>setStatus('Word API error: '+e.message,'error'));
+}
+
+// ========== MSAL + GRAPH API ==========
+function getMsalInstance(){
+  if(!msalInstance){
+    const MsalLib=window.msal||window.msalBrowser||window['@azure/msal-browser'];
+    if(!MsalLib||!MsalLib.PublicClientApplication)throw new Error('MSAL library not loaded');
+    console.log('MSAL loaded, creating instance');
+    msalInstance=new MsalLib.PublicClientApplication(MSAL_CONFIG);
+  }
+  return msalInstance;
+}
+
+function getGraphToken(){
+  const msalInst=getMsalInstance();
+  const scopes=['Files.Read','User.Read'];
+  const accounts=msalInst.getAllAccounts();
+  console.log('MSAL accounts:',accounts.length);
+  if(accounts.length>0){return msalInst.acquireTokenSilent({scopes,account:accounts[0]}).catch(e=>{console.log('Silent failed:',e.message);return msalInst.acquireTokenPopup({scopes});});}
+  return msalInst.acquireTokenPopup({scopes});
+}
+
+function downloadAsTemplate(){
+  if(typeof Word==='undefined'){setStatus('Not running inside Word','error');return;}
+  if(!state.variables.length){setStatus('No variables to save','warn');return;}
+  if(typeof JSZip==='undefined'){setStatus('JSZip not loaded','error');return;}
+  setStatus('Signing in to Microsoft...');
+  const neotaXml=buildXML();
+  getGraphToken()
+    .then(result=>{
+      const token=result.accessToken;
+      console.log('Got Graph token');
+      setStatus('Finding document in OneDrive...');
+      return Word.run(async ctx=>{
+        const docProps=ctx.document.properties;docProps.load('title');await ctx.sync();
+        return {token,title:docProps.title||'Document'};
+      }).then(({token,title})=>findAndDownloadFile(token,title,neotaXml));
+    })
+    .catch(e=>{console.error('Auth error:',e);setStatus('Sign-in failed: '+e.message,'error');});
+}
+
+function findAndDownloadFile(token,title,neotaXml){
+  // v1.4.0-FIND
+  setStatus('Searching OneDrive...');
+  console.log('FIND: title=',title);
+  const cleanTitle=(title||'').replace(/\.docx$/i,'').trim();
+  return fetch('https://graph.microsoft.com/v1.0/me/drive/recent?$select=id,name&$top=50',{headers:{Authorization:'Bearer '+token}})
+  .then(r=>r.json())
+  .then(data=>{
+    const files=(data.value||[]).filter(f=>f&&f.name);
+    console.log('FIND: recent count=',files.length,'names=',files.map(f=>f.name).join('|'));
+    const match=files.find(f=>{const fname=f.name.replace(/\.docx$/i,'').trim();return fname===cleanTitle||f.name===cleanTitle+'.docx';});
+    if(match){console.log('FIND: matched=',match.name);return downloadAndInject(token,match.id,title,neotaXml);}
+    console.log('FIND: not in recent, searching...');
+    return fetch(`https://graph.microsoft.com/v1.0/me/drive/root/search(q='${encodeURIComponent(cleanTitle)}')?$select=id,name&$top=10`,{headers:{Authorization:'Bearer '+token}})
+    .then(r=>r.json())
+    .then(sd=>{
+      const results=(sd.value||[]).filter(f=>f&&f.name);
+      console.log('FIND: search results=',results.map(f=>f.name).join('|'));
+      const sm=results.find(f=>{const fname=f.name.replace(/\.docx$/i,'').trim();return fname===cleanTitle||f.name===cleanTitle+'.docx';});
+      if(sm){console.log('FIND: search matched=',sm.name);return downloadAndInject(token,sm.id,title,neotaXml);}
+      console.log('FIND: full response=',JSON.stringify(sd).substring(0,500));
+      throw new Error('Document "'+cleanTitle+'" not found in OneDrive. Please save it to OneDrive first (Ctrl+S).');
+    });
+  });
+}
+
+function downloadAndInject(token,fileId,title,neotaXml){
+  setStatus('Downloading from OneDrive...');
+  return fetch('https://graph.microsoft.com/v1.0/me/drive/items/'+fileId+'/content',{headers:{Authorization:'Bearer '+token}})
+  .then(r=>{if(!r.ok)throw new Error('Download failed: HTTP '+r.status);return r.arrayBuffer();})
+  .then(buffer=>{console.log('Downloaded size:',buffer.byteLength);setStatus('Injecting Neota XML...');return injectNeotaXmlIntoDocx(buffer,neotaXml,title);});
+}
+
+function injectNeotaXmlIntoDocx(buffer,neotaXml,title){
+  return JSZip.loadAsync(buffer).then(zip=>{
+    console.log('Docx files:',Object.keys(zip.files).join(', '));
+    zip.file('customXml/item1.xml',neotaXml);
+    zip.file('customXml/itemProps1.xml',`<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n<ds:datastoreItem ds:itemID="{${generateGuid()}}" xmlns:ds="http://schemas.openxmlformats.org/officeDocument/2006/customXml"><ds:schemaRefs><ds:schemaRef ds:uri="http://www.neotalogic.com"/></ds:schemaRefs></ds:datastoreItem>`);
+    zip.file('customXml/_rels/item1.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps" Target="itemProps1.xml"/></Relationships>`);
+    return zip.file('[Content_Types].xml').async('string').then(ct=>{
+      if(!ct.includes('customXmlProperties'))ct=ct.replace('</Types>','  <Override PartName="/customXml/itemProps1.xml" ContentType="application/vnd.openxmlformats-officedocument.customXmlProperties+xml"/>\n</Types>');
+      zip.file('[Content_Types].xml',ct);
+      const relsFile=zip.file('word/_rels/document.xml.rels');
+      const updateRels=content=>{
+        if(!content.includes('customXml/item1.xml'))content=content.replace('</Relationships>','  <Relationship Id="rId99" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>\n</Relationships>');
+        zip.file('word/_rels/document.xml.rels',content);
+        return generateAndDownload(zip,title);
+      };
+      return relsFile?relsFile.async('string').then(updateRels):updateRels(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId99" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>\n</Relationships>`);
+    });
+  });
+}
+
+function generateAndDownload(zip,title){
+  zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}).then(blob=>{
+    const safeName=(title||'Document').replace(/[-\s]*Template\s*$/i,'').replace(/[^a-zA-Z0-9\s\-_]/g,'').trim()||'Document';
+    const filename=safeName+'-Template.docx';
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+    setStatus('Downloaded: '+filename);
+  }).catch(e=>setStatus('Zip error: '+e.message,'error'));
+}
+
+// ========== PARSE XML INTO STATE ==========
 function parseXMLIntoState(xmlStr){
   const parser=new DOMParser();const doc=parser.parseFromString(xmlStr,'application/xml');
   const getText=(el,tag)=>el.querySelector(tag)?.textContent?.trim()||'';
@@ -1762,12 +923,12 @@ function parseXMLIntoState(xmlStr){
   state.issues=Array.from(doc.querySelectorAll('issue')).map(i=>({id:getText(i,'issue_id'),name:getText(i,'issue_name'),parentId:'',parentName:''}));
 }
 
-// ---- Init ----
+// ========== INIT ==========
 buildTypeOptions('child-type','Text');
 if(typeof Office!=='undefined'){
   Office.onReady(info=>{
     if(info.host===Office.HostType.Word){
-      setStatus('Connected to Word — loading document data...');
+      setStatus('Connected to Word — loading data...');
       autoLoadFromDocument();
     }
   });
