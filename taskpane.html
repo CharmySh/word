@@ -96,7 +96,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid #e5e5e5}
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span style="font-size:14px;font-weight:500">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.5.2</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.5.3</span>
 </div>
 <div class="nav">
   <button class="nav-btn active" onclick="showPanel('variables')"><span class="nav-icon">(x)</span>Variables</button>
@@ -504,7 +504,7 @@ function doInsert(v){
       const cc=sel.insertContentControl();
       cc.tag=mf;
       cc.title=v.name;
-      cc.appearance='Tags';
+      cc.appearance='Hidden';
       cc.cannotDelete=false;
       cc.cannotEdit=false;
       cc.insertText(dt,Word.InsertLocation.replace);
@@ -520,19 +520,25 @@ function doInsert(v){
 // Called inside injectXml() before the template is downloaded.
 async function convertContentControlsToMergeFields(zip){
   let docXml=await zip.file('word/document.xml').async('string');
-  // Find every <w:sdt> that has a <w:tag w:val="VariableName/Issue/"/> pattern
-  // and replace the entire sdt block with proper MERGEFIELD runs
+
+  // Case 1: Block-level SDT (contains <w:p>) — replace whole <w:sdt> with <w:p>MERGEFIELD</w:p>
   docXml=docXml.replace(
-    /<w:sdt>[\s\S]*?<w:tag w:val="([^"]+\/)"\/>[\s\S]*?<\/w:sdt>/g,
+    /<w:sdt\b[\s\S]*?<w:tag w:val="([^"]*\/[^"]*)"\/>[\s\S]*?<\/w:sdt>/g,
     (match, mf)=>{
       const dt=`\u00AB${mf}\u00BB`;
-      return `<w:r><w:fldChar w:fldCharType="begin"/></w:r>`+
+      const runs=
+        `<w:r><w:fldChar w:fldCharType="begin"/></w:r>`+
         `<w:r><w:rPr><w:color w:val="0000FF"/></w:rPr><w:instrText xml:space="preserve"> MERGEFIELD ${mf} \\* MERGEFORMAT </w:instrText></w:r>`+
         `<w:r><w:fldChar w:fldCharType="separate"/></w:r>`+
         `<w:r><w:rPr><w:noProof/><w:color w:val="0000FF"/></w:rPr><w:t>${dt}</w:t></w:r>`+
         `<w:r><w:fldChar w:fldCharType="end"/></w:r>`;
+      // If original SDT was block (contained w:p), wrap in w:p
+      // If inline (inside existing w:p), just return runs
+      const isBlock=match.includes('<w:p ') || match.includes('<w:p>');
+      return isBlock ? `<w:p>${runs}</w:p>` : runs;
     }
   );
+
   zip.file('word/document.xml',docXml);
 }
 
