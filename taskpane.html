@@ -96,7 +96,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid #e5e5e5}
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span style="font-size:14px;font-weight:500">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.5.0</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.5.1</span>
 </div>
 <div class="nav">
   <button class="nav-btn active" onclick="showPanel('variables')"><span class="nav-icon">(x)</span>Variables</button>
@@ -491,29 +491,26 @@ function removeNVDS(){if(S._selNVDS===null||S._selNVDS===undefined){setStatus('S
 let _inserting=false;
 function doInsert(v){
   if(_inserting)return;
-  if(typeof Office==='undefined'||!Office.context){setStatus('Office.js not loaded','error');return;}
+  if(typeof Word==='undefined'){setStatus('Office.js not loaded','error');return;}
   _inserting=true;
   const mf=v.mergeField||(v.name+'/'+(v.issueName||'First Issue')+'/');
   const dt='\u00AB'+mf+'\u00BB';
   const ox=`<pkg:package xmlns:pkg="http://schemas.microsoft.com/office/2006/xmlPackage"><pkg:part pkg:name="/_rels/.rels" pkg:contentType="application/vnd.openxmlformats-package.relationships+xml"><pkg:xmlData><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships></pkg:xmlData></pkg:part><pkg:part pkg:name="/word/document.xml" pkg:contentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"><pkg:xmlData><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:r><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:rPr><w:color w:val="0000FF"/></w:rPr><w:instrText xml:space="preserve"> MERGEFIELD ${xe(mf)} \\* MERGEFORMAT </w:instrText></w:r><w:r><w:fldChar w:fldCharType="separate"/></w:r><w:r><w:rPr><w:noProof/><w:color w:val="0000FF"/></w:rPr><w:t>${xe(dt)}</w:t></w:r><w:r><w:fldChar w:fldCharType="end"/></w:r></w:p></w:body></w:document></pkg:xmlData></pkg:part></pkg:package>`;
-  Office.context.document.setSelectedDataAsync(ox,
-    {coercionType:Office.CoercionType.Ooxml},
-    result=>{
-      _inserting=false;
-      if(result.status===Office.AsyncResultStatus.Succeeded){
-        setStatus('Merge field inserted: '+v.name);
-      }else{
-        // Fallback to plain text
-        Office.context.document.setSelectedDataAsync(dt,
-          {coercionType:Office.CoercionType.Text},
-          r2=>{
-            if(r2.status===Office.AsyncResultStatus.Succeeded)setStatus('Inserted (plain text): '+v.name,'warn');
-            else setStatus('Insert failed: '+r2.error.message,'error');
-          }
-        );
-      }
-    }
-  );
+  Word.run(async ctx=>{
+    try{
+      const sel=ctx.document.getSelection();
+      sel.insertOoxml(ox,Word.InsertLocation.replace);
+      await ctx.sync();
+      setStatus('Merge field inserted: '+v.name);
+    }catch(e){
+      try{
+        const sel2=ctx.document.getSelection();
+        sel2.insertText(dt,Word.InsertLocation.replace);
+        await ctx.sync();
+        setStatus('Inserted (plain text): '+v.name,'warn');
+      }catch(e2){setStatus('Insert failed: '+e2.message,'error');}
+    }finally{_inserting=false;}
+  }).catch(e=>{_inserting=false;setStatus('Word API error: '+e.message,'error');});
 }
 
 // ========== RENDER VARIABLES ==========
