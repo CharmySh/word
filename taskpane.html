@@ -96,7 +96,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid #e5e5e5}
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span style="font-size:14px;font-weight:500">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.4.4</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.4.6</span>
 </div>
 <div class="nav">
   <button class="nav-btn active" onclick="showPanel('variables')"><span class="nav-icon">(x)</span>Variables</button>
@@ -583,14 +583,14 @@ function buildXML(){
   S.conditions.forEach(c=>{if(c.issueName&&!im[c.issueName])im[c.issueName]=S.nextId();});
   if(!im['Top Issue'])im['Top Issue']=S.nextId();
   const allIss=[{id:im['Top Issue'],name:'Top Issue'},...Object.entries(im).filter(([n])=>n!=='Top Issue').map(([n,id])=>({id,name:n}))];
-  let x=`<?xml version="1.0" encoding="UTF-8"?>\n<nl xmlns="http://www.neotalogic.com">\n  <nl_version>3.18.0</nl_version>\n  <nl_source>blank</nl_source>\n  <nl_doc_type>self</nl_doc_type>\n  <nl_doc_paths></nl_doc_paths>\n  <nl_mode>studio</nl_mode>\n  <nl_imported></nl_imported>\n  <variables>\n`;
+  let x=`<?xml version="1.0" encoding="UTF-8"?>\n<nl xmlns="http://www.neotalogic.com">\n  <nl_version>3.18.0</nl_version>\n  <nl_source>blank</nl_source>\n  <nl_imported>yes</nl_imported>\n  <nl_doc_type>self</nl_doc_type>\n  <nl_doc_paths></nl_doc_paths>\n  <nl_mode>studio</nl_mode>\n  <variables>\n`;
   S.variables.forEach((v,i)=>{const iid=im[v.issueName||'']||'';x+=`    <variable var_issue_sequence="${i+1}" var_form_sequence="${v.formName?i+1:0}">\n      <variable_id>${v.id}</variable_id>\n      <parent_id></parent_id>\n      <parent_name></parent_name>\n      <child_ids></child_ids>\n      <issue>${xe(v.issueName||'')}</issue>\n      <issue_id>${iid}</issue_id>\n      <variable_name>${xe(v.name)}</variable_name>\n      <data_type>${xe(v.type)}</data_type>\n      <var_named_value_display_set_id></var_named_value_display_set_id>\n      <var_named_value_display_set_name></var_named_value_display_set_name>\n      <dynamic_list_source><source_var_id>${v.valsetId||''}</source_var_id><source_var_name></source_var_name></dynamic_list_source>\n      <question_text>${xe(v.question)}</question_text>\n      <values>${(v.listValues||[]).map(l=>`<value>${xe(l)}</value>`).join('')}</values>\n      <hint_text>${xe(v.hint||'')}</hint_text>\n      <default_answers>${xe(v.defaultAnswer||'')}</default_answers>\n      <mv>${v.isMultiValue?'MV':''}</mv>\n      <form_id>${v.formId||''}</form_id>\n      <folder>${xe(v.folder||'')}</folder>\n      <notes>${xe(v.note||'')}</notes>\n      <merge_field>${xe(v.mergeField||'')}</merge_field>\n    </variable>\n`;});
   x+=`  </variables>\n  <conditions>\n`;
   S.conditions.forEach((c,seq)=>{const cid=im[c.issueName||'']||'';x+=`    <condition condition_issue_sequence="${seq+1}">\n      <condition_id>${c.id}</condition_id>\n      <condition_name>${xe(c.name)}</condition_name>\n      <condition_issue_id>${cid}</condition_issue_id>\n      <condition_issue_name>${xe(c.issueName||'')}</condition_issue_name>\n      <condition_description>${xe(c.desc||'')}</condition_description>\n      <conjunct_expression conjunct="${c.conjunct||'and'}">\n`;c.expressions.forEach(e=>{x+=`        <expression operator="${e.op}">\n          <variable>${e.varId}</variable>\n          <constant type="${xe(e.varType)}">${xe(e.value)}</constant>\n        </expression>\n`;});x+=`      </conjunct_expression>\n    </condition>\n`;});
   x+=`  </conditions>\n  <forms>\n`;
   S.forms.forEach((f,seq)=>{x+=`    <form form_issue_sequence="${seq+1}">\n      <form_id>${f.id}</form_id>\n      <form_issue>${xe(f.issueName||'')}</form_issue>\n      <form_issue_id>${im[f.issueName||'']||''}</form_issue_id>\n      <form_name>${xe(f.name)}</form_name>\n    </form>\n`;});
   x+=`  </forms>\n  <issues>\n`;
-  allIss.forEach((iss,seq)=>{x+=`    <issue issue_top_sequence="${seq}">\n      <issue_id>${iss.id}</issue_id>\n      <issue_name>${xe(iss.name)}</issue_name>\n    </issue>\n`;});
+  allIss.forEach((iss,seq)=>{x+=`    <issue issue_top_sequence="0">\n      <issue_id>${iss.id}</issue_id>\n      <issue_name>${xe(iss.name)}</issue_name>\n    </issue>\n`;});
   x+=`  </issues>\n  <named_value_display_sets/>\n  <deleted/>\n</nl>`;
   return x;
 }
