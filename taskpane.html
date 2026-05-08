@@ -96,7 +96,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid #e5e5e5}
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span style="font-size:14px;font-weight:500">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.5.3</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.5.4-debug</span>
 </div>
 <div class="nav">
   <button class="nav-btn active" onclick="showPanel('variables')"><span class="nav-icon">(x)</span>Variables</button>
@@ -520,6 +520,15 @@ function doInsert(v){
 // Called inside injectXml() before the template is downloaded.
 async function convertContentControlsToMergeFields(zip){
   let docXml=await zip.file('word/document.xml').async('string');
+
+  // DEBUG: log the actual SDT structures found
+  const sdtMatches=[...docXml.matchAll(/<w:sdt\b[\s\S]*?<\/w:sdt>/g)];
+  console.log('SDT count found:',sdtMatches.length);
+  sdtMatches.forEach((m,i)=>console.log('SDT['+i+']:',m[0].substring(0,400)));
+
+  // Also log tag values found
+  const tagMatches=[...docXml.matchAll(/<w:tag w:val="([^"]*)"/g)];
+  console.log('Tag values:',[...tagMatches].map(m=>m[1]));
 
   // Case 1: Block-level SDT (contains <w:p>) — replace whole <w:sdt> with <w:p>MERGEFIELD</w:p>
   docXml=docXml.replace(
