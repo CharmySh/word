@@ -96,7 +96,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid #e5e5e5}
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span style="font-size:14px;font-weight:500">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.4.8</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.4.9</span>
 </div>
 <div class="nav">
   <button class="nav-btn active" onclick="showPanel('variables')"><span class="nav-icon">(x)</span>Variables</button>
@@ -454,7 +454,11 @@ function showError(fid,msg){const el=document.getElementById(fid);if(!el)return;
 function openNewVar(){
   S.tempChildVars=[];document.getElementById('var-new-layout').innerHTML='<div id="vnew"></div>';
   const open=(txt)=>{buildVarFields('vnew',txt?{name:txt}:null,false);buildTypeOptions('vnew-type','Text');openModal('varNewModal');};
-  if(typeof Word!=='undefined'&&typeof Office!=='undefined'&&Office.context){Word.run(async ctx=>{const sel=ctx.document.getSelection();sel.load('text');await ctx.sync();open(sel.text?sel.text.trim():'');}).catch(()=>open(''));}else open('');
+  if(typeof Office!=='undefined'&&Office.context){
+    Office.context.document.getSelectedDataAsync(Office.CoercionType.Text,r=>{
+      open(r.status===Office.AsyncResultStatus.Succeeded&&r.value?r.value.trim():'');
+    });
+  }else open('');
 }
 function saveNewVariable(){
   clearErrors('vnew');const v=readVarFields('vnew');let err=false;
@@ -529,7 +533,7 @@ function saveEditCondition(){const id=document.getElementById('edit-cond-select'
 function openDeleteCond(){refreshCondSel('delete-cond-select');openModal('condDeleteModal');}
 function confirmDeleteCond(){const id=document.getElementById('delete-cond-select').value;if(!id){setStatus('Select a condition','warn');return;}S.conditions=S.conditions.filter(x=>x.id!=id);closeModal('condDeleteModal');renderConds();saveSettings();setStatus('Condition deleted');}
 function openInsertCond(){const s=document.getElementById('insert-cond-select');s.innerHTML='<option value="">— Select —</option>'+S.conditions.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');openModal('condInsertModal');}
-function doInsertCondition(){const id=document.getElementById('insert-cond-select').value;const c=S.conditions.find(x=>x.id==id);if(!c){setStatus('Select a condition','warn');return;}closeModal('condInsertModal');if(typeof Word!=='undefined'){Word.run(async ctx=>{const sel=ctx.document.getSelection();sel.load('text');await ctx.sync();sel.insertText('{IF '+c.name+'::'+(sel.text||'')+'::}','Replace');await ctx.sync();setStatus('Condition tag inserted');}).catch(e=>setStatus('Error: '+e.message,'error'));}else setStatus('[Demo] Condition tag inserted');}
+function doInsertCondition(){const id=document.getElementById('insert-cond-select').value;const c=S.conditions.find(x=>x.id==id);if(!c){setStatus('Select a condition','warn');return;}closeModal('condInsertModal');if(typeof Office!=='undefined'&&Office.context){Office.context.document.getSelectedDataAsync(Office.CoercionType.Text,r=>{const sel=r.status===Office.AsyncResultStatus.Succeeded&&r.value?r.value:'';Office.context.document.setSelectedDataAsync('{IF '+c.name+'::'+sel+'::}',{coercionType:Office.CoercionType.Text},r2=>{if(r2.status===Office.AsyncResultStatus.Succeeded)setStatus('Condition tag inserted');else setStatus('Insert failed: '+r2.error.message,'error');});});}else setStatus('[Demo] Condition tag inserted');}
 function renderConds(){const el=document.getElementById('cond-list');if(!S.conditions.length){el.innerHTML='<div class="empty">No conditions defined yet</div>';return;}el.innerHTML=S.conditions.map(c=>`<div class="card"><div class="card-row"><span class="card-name">${esc(c.name)}</span><span class="card-type cond">Condition</span><div class="card-actions"><button class="btn btn-sm" onclick="qEditCond('${c.id}')">Edit</button><button class="btn btn-sm btn-danger" onclick="qDelCond('${c.id}')">×</button></div></div>${c.issueName?`<span class="tag">${esc(c.issueName)}</span>`:''} ${c.expressions.length?`<div style="margin-top:4px;font-size:11px">${c.expressions.map(e=>`<span class="tag">${esc(e.varName)} ${e.op} "${esc(e.value)}"</span>`).join(' <b>'+c.conjunct.toUpperCase()+'</b> ')}</div>`:''}</div>`).join('');}
 function qEditCond(id){openViewEditCond();setTimeout(()=>{document.getElementById('edit-cond-select').value=id;loadCondForEdit();},100);}
 function qDelCond(id){openDeleteCond();setTimeout(()=>{document.getElementById('delete-cond-select').value=id;},100);}
@@ -562,7 +566,7 @@ document.getElementById('issueNewModal').addEventListener('click',()=>{const s=d
 
 // ========== REPEAT ==========
 function openRepeatModal(){const s=document.getElementById('repeat-var');s.innerHTML='<option value="">— Select —</option>'+S.variables.filter(v=>v.isMultiValue||v.type==='Instance').map(v=>`<option value="${v.id}">${esc(v.name)} (${v.type})</option>`).join('');openModal('repeatModal');}
-function saveRepeat(){const id=document.getElementById('repeat-var').value;const v=S.variables.find(x=>x.id==id);if(!v){setStatus('Select a variable','warn');return;}S.repeats.push({id:S.nextId(),varId:id,varName:v.name,varType:v.type});closeModal('repeatModal');renderRepeats();if(typeof Word!=='undefined'){Word.run(async ctx=>{const sel=ctx.document.getSelection();sel.insertText('[REPEAT:'+v.name+'] <Insert Text> [/REPEAT:'+v.name+']','Replace');await ctx.sync();setStatus('Repeat tag inserted');}).catch(e=>setStatus('Error: '+e.message,'error'));}else setStatus('[Demo] Repeat tag inserted');}
+function saveRepeat(){const id=document.getElementById('repeat-var').value;const v=S.variables.find(x=>x.id==id);if(!v){setStatus('Select a variable','warn');return;}S.repeats.push({id:S.nextId(),varId:id,varName:v.name,varType:v.type});closeModal('repeatModal');renderRepeats();if(typeof Office!=='undefined'&&Office.context){Office.context.document.setSelectedDataAsync('[REPEAT:'+v.name+'] <Insert Text> [/REPEAT:'+v.name+']',{coercionType:Office.CoercionType.Text},r=>{if(r.status===Office.AsyncResultStatus.Succeeded)setStatus('Repeat tag inserted');else setStatus('Insert failed: '+r.error.message,'error');});}else setStatus('[Demo] Repeat tag inserted');}
 function renderRepeats(){const el=document.getElementById('repeat-list');if(!S.repeats.length){el.innerHTML='<div class="empty">No repeat tags inserted</div>';return;}el.innerHTML=S.repeats.map(r=>`<div class="card"><div class="card-row"><span class="card-name">${esc(r.varName)}</span><span class="card-type repeat">${esc(r.varType)}</span><div class="card-actions"><button class="btn btn-sm btn-danger" onclick="delRepeat('${r.id}')">×</button></div></div></div>`).join('');}
 function delRepeat(id){S.repeats=S.repeats.filter(x=>x.id!=id);renderRepeats();}
 
