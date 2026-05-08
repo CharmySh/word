@@ -96,7 +96,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid #e5e5e5}
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span style="font-size:14px;font-weight:500">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.5.4-debug</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.5.4</span>
 </div>
 <div class="nav">
   <button class="nav-btn active" onclick="showPanel('variables')"><span class="nav-icon">(x)</span>Variables</button>
@@ -521,18 +521,15 @@ function doInsert(v){
 async function convertContentControlsToMergeFields(zip){
   let docXml=await zip.file('word/document.xml').async('string');
 
-  // DEBUG: log the actual SDT structures found
-  const sdtMatches=[...docXml.matchAll(/<w:sdt\b[\s\S]*?<\/w:sdt>/g)];
-  console.log('SDT count found:',sdtMatches.length);
-  sdtMatches.forEach((m,i)=>console.log('SDT['+i+']:',m[0].substring(0,400)));
+  // Each SDT looks like:
+  // <w:sdt><w:sdtPr>...<w:tag w:val="Name/First Issue/"/>...</w:sdtPr>
+  //   <w:sdtContent><w:p ...><w:pPr>...</w:pPr> ... </w:p></w:sdtContent></w:sdt>
+  //
+  // We replace the entire <w:sdt>...</w:sdt> with just a <w:p> containing
+  // the MERGEFIELD runs, preserving the original <w:pPr> from the inner paragraph.
 
-  // Also log tag values found
-  const tagMatches=[...docXml.matchAll(/<w:tag w:val="([^"]*)"/g)];
-  console.log('Tag values:',[...tagMatches].map(m=>m[1]));
-
-  // Case 1: Block-level SDT (contains <w:p>) — replace whole <w:sdt> with <w:p>MERGEFIELD</w:p>
   docXml=docXml.replace(
-    /<w:sdt\b[\s\S]*?<w:tag w:val="([^"]*\/[^"]*)"\/>[\s\S]*?<\/w:sdt>/g,
+    /<w:sdt\b[\s\S]*?<w:tag w:val="([^"]*\/[^"]*)"[\s\S]*?<\/w:sdt>/g,
     (match, mf)=>{
       const dt=`\u00AB${mf}\u00BB`;
       const runs=
@@ -541,10 +538,16 @@ async function convertContentControlsToMergeFields(zip){
         `<w:r><w:fldChar w:fldCharType="separate"/></w:r>`+
         `<w:r><w:rPr><w:noProof/><w:color w:val="0000FF"/></w:rPr><w:t>${dt}</w:t></w:r>`+
         `<w:r><w:fldChar w:fldCharType="end"/></w:r>`;
-      // If original SDT was block (contained w:p), wrap in w:p
-      // If inline (inside existing w:p), just return runs
-      const isBlock=match.includes('<w:p ') || match.includes('<w:p>');
-      return isBlock ? `<w:p>${runs}</w:p>` : runs;
+
+      // Extract the inner <w:pPr> if present so we preserve paragraph formatting
+      const pPrMatch=match.match(/<w:pPr[\s\S]*?<\/w:pPr>/);
+      const pPr=pPrMatch?pPrMatch[0]:'';
+
+      // Extract any paragraph-level attributes from the inner <w:p ...>
+      const pAttrMatch=match.match(/<w:p\b([^>]*)>/);
+      const pAttrs=pAttrMatch?pAttrMatch[1]:'';
+
+      return `<w:p${pAttrs}>${pPr}${runs}</w:p>`;
     }
   );
 
