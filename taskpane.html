@@ -96,7 +96,7 @@ table.data-table td{padding:5px 8px;border-bottom:0.5px solid #e5e5e5}
 <div class="topbar">
   <div class="topbar-logo">N</div>
   <span style="font-size:14px;font-weight:500">Neota Word Add-in</span>
-  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.5.1</span>
+  <span style="margin-left:auto;font-size:10px;opacity:0.75">v1.5.2</span>
 </div>
 <div class="nav">
   <button class="nav-btn active" onclick="showPanel('variables')"><span class="nav-icon">(x)</span>Variables</button>
@@ -488,6 +488,9 @@ function addNVDS(){const n=document.getElementById('nvds-name').value.trim();if(
 function removeNVDS(){if(S._selNVDS===null||S._selNVDS===undefined){setStatus('Select a set','warn');return;}S.nvds.splice(S._selNVDS,1);S._selNVDS=null;renderNVDS();}
 
 // ========== INSERT MERGE FIELD ==========
+// Insert as a Plain Text content control — instant, no spinner in Word Online.
+// On Download as Template, convertContentControlsToMergeFields() replaces them
+// with real Word MERGEFIELDs before the docx is handed to Architect.
 let _inserting=false;
 function doInsert(v){
   if(_inserting)return;
@@ -495,22 +498,42 @@ function doInsert(v){
   _inserting=true;
   const mf=v.mergeField||(v.name+'/'+(v.issueName||'First Issue')+'/');
   const dt='\u00AB'+mf+'\u00BB';
-  const ox=`<pkg:package xmlns:pkg="http://schemas.microsoft.com/office/2006/xmlPackage"><pkg:part pkg:name="/_rels/.rels" pkg:contentType="application/vnd.openxmlformats-package.relationships+xml"><pkg:xmlData><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships></pkg:xmlData></pkg:part><pkg:part pkg:name="/word/document.xml" pkg:contentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"><pkg:xmlData><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:r><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:rPr><w:color w:val="0000FF"/></w:rPr><w:instrText xml:space="preserve"> MERGEFIELD ${xe(mf)} \\* MERGEFORMAT </w:instrText></w:r><w:r><w:fldChar w:fldCharType="separate"/></w:r><w:r><w:rPr><w:noProof/><w:color w:val="0000FF"/></w:rPr><w:t>${xe(dt)}</w:t></w:r><w:r><w:fldChar w:fldCharType="end"/></w:r></w:p></w:body></w:document></pkg:xmlData></pkg:part></pkg:package>`;
   Word.run(async ctx=>{
     try{
       const sel=ctx.document.getSelection();
-      sel.insertOoxml(ox,Word.InsertLocation.replace);
+      const cc=sel.insertContentControl();
+      cc.tag=mf;
+      cc.title=v.name;
+      cc.appearance='Tags';
+      cc.cannotDelete=false;
+      cc.cannotEdit=false;
+      cc.insertText(dt,Word.InsertLocation.replace);
       await ctx.sync();
       setStatus('Merge field inserted: '+v.name);
     }catch(e){
-      try{
-        const sel2=ctx.document.getSelection();
-        sel2.insertText(dt,Word.InsertLocation.replace);
-        await ctx.sync();
-        setStatus('Inserted (plain text): '+v.name,'warn');
-      }catch(e2){setStatus('Insert failed: '+e2.message,'error');}
+      setStatus('Insert failed: '+e.message,'error');
     }finally{_inserting=false;}
   }).catch(e=>{_inserting=false;setStatus('Word API error: '+e.message,'error');});
+}
+
+// Convert all Neota content controls → real Word MERGEFIELDs in the docx XML.
+// Called inside injectXml() before the template is downloaded.
+async function convertContentControlsToMergeFields(zip){
+  let docXml=await zip.file('word/document.xml').async('string');
+  // Find every <w:sdt> that has a <w:tag w:val="VariableName/Issue/"/> pattern
+  // and replace the entire sdt block with proper MERGEFIELD runs
+  docXml=docXml.replace(
+    /<w:sdt>[\s\S]*?<w:tag w:val="([^"]+\/)"\/>[\s\S]*?<\/w:sdt>/g,
+    (match, mf)=>{
+      const dt=`\u00AB${mf}\u00BB`;
+      return `<w:r><w:fldChar w:fldCharType="begin"/></w:r>`+
+        `<w:r><w:rPr><w:color w:val="0000FF"/></w:rPr><w:instrText xml:space="preserve"> MERGEFIELD ${mf} \\* MERGEFORMAT </w:instrText></w:r>`+
+        `<w:r><w:fldChar w:fldCharType="separate"/></w:r>`+
+        `<w:r><w:rPr><w:noProof/><w:color w:val="0000FF"/></w:rPr><w:t>${dt}</w:t></w:r>`+
+        `<w:r><w:fldChar w:fldCharType="end"/></w:r>`;
+    }
+  );
+  zip.file('word/document.xml',docXml);
 }
 
 // ========== RENDER VARIABLES ==========
@@ -696,18 +719,19 @@ function downloadAndInject(token,fileId,title,neotaXml,driveId){
 }
 
 function injectXml(buf,neotaXml,title){
-  return JSZip.loadAsync(buf).then(zip=>{
-    console.log('Docx files:',Object.keys(zip.files).join(', '));
+  return JSZip.loadAsync(buf).then(async zip=>{
+    // Convert any Neota content controls → real MERGEFIELDs before download
+    await convertContentControlsToMergeFields(zip);
     zip.file('customXml/item1.xml',neotaXml);
     zip.file('customXml/itemProps1.xml',`<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n<ds:datastoreItem ds:itemID="{${guid()}}" xmlns:ds="http://schemas.openxmlformats.org/officeDocument/2006/customXml"><ds:schemaRefs><ds:schemaRef ds:uri="http://www.neotalogic.com"/></ds:schemaRefs></ds:datastoreItem>`);
     zip.file('customXml/_rels/item1.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps" Target="itemProps1.xml"/></Relationships>`);
-    return zip.file('[Content_Types].xml').async('string').then(ct=>{
-      if(!ct.includes('customXmlProperties'))ct=ct.replace('</Types>','  <Override PartName="/customXml/itemProps1.xml" ContentType="application/vnd.openxmlformats-officedocument.customXmlProperties+xml"/>\n</Types>');
-      zip.file('[Content_Types].xml',ct);
-      const rf=zip.file('word/_rels/document.xml.rels');
-      const upd=c=>{if(!c.includes('customXml/item1.xml'))c=c.replace('</Relationships>','  <Relationship Id="rId99" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>\n</Relationships>');zip.file('word/_rels/document.xml.rels',c);return genDownload(zip,title);};
-      return rf?rf.async('string').then(upd):upd(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId99" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>\n</Relationships>`);
-    });
+    const ct=await zip.file('[Content_Types].xml').async('string');
+    let ctUpdated=ct;
+    if(!ct.includes('customXmlProperties'))ctUpdated=ct.replace('</Types>','  <Override PartName="/customXml/itemProps1.xml" ContentType="application/vnd.openxmlformats-officedocument.customXmlProperties+xml"/>\n</Types>');
+    zip.file('[Content_Types].xml',ctUpdated);
+    const rf=zip.file('word/_rels/document.xml.rels');
+    const upd=c=>{if(!c.includes('customXml/item1.xml'))c=c.replace('</Relationships>','  <Relationship Id="rId99" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>\n</Relationships>');zip.file('word/_rels/document.xml.rels',c);return genDownload(zip,title);};
+    return rf?rf.async('string').then(upd):upd(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId99" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>\n</Relationships>`);
   });
 }
 
